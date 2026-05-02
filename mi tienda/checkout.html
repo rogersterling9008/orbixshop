@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Finalizar compra</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    :root {
+      --bg:#F7F6F3; --surface:#FFFFFF; --primary:#111111;
+      --accent:#FF4D00; --accent-light:#FFF3EE;
+      --muted:#6B7280; --border:#E5E5E0;
+      --success:#10B981; --success-light:#ECFDF5;
+      --blue:#009EE3; --radius:8px; --radius-lg:14px;
+    }
+    body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--primary); min-height:100vh; }
+
+    .nav { background:white; border-bottom:1px solid var(--border); padding:0 40px; height:60px; display:flex; align-items:center; justify-content:space-between; }
+    .nav-logo { font-family:'Syne',sans-serif; font-weight:800; font-size:20px; text-decoration:none; color:var(--primary); }
+    .nav-logo span { color:var(--accent); }
+    .back-link { color:var(--muted); text-decoration:none; font-size:14px; font-weight:500; transition:color .18s; }
+    .back-link:hover { color:var(--primary); }
+
+    .checkout-wrap { max-width:1060px; margin:0 auto; padding:40px 24px; display:grid; grid-template-columns:1fr 420px; gap:32px; align-items:start; }
+
+    .card { background:white; border-radius:var(--radius-lg); border:1px solid var(--border); margin-bottom:16px; overflow:hidden; }
+    .card-head { padding:18px 24px; border-bottom:1px solid var(--border); }
+    .card-title { font-family:'Syne',sans-serif; font-size:17px; font-weight:700; }
+    .card-body { padding:20px 24px; }
+
+    .form-group { margin-bottom:14px; }
+    .form-label { display:block; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:var(--muted); margin-bottom:6px; }
+    .form-input { width:100%; padding:11px 14px; border:1.5px solid var(--border); border-radius:var(--radius); font-family:'DM Sans',sans-serif; font-size:14px; outline:none; transition:all .18s; background:white; color:var(--primary); }
+    .form-input:focus { border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-light); }
+    textarea.form-input { resize:vertical; min-height:68px; }
+    select.form-input { cursor:pointer; }
+    .form-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+
+    /* SHIPPING BANNERS */
+    .ship-banner { border-radius:var(--radius); padding:13px 16px; display:none; align-items:flex-start; gap:10px; margin-bottom:14px; font-size:13px; line-height:1.6; }
+    .ship-banner.show { display:flex; }
+    .ship-banner.free { background:var(--success-light); border:1.5px solid #6EE7B7; color:#065f46; }
+    .ship-banner.bx   { background:#EFF6FF; border:1.5px solid #93C5FD; color:#1e40af; }
+    .ship-icon { font-size:22px; flex-shrink:0; margin-top:1px; }
+
+    .toggle-communes { display:inline-flex; align-items:center; gap:4px; margin-top:6px; font-size:12px; font-weight:700; color:var(--blue); background:none; border:none; cursor:pointer; font-family:'DM Sans',sans-serif; text-decoration:underline; text-underline-offset:3px; }
+    .communes-panel { background:#F0F9FF; border:1px solid #BAE6FD; border-radius:var(--radius); padding:14px; margin-top:10px; display:none; }
+    .communes-panel.open { display:block; }
+    .communes-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:3px 10px; margin-top:8px; }
+    .c-chip { font-size:12px; color:#0c4a6e; display:flex; align-items:center; gap:4px; }
+    .c-chip::before { content:'✓'; color:var(--success); font-weight:700; }
+
+    /* PAYMENT */
+    .payment-options { display:flex; flex-direction:column; gap:10px; }
+    .payment-option { border:2px solid var(--border); border-radius:var(--radius-lg); padding:16px 18px; cursor:pointer; transition:all .2s; display:flex; align-items:center; gap:14px; position:relative; user-select:none; }
+    .payment-option:hover:not(.disabled) { border-color:#aaa; }
+    .payment-option.selected { border-color:var(--accent); background:var(--accent-light); }
+    .payment-option.disabled { opacity:.38; cursor:not-allowed; pointer-events:none; }
+    .payment-option input[type=radio] { accent-color:var(--accent); width:18px; height:18px; flex-shrink:0; }
+    .pay-icon { font-size:28px; }
+    .pay-info { flex:1; }
+    .pay-name { font-size:15px; font-weight:700; margin-bottom:2px; }
+    .pay-desc { font-size:12px; color:var(--muted); }
+    .pay-badge { color:white; font-size:10px; font-weight:700; padding:2px 9px; border-radius:100px; position:absolute; top:10px; right:14px; }
+    .badge-green  { background:var(--success); }
+    .badge-orange { background:var(--accent); }
+
+    .bx-note { background:#EFF6FF; border:1px solid #93C5FD; border-radius:var(--radius); padding:12px 14px; font-size:13px; color:#1e40af; margin-top:10px; display:none; }
+    .bx-note.show { display:block; }
+
+    /* RETURNS */
+    .returns-box { background:#FFFBEB; border:1px solid #FCD34D; border-radius:var(--radius); padding:13px 15px; font-size:13px; color:#78350F; margin-top:14px; display:flex; gap:10px; align-items:flex-start; }
+
+    /* SUMMARY */
+    .order-item { display:flex; gap:12px; padding:12px 0; border-bottom:1px solid var(--border); }
+    .item-img-wrap { position:relative; flex-shrink:0; }
+    .oi-img { width:56px; height:56px; border-radius:8px; object-fit:cover; background:var(--bg); }
+    .qty-badge { position:absolute; top:-6px; right:-6px; background:var(--muted); color:white; border-radius:50%; width:18px; height:18px; font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center; }
+    .oi-name { font-size:14px; font-weight:600; line-height:1.3; margin-bottom:2px; }
+    .oi-sub  { font-size:12px; color:var(--muted); }
+    .oi-price{ font-weight:700; font-size:14px; margin-left:auto; white-space:nowrap; }
+
+    .totals { border-top:1px solid var(--border); padding-top:14px; margin-top:4px; }
+    .total-row { display:flex; justify-content:space-between; margin-bottom:8px; font-size:14px; color:var(--muted); }
+    .total-final { display:flex; justify-content:space-between; font-size:18px; font-weight:800; padding-top:8px; border-top:1px solid var(--border); }
+
+    /* SUBMIT */
+    .submit-btn { width:100%; margin-top:16px; padding:15px; border-radius:var(--radius); border:none; font-family:'DM Sans',sans-serif; font-size:16px; font-weight:700; cursor:pointer; transition:all .2s; }
+    .submit-btn:disabled { opacity:.5; cursor:not-allowed; }
+    .btn-mp { background:#009EE3; color:white; }
+    .btn-mp:hover:not(:disabled) { background:#0077B6; }
+    .btn-entrega { background:var(--accent); color:white; }
+    .btn-entrega:hover:not(:disabled) { background:#E04400; }
+    .sec-note { text-align:center; font-size:12px; color:var(--muted); margin-top:10px; }
+
+    /* SUCCESS */
+    .success-wrap { position:fixed; inset:0; background:rgba(255,255,255,.97); z-index:999; display:none; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:40px; overflow-y:auto; }
+    .success-wrap.show { display:flex; }
+    .suc-icon { font-size:72px; margin-bottom:20px; }
+    .suc-title { font-family:'Syne',sans-serif; font-size:30px; font-weight:800; margin-bottom:10px; }
+    .suc-desc { color:var(--muted); font-size:15px; max-width:460px; line-height:1.75; margin-bottom:20px; }
+    .suc-order { background:var(--bg); padding:14px 28px; border-radius:var(--radius-lg); margin-bottom:16px; font-size:14px; }
+    .suc-order strong { display:block; font-family:'Syne',sans-serif; font-size:22px; margin-bottom:4px; }
+    .suc-actions { display:flex; gap:12px; flex-wrap:wrap; justify-content:center; margin-top:16px; }
+    .suc-btn { padding:13px 26px; border-radius:var(--radius); font-family:'DM Sans',sans-serif; font-size:15px; font-weight:700; cursor:pointer; transition:all .2s; text-decoration:none; border:none; }
+    .suc-btn.dark { background:var(--primary); color:white; }
+    .suc-btn.dark:hover { background:#333; }
+    .suc-btn.orange { background:var(--accent); color:white; }
+    .suc-btn.orange:hover { background:#E04400; }
+
+    /* MP loading */
+    .mp-loading { display:none; position:fixed; inset:0; background:rgba(255,255,255,.95); z-index:998; align-items:center; justify-content:center; flex-direction:column; gap:16px; }
+    .mp-loading.show { display:flex; }
+    .spinner { width:48px; height:48px; border:4px solid var(--border); border-top-color:#009EE3; border-radius:50%; animation:spin .8s linear infinite; }
+    @keyframes spin { to{transform:rotate(360deg);} }
+
+    .toast { position:fixed; bottom:20px; right:20px; background:var(--primary); color:white; padding:11px 18px; border-radius:8px; font-size:14px; font-weight:500; z-index:9999; transform:translateY(60px); transition:transform .3s; pointer-events:none; max-width:320px; }
+    .toast.show { transform:translateY(0); }
+
+    @media(max-width:760px){
+      .nav { padding:0 16px; }
+      .checkout-wrap { grid-template-columns:1fr; padding:20px 16px; }
+      .form-row { grid-template-columns:1fr; }
+      .communes-grid { grid-template-columns:repeat(2,1fr); }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="index.html" class="nav-logo" id="navLogo">Mi<span>Tienda</span></a>
+  <a href="index.html" class="back-link">← Seguir comprando</a>
+</nav>
+
+<div class="checkout-wrap">
+
+  <!-- ── LEFT COLUMN ── -->
+  <div>
+
+    <!-- DATOS DE CONTACTO -->
+    <div class="card">
+      <div class="card-head"><div class="card-title">1. Datos de contacto</div></div>
+      <div class="card-body">
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Nombre completo *</label><input class="form-input" id="c_name" placeholder="Ej: Juan Pérez"></div>
+          <div class="form-group"><label class="form-label">Email *</label><input class="form-input" type="email" id="c_email" placeholder="tu@email.com"></div>
+        </div>
+        <div class="form-group"><label class="form-label">Teléfono / Celular *</label><input class="form-input" type="tel" id="c_phone" placeholder="+56 9 XXXX XXXX"></div>
+      </div>
+    </div>
+
+    <!-- DIRECCIÓN -->
+    <div class="card">
+      <div class="card-head"><div class="card-title">2. Dirección de entrega</div></div>
+      <div class="card-body">
+
+        <div class="form-group">
+          <label class="form-label">Comuna *</label>
+          <select class="form-input" id="c_commune" onchange="onCommuneChange()">
+            <option value="">— Selecciona tu comuna —</option>
+            <optgroup label="✅ Provincia de Santiago — Envío GRATIS contra entrega">
+              <option>Cerrillos</option><option>Cerro Navia</option><option>Conchalí</option>
+              <option>El Bosque</option><option>Estación Central</option><option>Huechuraba</option>
+              <option>Independencia</option><option>La Cisterna</option><option>La Florida</option>
+              <option>La Granja</option><option>La Pintana</option><option>La Reina</option>
+              <option>Las Condes</option><option>Lo Barnechea</option><option>Lo Espejo</option>
+              <option>Lo Prado</option><option>Macul</option><option>Maipú</option>
+              <option>Ñuñoa</option><option>Pedro Aguirre Cerda</option><option>Peñalolén</option>
+              <option>Providencia</option><option>Pudahuel</option><option>Quilicura</option>
+              <option>Quinta Normal</option><option>Recoleta</option><option>Renca</option>
+              <option>San Joaquín</option><option>San Miguel</option><option>San Ramón</option>
+              <option>Santiago</option><option>Vitacura</option>
+            </optgroup>
+            <optgroup label="📦 RM — Otras provincias (BlueExpress)">
+              <option>Buin</option><option>Calera de Tango</option><option>Colina</option>
+              <option>Curacaví</option><option>El Monte</option><option>Isla de Maipo</option>
+              <option>Lampa</option><option>María Pinto</option><option>Melipilla</option>
+              <option>Padre Hurtado</option><option>Paine</option><option>Peñaflores</option>
+              <option>Pirque</option><option>Puente Alto</option><option>San Bernardo</option>
+              <option>San José de Maipo</option><option>San Pedro</option><option>Talagante</option><option>Tiltil</option>
+            </optgroup>
+            <optgroup label="📦 Región de Valparaíso">
+              <option>Valparaíso</option><option>Viña del Mar</option><option>Quilpué</option><option>Villa Alemana</option><option>San Antonio</option><option>Quillota</option><option>Los Andes</option><option>La Calera</option>
+            </optgroup>
+            <optgroup label="📦 Región del Biobío">
+              <option>Concepción</option><option>Talcahuano</option><option>Chiguayante</option><option>Hualpén</option><option>San Pedro de la Paz</option><option>Coronel</option><option>Los Ángeles</option>
+            </optgroup>
+            <optgroup label="📦 Región de La Araucanía">
+              <option>Temuco</option><option>Padre Las Casas</option><option>Villarrica</option><option>Pucón</option><option>Angol</option>
+            </optgroup>
+            <optgroup label="📦 Región del Maule">
+              <option>Talca</option><option>Curicó</option><option>Linares</option><option>Constitución</option>
+            </optgroup>
+            <optgroup label="📦 Región de O'Higgins">
+              <option>Rancagua</option><option>Machalí</option><option>San Fernando</option>
+            </optgroup>
+            <optgroup label="📦 Región de Los Lagos">
+              <option>Puerto Montt</option><option>Osorno</option><option>Castro</option><option>Puerto Varas</option>
+            </optgroup>
+            <optgroup label="📦 Región de Los Ríos">
+              <option>Valdivia</option><option>La Unión</option>
+            </optgroup>
+            <optgroup label="📦 Región de Ñuble">
+              <option>Chillán</option><option>San Carlos</option>
+            </optgroup>
+            <optgroup label="📦 Región de Coquimbo">
+              <option>La Serena</option><option>Coquimbo</option><option>Ovalle</option>
+            </optgroup>
+            <optgroup label="📦 Región de Atacama">
+              <option>Copiapó</option><option>Caldera</option>
+            </optgroup>
+            <optgroup label="📦 Región de Antofagasta">
+              <option>Antofagasta</option><option>Calama</option>
+            </optgroup>
+            <optgroup label="📦 Región de Tarapacá">
+              <option>Iquique</option><option>Alto Hospicio</option>
+            </optgroup>
+            <optgroup label="📦 Región de Arica y Parinacota">
+              <option>Arica</option>
+            </optgroup>
+            <optgroup label="📦 Región de Magallanes">
+              <option>Punta Arenas</option><option>Puerto Natales</option>
+            </optgroup>
+            <optgroup label="📦 Región de Aysén">
+              <option>Coyhaique</option>
+            </optgroup>
+          </select>
+        </div>
+
+        <!-- BANNER ENVÍO GRATIS -->
+        <div class="ship-banner free" id="bannerFree">
+          <div class="ship-icon">🟢</div>
+          <div>
+            <strong>¡Envío GRATIS para tu comuna!</strong><br>
+            Estás en la <strong>Provincia de Santiago</strong>. Puedes elegir pago contra entrega — nuestros repartidores de confianza te llegan sin costo.<br>
+            <button class="toggle-communes" onclick="toggleList()">📋 Ver las 32 comunas con envío gratis</button>
+            <div class="communes-panel" id="communePanel">
+              <div style="font-size:12px;font-weight:700;color:#065f46;">Comunas de la Provincia de Santiago:</div>
+              <div class="communes-grid" id="communeChips"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- BANNER BLUEEXPRESS -->
+        <div class="ship-banner bx" id="bannerBX">
+          <div class="ship-icon">📦</div>
+          <div>
+            <strong>Envío vía BlueExpress</strong><br>
+            Tu comuna está fuera de la Provincia de Santiago. El despacho se realiza por <strong>BlueExpress</strong> y el <strong>costo de envío lo pagas tú al recibir</strong> el pedido directamente al repartidor.<br>
+            <small style="margin-top:5px;display:block;opacity:.85;">Solo disponible MercadoPago para tu zona.</small>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Dirección *</label>
+          <input class="form-input" id="c_addr" placeholder="Calle, número, depto/casa">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Región</label>
+          <input class="form-input" id="c_region" placeholder="Se completa automáticamente" readonly style="background:var(--bg);">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Notas adicionales</label>
+          <textarea class="form-input" id="c_notes" placeholder="Talla, color, instrucciones especiales de entrega..."></textarea>
+        </div>
+
+        <div class="returns-box">
+          <div style="font-size:22px;flex-shrink:0;">🔄</div>
+          <div><strong>Política de devoluciones:</strong> Aceptamos devoluciones desde el momento en que recibes tu pedido hasta los <strong>7 días corridos</strong> siguientes. Contáctanos por WhatsApp con tu número de pedido y coordinamos.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MÉTODO DE PAGO -->
+    <div class="card">
+      <div class="card-head"><div class="card-title">3. Método de pago</div></div>
+      <div class="card-body">
+        <div class="payment-options">
+
+          <!-- CONTRA ENTREGA (solo Provincia Santiago) -->
+          <label class="payment-option disabled" id="opt-entrega" onclick="selectPayment('contra_entrega')">
+            <input type="radio" name="payment" value="contra_entrega">
+            <div class="pay-icon">🏠</div>
+            <div class="pay-info">
+              <div class="pay-name">Pago contra entrega</div>
+              <div class="pay-desc" id="entregaDesc">Solo disponible en la Provincia de Santiago</div>
+            </div>
+            <div class="pay-badge badge-green">ENVÍO GRATIS</div>
+          </label>
+
+          <!-- MERCADOPAGO -->
+          <label class="payment-option selected" id="opt-mp" onclick="selectPayment('mercadopago')">
+            <input type="radio" name="payment" value="mercadopago" checked>
+            <div class="pay-icon">💳</div>
+            <div class="pay-info">
+              <div class="pay-name">Pagar con MercadoPago</div>
+              <div class="pay-desc">Débito, crédito o saldo MP · 100% seguro</div>
+            </div>
+            <div class="pay-badge badge-orange">RECOMENDADO</div>
+          </label>
+
+        </div>
+
+        <div class="bx-note" id="bxNote">
+          📦 <strong>Sobre tu envío BlueExpress:</strong> El costo de despacho no está incluido en el precio de tu compra. Lo pagas directamente al repartidor cuando recibes tu pedido.
+        </div>
+
+        <button class="submit-btn btn-mp" id="submitBtn" onclick="submitOrder()">
+          💳 Pagar con MercadoPago →
+        </button>
+        <div class="sec-note">🔒 Transacción 100% segura · Aceptamos devoluciones 7 días</div>
+      </div>
+    </div>
+
+  </div><!-- /left -->
+
+  <!-- ── RIGHT COLUMN ── -->
+  <div>
+    <div class="card" style="position:sticky;top:24px;margin-bottom:0;">
+      <div class="card-head"><div class="card-title">Resumen del pedido</div></div>
+      <div class="card-body" id="orderSummary"></div>
+    </div>
+  </div>
+
+</div><!-- /checkout-wrap -->
+
+<!-- MP Loading -->
+<div class="mp-loading" id="mpLoading">
+  <div class="spinner"></div>
+  <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;">Preparando tu pago...</div>
+  <div style="color:var(--muted);font-size:14px;">Te redirigiremos a MercadoPago</div>
+</div>
+
+<!-- SUCCESS -->
+<div class="success-wrap" id="successWrap">
+  <div class="suc-icon">✅</div>
+  <h1 class="suc-title">¡Pedido confirmado!</h1>
+  <p class="suc-desc" id="sucDesc">Tu pedido fue registrado exitosamente.</p>
+  <div class="suc-order">Número de pedido<br><strong id="sucNum">#000000</strong></div>
+  <p style="font-size:13px;color:var(--muted);max-width:400px;line-height:1.6;">🔄 Recuerda: tienes <strong>7 días corridos</strong> desde que recibes el pedido para solicitar una devolución vía WhatsApp.</p>
+  <div class="suc-actions">
+    <button class="suc-btn dark" onclick="printLabel()">🖨️ Imprimir etiqueta PDF</button>
+    <a href="index.html" class="suc-btn orange" onclick="clearCart()">Volver a la tienda →</a>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════════════════════════════════════
+//  DATA
+// ══════════════════════════════════════
+
+const SANTIAGO_COMMUNES = new Set([
+  'Cerrillos','Cerro Navia','Conchalí','El Bosque','Estación Central','Huechuraba',
+  'Independencia','La Cisterna','La Florida','La Granja','La Pintana','La Reina',
+  'Las Condes','Lo Barnechea','Lo Espejo','Lo Prado','Macul','Maipú','Ñuñoa',
+  'Pedro Aguirre Cerda','Peñalolén','Providencia','Pudahuel','Quilicura',
+  'Quinta Normal','Recoleta','Renca','San Joaquín','San Miguel','San Ramón',
+  'Santiago','Vitacura'
+]);
+
+const COMMUNE_REGION = {};
+[...SANTIAGO_COMMUNES].forEach(c=>COMMUNE_REGION[c]='Metropolitana de Santiago');
+['Buin','Calera de Tango','Colina','Curacaví','El Monte','Isla de Maipo','Lampa','María Pinto',
+ 'Melipilla','Padre Hurtado','Paine','Peñaflores','Pirque','Puente Alto','San Bernardo',
+ 'San José de Maipo','San Pedro','Talagante','Tiltil'].forEach(c=>COMMUNE_REGION[c]='Metropolitana de Santiago');
+['Valparaíso','Viña del Mar','Quilpué','Villa Alemana','San Antonio','Quillota','Los Andes','La Calera'].forEach(c=>COMMUNE_REGION[c]='Valparaíso');
+['Concepción','Talcahuano','Chiguayante','Hualpén','San Pedro de la Paz','Coronel','Los Ángeles'].forEach(c=>COMMUNE_REGION[c]='Biobío');
+['Temuco','Padre Las Casas','Villarrica','Pucón','Angol'].forEach(c=>COMMUNE_REGION[c]='La Araucanía');
+['Talca','Curicó','Linares','Constitución'].forEach(c=>COMMUNE_REGION[c]='Maule');
+['Rancagua','Machalí','San Fernando'].forEach(c=>COMMUNE_REGION[c]="O'Higgins");
+['Puerto Montt','Osorno','Castro','Puerto Varas'].forEach(c=>COMMUNE_REGION[c]='Los Lagos');
+['Valdivia','La Unión'].forEach(c=>COMMUNE_REGION[c]='Los Ríos');
+['Chillán','San Carlos'].forEach(c=>COMMUNE_REGION[c]='Ñuble');
+['La Serena','Coquimbo','Ovalle'].forEach(c=>COMMUNE_REGION[c]='Coquimbo');
+['Copiapó','Caldera'].forEach(c=>COMMUNE_REGION[c]='Atacama');
+['Antofagasta','Calama'].forEach(c=>COMMUNE_REGION[c]='Antofagasta');
+['Iquique','Alto Hospicio'].forEach(c=>COMMUNE_REGION[c]='Tarapacá');
+['Arica'].forEach(c=>COMMUNE_REGION[c]='Arica y Parinacota');
+['Punta Arenas','Puerto Natales'].forEach(c=>COMMUNE_REGION[c]='Magallanes');
+['Coyhaique'].forEach(c=>COMMUNE_REGION[c]='Aysén');
+
+function getSettings(){ try{ return Object.assign({storeName:'MiTienda',whatsappNumber:'56991065770',mpWebhookUrl:''},JSON.parse(localStorage.getItem('st_settings')||'{}')); }catch(e){ return {storeName:'MiTienda',whatsappNumber:'56991065770',mpWebhookUrl:''}; } }
+function getProducts(){ try{ return JSON.parse(localStorage.getItem('st_products')||'[]'); }catch(e){ return []; } }
+function getCart(){ try{ return JSON.parse(localStorage.getItem('st_cart')||'[]'); }catch(e){ return []; } }
+function clearCart(){ localStorage.removeItem('st_cart'); }
+function getOrders(){ try{ return JSON.parse(localStorage.getItem('st_orders')||'[]'); }catch(e){ return []; } }
+function saveOrders(o){ localStorage.setItem('st_orders',JSON.stringify(o)); }
+function fmtPrice(p){ return '$'+Number(p).toLocaleString('es-CL'); }
+function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
+
+let selectedPayment = 'mercadopago';
+let lastOrder = null;
+
+// ══════════════════════════════════════
+//  BOOT
+// ══════════════════════════════════════
+
+function boot(){
+  const S = getSettings();
+  const cart = getCart();
+  const logo = document.getElementById('navLogo');
+  logo.innerHTML = S.storeName.slice(0,-1)+'<span>'+S.storeName.slice(-1)+'</span>';
+  document.title = 'Checkout — '+S.storeName;
+  if(!cart.length){ window.location.href='index.html'; return; }
+  renderSummary(cart, getProducts());
+
+  // Populate commune chips
+  document.getElementById('communeChips').innerHTML =
+    [...SANTIAGO_COMMUNES].sort().map(c=>`<div class="c-chip">${c}</div>`).join('');
+
+  // MP return detection
+  const p = new URLSearchParams(window.location.search);
+  const st = p.get('status')||p.get('collection_status');
+  const oid = p.get('order_id');
+  if(st==='approved'){
+    const o = getOrders().find(o=>o.id===oid);
+    if(o){ o.status='confirmed'; saveOrders(getOrders().map(x=>x.id===oid?o:x)); sendWA(o,S); lastOrder=o; }
+    showSuccess(oid||uid(),'mercadopago');
+  } else if(st==='pending'){
+    const o = getOrders().find(o=>o.id===oid);
+    if(o){ sendWA(o,S); lastOrder=o; }
+    showSuccess(oid||uid(),'pending');
+  } else if(st==='failure'){
+    showToast('El pago fue rechazado. Intenta de nuevo.');
+  }
+}
+
+function renderSummary(cart, prods){
+  let html='', total=0, count=0;
+  cart.forEach(item=>{
+    const p=prods.find(pr=>pr.id===item.id); if(!p) return;
+    const sub=p.price*item.qty; total+=sub; count+=item.qty;
+    html+=`<div class="order-item">
+      <div class="item-img-wrap">
+        <img class="oi-img" src="${p.img||'https://via.placeholder.com/56'}" alt="${p.name}">
+        <div class="qty-badge">${item.qty}</div>
+      </div>
+      <div><div class="oi-name">${p.name}</div><div class="oi-sub">${p.cat} · ${fmtPrice(p.price)}/u</div></div>
+      <div class="oi-price">${fmtPrice(sub)}</div>
+    </div>`;
+  });
+  html+=`<div class="totals">
+    <div class="total-row"><span>${count} producto${count!==1?'s':''}</span><span>${fmtPrice(total)}</span></div>
+    <div class="total-row"><span>Despacho</span><span id="shipVal" style="font-weight:600;color:var(--muted);">Selecciona tu comuna</span></div>
+    <div class="total-final"><span>Total</span><strong>${fmtPrice(total)}</strong></div>
+  </div>`;
+  document.getElementById('orderSummary').innerHTML = html;
+}
+
+// ══════════════════════════════════════
+//  COMMUNE LOGIC
+// ══════════════════════════════════════
+
+function onCommuneChange(){
+  const commune = document.getElementById('c_commune').value;
+  const isSantiago = SANTIAGO_COMMUNES.has(commune);
+  document.getElementById('c_region').value = COMMUNE_REGION[commune]||'';
+
+  const bFree = document.getElementById('bannerFree');
+  const bBX   = document.getElementById('bannerBX');
+  const optE  = document.getElementById('opt-entrega');
+  const eDesc = document.getElementById('entregaDesc');
+  const bxN   = document.getElementById('bxNote');
+  const sv    = document.getElementById('shipVal');
+
+  if(!commune){
+    bFree.classList.remove('show'); bBX.classList.remove('show');
+    optE.classList.add('disabled'); bxN.classList.remove('show');
+    if(sv){ sv.textContent='Selecciona tu comuna'; sv.style.color='var(--muted)'; }
+    return;
+  }
+
+  if(isSantiago){
+    bFree.classList.add('show'); bBX.classList.remove('show');
+    optE.classList.remove('disabled');
+    eDesc.textContent = 'Paga cuando te llegue el pedido · envío gratis en '+commune;
+    bxN.classList.remove('show');
+    if(sv){ sv.innerHTML='<span style="color:var(--success);font-weight:700;">🟢 Gratis (Provincia Santiago)</span>'; }
+  } else {
+    bFree.classList.remove('show'); bBX.classList.add('show');
+    optE.classList.add('disabled');
+    eDesc.textContent = 'No disponible en tu zona (solo Provincia de Santiago)';
+    if(selectedPayment==='contra_entrega') selectPayment('mercadopago');
+    bxN.classList.add('show');
+    if(sv){ sv.innerHTML='<span style="color:#1e40af;font-weight:700;">📦 BlueExpress (pagas al recibir)</span>'; }
+  }
+}
+
+function toggleList(){
+  document.getElementById('communePanel').classList.toggle('open');
+}
+
+// ══════════════════════════════════════
+//  PAYMENT
+// ══════════════════════════════════════
+
+function selectPayment(method){
+  if(method==='contra_entrega' && !SANTIAGO_COMMUNES.has(document.getElementById('c_commune').value)) return;
+  selectedPayment = method;
+  document.getElementById('opt-mp').classList.toggle('selected', method==='mercadopago');
+  document.getElementById('opt-entrega').classList.toggle('selected', method==='contra_entrega');
+  const btn = document.getElementById('submitBtn');
+  if(method==='mercadopago'){ btn.textContent='💳 Pagar con MercadoPago →'; btn.className='submit-btn btn-mp'; }
+  else { btn.textContent='🏠 Confirmar pedido — pago al recibir →'; btn.className='submit-btn btn-entrega'; }
+}
+
+document.getElementById('opt-mp').classList.add('selected');
+document.querySelector('#opt-mp input').checked=true;
+
+// ══════════════════════════════════════
+//  SUBMIT
+// ══════════════════════════════════════
+
+function validate(){
+  const reqs = [{id:'c_name',l:'Nombre'},{id:'c_email',l:'Email'},{id:'c_phone',l:'Teléfono'},{id:'c_commune',l:'Comuna'},{id:'c_addr',l:'Dirección'}];
+  for(const f of reqs){
+    if(!document.getElementById(f.id).value.trim()){ showToast('Por favor completa: '+f.l); document.getElementById(f.id).focus(); return false; }
+  }
+  if(selectedPayment==='contra_entrega' && !SANTIAGO_COMMUNES.has(document.getElementById('c_commune').value)){
+    showToast('Pago contra entrega solo disponible en la Provincia de Santiago');
+    return false;
+  }
+  if(!getCart().length){ showToast('Tu carrito está vacío'); return false; }
+  return true;
+}
+
+function buildOrder(){
+  const cart=getCart(), prods=getProducts();
+  const total=cart.reduce((s,i)=>{const p=prods.find(pr=>pr.id===i.id);return s+(p?p.price*i.qty:0);},0);
+  const commune=document.getElementById('c_commune').value;
+  return {
+    id:uid(),
+    customer:{
+      name:document.getElementById('c_name').value.trim(),
+      email:document.getElementById('c_email').value.trim(),
+      phone:document.getElementById('c_phone').value.trim(),
+      commune,
+      address:document.getElementById('c_addr').value.trim(),
+      region:document.getElementById('c_region').value.trim(),
+      notes:document.getElementById('c_notes').value.trim()
+    },
+    items:cart, total,
+    paymentMethod:selectedPayment,
+    shipping:SANTIAGO_COMMUNES.has(commune)?'gratis':'blueexpress',
+    status:'pending',
+    createdAt:Date.now()
+  };
+}
+
+async function submitOrder(){
+  if(!validate()) return;
+  const S=getSettings(), order=buildOrder();
+  if(selectedPayment==='mercadopago') await handleMP(order,S);
+  else await handleEntrega(order,S);
+}
+
+async function handleMP(order,S){
+  getOrders().concat([order]); saveOrders([...getOrders(),order]); lastOrder=order;
+  if(!S.mpWebhookUrl){
+    sendWA(order,S); showSuccess(order.id,'pending'); return;
+  }
+  document.getElementById('mpLoading').classList.add('show');
+  document.getElementById('submitBtn').disabled=true;
+  try {
+    const r=await fetch(S.mpWebhookUrl,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+      order_id:order.id, total:order.total, currency:'CLP', customer:order.customer,
+      items:order.items.map(item=>{const p=getProducts().find(pr=>pr.id===item.id);return{id:item.id,title:p?.name||item.id,unit_price:p?.price||0,quantity:item.qty};}),
+      back_urls:{
+        success:location.origin+location.pathname+'?status=approved&order_id='+order.id,
+        failure:location.origin+location.pathname+'?status=failure',
+        pending:location.origin+location.pathname+'?status=pending&order_id='+order.id
+      }
+    })});
+    const d=await r.json();
+    if(d.init_point) location.href=d.init_point; else throw new Error();
+  } catch(e){
+    document.getElementById('mpLoading').classList.remove('show');
+    document.getElementById('submitBtn').disabled=false;
+    showToast('Error al conectar con MercadoPago. Intenta de nuevo.');
+  }
+}
+
+async function handleEntrega(order,S){
+  saveOrders([...getOrders(),order]); lastOrder=order;
+  sendWA(order,S);
+  showSuccess(order.id,'contra_entrega');
+}
+
+// ══════════════════════════════════════
+//  WHATSAPP NOTIFICATION
+// ══════════════════════════════════════
+
+function sendWA(order,S){
+  const prods=getProducts();
+  const items=order.items.map(i=>{const p=prods.find(pr=>pr.id===i.id);return`  • ${p?p.name:i.id} × ${i.qty} = ${fmtPrice((p?p.price:0)*i.qty)}`;}).join('\n');
+  const payL=order.paymentMethod==='mercadopago'?'💳 MercadoPago (pagado)':'🏠 Contra entrega (cobrar al entregar)';
+  const shipL=order.shipping==='gratis'?'🟢 GRATIS — Provincia Santiago':'📦 BlueExpress — cliente paga al recibir';
+  const msg=`🛍️ *NUEVO PEDIDO #${order.id.slice(-6).toUpperCase()}*\n────────────────────\n👤 *Cliente*\nNombre: ${order.customer.name}\nTeléfono: ${order.customer.phone}\nEmail: ${order.customer.email}\n\n📦 *Productos*\n${items}\n\n💰 *Total: ${fmtPrice(order.total)}*\n💳 *Pago:* ${payL}\n🚚 *Envío:* ${shipL}\n\n🏠 *Dirección*\n${order.customer.address}\n*${order.customer.commune}*, Región ${order.customer.region}${order.customer.notes?'\n\n📝 Notas: '+order.customer.notes:''}\n────────────────────\n🔄 Devoluciones hasta 7 días de recibido`;
+  setTimeout(()=>window.open(`https://wa.me/${S.whatsappNumber}?text=${encodeURIComponent(msg)}`,'_blank'),800);
+}
+
+// ══════════════════════════════════════
+//  SUCCESS
+// ══════════════════════════════════════
+
+function showSuccess(orderId, method){
+  clearCart();
+  document.getElementById('sucNum').textContent='#'+orderId.slice(-6).toUpperCase();
+  const descs={
+    mercadopago:'Tu pago fue procesado por MercadoPago. Te contactaremos pronto para coordinar el despacho.',
+    contra_entrega:'Pedido registrado. Te contactaremos por WhatsApp para coordinar la entrega. Pagas cuando lo recibes 🏠',
+    pending:'Pedido registrado. Nos contactaremos contigo por WhatsApp para coordinar pago y despacho.'
+  };
+  document.getElementById('sucDesc').textContent=descs[method]||descs.pending;
+  document.getElementById('successWrap').classList.add('show');
+}
+
+// ══════════════════════════════════════
+//  PDF LABEL 10 × 15 cm
+// ══════════════════════════════════════
+
+function printLabel(){
+  const order = lastOrder || [...getOrders()].sort((a,b)=>b.createdAt-a.createdAt)[0];
+  if(!order){ showToast('No se encontró el pedido para la etiqueta'); return; }
+  const S = getSettings();
+  const { jsPDF } = window.jspdf;
+
+  const doc = new jsPDF({ unit:'mm', format:[100,150], orientation:'portrait' });
+  const W=100, H=150, P=7;
+
+  // BG white
+  doc.setFillColor(255,255,255); doc.rect(0,0,W,H,'F');
+
+  // ── HEADER: dark strip ──
+  doc.setFillColor(17,17,17); doc.rect(0,0,W,24,'F');
+  doc.setFont('helvetica','bold'); doc.setFontSize(15); doc.setTextColor(255,255,255);
+  doc.text(S.storeName.toUpperCase(), W/2, 11, {align:'center'});
+  doc.setFont('helvetica','normal'); doc.setFontSize(7); doc.setTextColor(180,180,180);
+  doc.text('ETIQUETA DE DESPACHO', W/2, 18, {align:'center'});
+
+  // ── ORDER NUMBER pill ──
+  const ordNum='#'+order.id.slice(-6).toUpperCase();
+  doc.setFillColor(255,77,0); doc.roundedRect(P,27,W-P*2,10,2,2,'F');
+  doc.setFont('helvetica','bold'); doc.setFontSize(9); doc.setTextColor(255,255,255);
+  doc.text('PEDIDO '+ordNum, W/2, 33.5, {align:'center'});
+
+  const hline=y=>{ doc.setDrawColor(225,222,217); doc.setLineWidth(0.3); doc.line(P,y,W-P,y); };
+
+  // ── DESTINATARIO ──
+  let y=44;
+  doc.setFontSize(7); doc.setFont('helvetica','bold'); doc.setTextColor(160,155,148);
+  doc.text('DESTINATARIO', P, y); y+=5;
+
+  doc.setFontSize(13); doc.setFont('helvetica','bold'); doc.setTextColor(17,17,17);
+  const nameLines=doc.splitTextToSize(order.customer.name.toUpperCase(), W-P*2);
+  doc.text(nameLines, P, y); y+=nameLines.length*6+1;
+
+  doc.setFontSize(9); doc.setFont('helvetica','normal'); doc.setTextColor(55,55,55);
+  doc.text('Tel: '+order.customer.phone, P, y); y+=5;
+  doc.text('Email: '+order.customer.email, P, y); y+=7;
+
+  hline(y); y+=6;
+
+  // ── DIRECCIÓN ──
+  doc.setFontSize(7); doc.setFont('helvetica','bold'); doc.setTextColor(160,155,148);
+  doc.text('DIRECCIÓN DE ENTREGA', P, y); y+=5;
+
+  doc.setFontSize(10); doc.setFont('helvetica','normal'); doc.setTextColor(40,40,40);
+  const addrLines=doc.splitTextToSize(order.customer.address, W-P*2);
+  doc.text(addrLines, P, y); y+=addrLines.length*5+4;
+
+  // ── COMMUNE — CENTRADA, NEGRITA, DESTACADA ──
+  doc.setFillColor(240,236,228); doc.roundedRect(P,y-3,W-P*2,16,2,2,'F');
+  doc.setDrawColor(210,200,185); doc.setLineWidth(0.4);
+  doc.roundedRect(P,y-3,W-P*2,16,2,2,'S');
+  doc.setFont('helvetica','bold'); doc.setFontSize(18); doc.setTextColor(17,17,17);
+  doc.text(order.customer.commune.toUpperCase(), W/2, y+8.5, {align:'center'});
+  y+=20;
+
+  doc.setFontSize(8); doc.setFont('helvetica','normal'); doc.setTextColor(110,105,98);
+  doc.text('Región '+order.customer.region, W/2, y, {align:'center'}); y+=7;
+
+  hline(y); y+=6;
+
+  // ── PAGO / ENVÍO ──
+  doc.setFontSize(7); doc.setFont('helvetica','bold'); doc.setTextColor(160,155,148);
+  doc.text('PAGO Y DESPACHO', P, y); y+=5;
+
+  const payLabel=order.paymentMethod==='mercadopago'?'MercadoPago — Pago confirmado':'Contra Entrega — COBRAR AL RECIBIR';
+  doc.setFontSize(9); doc.setFont('helvetica','bold'); doc.setTextColor(40,40,40);
+  doc.text(payLabel, P, y); y+=5;
+
+  const shipLabel=order.shipping==='gratis'?'Envío GRATIS — Provincia de Santiago':'BlueExpress — Cobrar costo envío al cliente';
+  doc.setFontSize(8); doc.setFont('helvetica','normal'); doc.setTextColor(80,80,80);
+  const sLines=doc.splitTextToSize(shipLabel, W-P*2);
+  doc.text(sLines, P, y); y+=sLines.length*4.5+3;
+
+  // ── NOTAS (si hay) ──
+  if(order.customer.notes){
+    hline(y); y+=5;
+    doc.setFontSize(7); doc.setFont('helvetica','bold'); doc.setTextColor(160,155,148);
+    doc.text('NOTAS DEL CLIENTE', P, y); y+=4;
+    doc.setFont('helvetica','italic'); doc.setFontSize(8); doc.setTextColor(80,80,80);
+    const nLines=doc.splitTextToSize(order.customer.notes, W-P*2);
+    doc.text(nLines, P, y);
+  }
+
+  // ── FOOTER ──
+  doc.setFillColor(247,246,243); doc.rect(0,H-15,W,15,'F');
+  doc.setDrawColor(220,218,213); doc.setLineWidth(0.4); doc.line(0,H-15,W,H-15);
+  doc.setFont('helvetica','normal'); doc.setFontSize(6.5); doc.setTextColor(145,140,132);
+  const dateStr=new Date(order.createdAt).toLocaleDateString('es-CL',{day:'2-digit',month:'2-digit',year:'numeric'});
+  doc.text('Devoluciones hasta 7 días de recibido · Fecha: '+dateStr, W/2, H-9, {align:'center'});
+  doc.text(S.storeName+' · '+ordNum, W/2, H-4, {align:'center'});
+
+  doc.save('etiqueta-'+ordNum+'.pdf');
+}
+
+function showToast(msg){
+  const t=document.getElementById('toast'); t.textContent=msg; t.className='toast show';
+  setTimeout(()=>t.className='toast',4000);
+}
+
+boot();
+</script>
+</body>
+</html>

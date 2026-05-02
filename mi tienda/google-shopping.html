@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Google Shopping Feed</title>
+</head>
+<body>
+<script>
+// Este archivo genera el feed XML de Google Shopping desde los productos en localStorage.
+// Google Merchant Center lo puede leer si lo publicas como feed dinámico desde tu tienda.
+// Para usarlo: abre esta página -> copia el XML -> súbelo como feed.xml a Netlify.
+
+const prods = JSON.parse(localStorage.getItem('st_products')||'[]').filter(p=>p.active && p.stock>0);
+const S     = JSON.parse(localStorage.getItem('st_settings')||'{}');
+const storeName = S.storeName||'MiTienda';
+const storeUrl  = window.location.origin;
+
+const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:g="http://base.google.com/ns/1.0">
+  <channel>
+    <title>${storeName}</title>
+    <link>${storeUrl}</link>
+    <description>Feed de productos para Google Shopping</description>
+${prods.map(p=>{
+  const price = (p.price/1||0).toFixed(2);
+  const safeTitle = p.name.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const safeDesc  = (p.desc||p.name).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').slice(0,5000);
+  const img = p.img||'';
+  const avail = p.stock>0 ? 'in_stock' : 'out_of_stock';
+  return `    <item>
+      <g:id>${p.id}</g:id>
+      <g:title>${safeTitle}</g:title>
+      <g:description>${safeDesc}</g:description>
+      <g:link>${storeUrl}/index.html?producto=${p.id}</g:link>
+      <g:image_link>${img}</g:image_link>
+      <g:condition>new</g:condition>
+      <g:availability>${avail}</g:availability>
+      <g:price>${price} CLP</g:price>
+      <g:brand>${storeName}</g:brand>
+      <g:google_product_category>Shopping</g:google_product_category>
+      <g:product_type>${p.cat||'General'}</g:product_type>
+    </item>`;
+}).join('\n')}
+  </channel>
+</rss>`;
+
+document.body.innerHTML = `
+<style>body{font-family:sans-serif;max-width:800px;margin:40px auto;padding:0 20px;}pre{background:#f5f5f5;padding:20px;border-radius:8px;overflow-x:auto;font-size:12px;max-height:400px;}button{padding:12px 24px;background:#FF4D00;color:white;border:none;border-radius:8px;cursor:pointer;font-size:14px;font-weight:700;margin-right:10px;}</style>
+<h2>🛍️ Feed Google Shopping</h2>
+<p>Este es el feed XML con <strong>${prods.length} producto${prods.length!==1?'s':''}</strong> activos para Google Merchant Center.</p>
+<div style="display:flex;gap:10px;margin:16px 0;">
+  <button onclick="downloadXML()">⬇️ Descargar feed.xml</button>
+  <button onclick="copyXML()" style="background:#111;">📋 Copiar XML</button>
+</div>
+<pre id="xmlPre">${xml.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</pre>
+<hr>
+<h3>📋 Instrucciones para Google Shopping</h3>
+<ol style="line-height:2;color:#444;">
+  <li>Descarga el archivo <code>feed.xml</code> con el botón de arriba.</li>
+  <li>Súbelo a tu Netlify (junto con los otros 3 archivos HTML). La URL será <code>https://tu-sitio.netlify.app/feed.xml</code></li>
+  <li>Ve a <a href="https://merchants.google.com" target="_blank">Google Merchant Center</a> → crea una cuenta si no tienes.</li>
+  <li>En <strong>Productos → Feeds</strong>, agrega un nuevo feed tipo "Scheduled fetch" con la URL de tu feed.xml.</li>
+  <li>Google validará y en 2-5 días tus productos aparecerán en Google Shopping.</li>
+  <li><strong>Importante:</strong> Cada vez que agregues productos nuevos, vuelve a este archivo y descarga el feed actualizado.</li>
+</ol>
+`;
+
+const xmlBlob = new Blob([xml], {type:'application/xml'});
+const xmlUrl  = URL.createObjectURL(xmlBlob);
+
+function downloadXML(){ const a=document.createElement('a'); a.href=xmlUrl; a.download='feed.xml'; a.click(); }
+function copyXML(){ navigator.clipboard.writeText(xml).then(()=>alert('✓ XML copiado al portapapeles')); }
+</script>
+</body>
+</html>
