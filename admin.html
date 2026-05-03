@@ -552,23 +552,76 @@
 
 <!-- ── BANNER MODAL ── -->
 <div class="modal-bg" id="bannerModal">
-  <div class="modal-box">
+  <div class="modal-box" style="max-width:680px;">
     <div class="modal-head">
       <h3 id="bannerModalTitle">Agregar banner</h3>
       <button class="modal-close" onclick="closeBannerModal()">✕</button>
     </div>
     <input type="hidden" id="bm_idx">
-    <div class="form-group"><label class="form-label">Título principal *</label><input class="form-control" id="bm_title" placeholder="¡Bienvenido a nuestra tienda!"></div>
-    <div class="form-group"><label class="form-label">Subtítulo</label><input class="form-control" id="bm_sub" placeholder="Descripción breve..."></div>
-    <div class="form-row">
-      <div class="form-group"><label class="form-label">Texto del botón</label><input class="form-control" id="bm_btn" placeholder="Ver productos"></div>
-      <div class="form-group"><label class="form-label">Enlace del botón</label><input class="form-control" id="bm_link" placeholder="#todos"></div>
+
+    <!-- TEXTO (todo opcional) -->
+    <div style="background:var(--bg);border-radius:var(--radius);padding:14px;margin-bottom:14px;">
+      <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:10px;">📝 Texto del banner <span style="font-weight:400;">(todo opcional si usas imagen con texto)</span></div>
+      <div class="form-group"><label class="form-label">Título</label><input class="form-control" id="bm_title" placeholder="Dejar vacío si la imagen ya tiene título"></div>
+      <div class="form-group"><label class="form-label">Subtítulo</label><input class="form-control" id="bm_sub" placeholder="Descripción breve (opcional)"></div>
+      <div class="form-group"><label class="form-label">Etiqueta badge (opcional)</label><input class="form-control" id="bm_tag" placeholder="NUEVA COLECCIÓN"></div>
     </div>
 
-    <!-- FONDO: color o imagen -->
-    <div class="form-group">
-      <label class="form-label">Tipo de fondo</label>
-      <div style="display:flex;gap:10px;margin-bottom:10px;">
+    <!-- BOTÓN -->
+    <div style="background:var(--bg);border-radius:var(--radius);padding:14px;margin-bottom:14px;">
+      <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:10px;">🔘 Botón de acción <span style="font-weight:400;">(dejar vacío para ocultar el botón)</span></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Texto del botón</label><input class="form-control" id="bm_btn" placeholder="Ver productos (vacío = sin botón)"></div>
+        <div class="form-group"><label class="form-label">Enlace</label><input class="form-control" id="bm_link" placeholder="#todos"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Posición del botón</label>
+          <select class="form-control" id="bm_btnpos">
+            <option value="left">⬅ Izquierda</option>
+            <option value="center">⬛ Centro</option>
+            <option value="right">➡ Derecha</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Fuente del botón</label>
+          <select class="form-control" id="bm_btnfont">
+            <option value="'DM Sans', sans-serif">DM Sans (por defecto)</option>
+            <option value="'Syne', sans-serif">Syne (moderna)</option>
+            <option value="Georgia, serif">Georgia (clásica)</option>
+            <option value="'Courier New', monospace">Courier (técnica)</option>
+            <option value="Arial, sans-serif">Arial (simple)</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Color del texto</label>
+          <input class="form-control" type="color" id="bm_btncolor" value="#111111">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Color de fondo del botón</label>
+          <input class="form-control" type="color" id="bm_btnbg" value="#ffffff" id="bm_btnbgcolor">
+        </div>
+      </div>
+      <div class="form-check" style="margin-top:6px;">
+        <input type="checkbox" id="bm_btntransparent" onchange="toggleBtnTransparent()">
+        <label for="bm_btntransparent" style="font-size:14px;cursor:pointer;">Fondo transparente (solo borde + texto)</label>
+      </div>
+      <!-- Vista previa del botón -->
+      <div style="margin-top:12px;padding:10px;background:linear-gradient(135deg,#1A1A2E,#2D2D4E);border-radius:8px;text-align:center;">
+        <div style="font-size:11px;color:rgba(255,255,255,0.5);margin-bottom:8px;">Vista previa</div>
+        <a id="bm_btn_preview" href="#" onclick="return false;"
+          style="display:inline-block;padding:12px 24px;border-radius:8px;font-weight:700;font-size:14px;text-decoration:none;transition:all .2s;">
+          Ver productos →
+        </a>
+      </div>
+    </div>
+
+    <!-- FONDO -->
+    <div style="background:var(--bg);border-radius:var(--radius);padding:14px;margin-bottom:14px;">
+      <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:10px;">🖼️ Fondo del banner</div>
+      <div style="display:flex;gap:14px;margin-bottom:12px;">
         <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:14px;">
           <input type="radio" name="bm_bgtype" value="color" id="bm_bgtype_color" checked onchange="toggleBannerBg()"> Color sólido
         </label>
@@ -577,10 +630,7 @@
         </label>
       </div>
       <div id="bm_bg_color_wrap">
-        <div class="form-row">
-          <div class="form-group"><label class="form-label">Color de fondo</label><input class="form-control" type="color" id="bm_bg" value="#1A1A2E"></div>
-          <div class="form-group"><label class="form-label">Etiqueta badge (opcional)</label><input class="form-control" id="bm_tag" placeholder="OFERTA ESPECIAL"></div>
-        </div>
+        <div class="form-group"><label class="form-label">Color de fondo</label><input class="form-control" type="color" id="bm_bg" value="#1A1A2E"></div>
       </div>
       <div id="bm_bg_image_wrap" style="display:none;">
         <div class="form-group">
@@ -590,20 +640,20 @@
           <input type="file" accept="image/*" id="bm_imgfile" onchange="uploadBannerImg(this)" style="font-family:'DM Sans',sans-serif;font-size:13px;">
         </div>
         <div class="form-row">
-          <div class="form-group">
-            <label class="form-label">Ancho recomendado (px)</label>
-            <input class="form-control" type="number" id="bm_imgw" placeholder="1440" value="1440">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Alto recomendado (px)</label>
-            <input class="form-control" type="number" id="bm_imgh" placeholder="520" value="520">
-          </div>
+          <div class="form-group"><label class="form-label">Ancho (px)</label><input class="form-control" type="number" id="bm_imgw" value="1440"></div>
+          <div class="form-group"><label class="form-label">Alto (px)</label><input class="form-control" type="number" id="bm_imgh" value="520"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Oscurecimiento de imagen (overlay) <span id="bm_overlay_val">35%</span></label>
+          <input type="range" min="0" max="80" step="5" value="35" id="bm_overlay"
+            oninput="document.getElementById('bm_overlay_val').textContent=this.value+'%'"
+            style="width:100%;accent-color:var(--accent);">
+          <small style="color:var(--muted);font-size:11px;">0% = imagen original · 80% = muy oscura</small>
         </div>
         <div id="bm_img_preview_wrap" style="display:none;margin-top:8px;">
           <img id="bm_imgpreview" src="" alt="Vista previa" style="width:100%;height:120px;object-fit:cover;border-radius:8px;border:1px solid var(--border);">
           <div style="font-size:11px;color:var(--muted);margin-top:4px;" id="bm_img_dims"></div>
         </div>
-        <div class="form-group"><label class="form-label">Etiqueta badge (opcional)</label><input class="form-control" id="bm_tag2" placeholder="OFERTA ESPECIAL"></div>
       </div>
     </div>
 
@@ -1149,17 +1199,54 @@ function uploadBannerImg(input){
   reader.readAsDataURL(input.files[0]);
 }
 
+function toggleBtnTransparent(){
+  const isTransparent = document.getElementById('bm_btntransparent').checked;
+  document.getElementById('bm_btnbg').disabled = isTransparent;
+  updateBtnPreview();
+}
+
+function updateBtnPreview(){
+  const btn = document.getElementById('bm_btn_preview');
+  const text = document.getElementById('bm_btn').value || 'Ver productos';
+  const color = document.getElementById('bm_btncolor').value;
+  const bg = document.getElementById('bm_btnbg').value;
+  const font = document.getElementById('bm_btnfont').value;
+  const isTransparent = document.getElementById('bm_btntransparent').checked;
+  btn.textContent = text + ' →';
+  btn.style.color = color;
+  btn.style.fontFamily = font;
+  if(isTransparent){
+    btn.style.background = 'transparent';
+    btn.style.border = `2px solid ${color}`;
+  } else {
+    btn.style.background = bg;
+    btn.style.border = 'none';
+  }
+}
+
+// Attach live preview listeners after DOM ready
+setTimeout(()=>{
+  ['bm_btn','bm_btncolor','bm_btnbg','bm_btnfont'].forEach(id=>{
+    const el = document.getElementById(id);
+    if(el) el.addEventListener('input', updateBtnPreview);
+  });
+}, 500);
+
 function openBannerModal(banner, idx){
   document.getElementById('bannerModalTitle').textContent = banner?'Editar banner':'Agregar banner';
   document.getElementById('bm_idx').value = idx!==undefined ? idx : -1;
   document.getElementById('bm_title').value = banner?.title||'';
   document.getElementById('bm_sub').value = banner?.subtitle||'';
-  document.getElementById('bm_btn').value = banner?.btn||'Ver productos';
-  document.getElementById('bm_link').value = banner?.link||'#todos';
-  document.getElementById('bm_bg').value = banner?.bg||'#1A1A2E';
   document.getElementById('bm_tag').value = banner?.tag||'';
+  document.getElementById('bm_btn').value = banner?.btn||'';
+  document.getElementById('bm_link').value = banner?.link||'#todos';
+  document.getElementById('bm_btnpos').value = banner?.btnPos||'left';
+  document.getElementById('bm_btnfont').value = banner?.btnFont||"'DM Sans', sans-serif";
+  document.getElementById('bm_btncolor').value = banner?.btnColor||'#111111';
+  document.getElementById('bm_btnbg').value = banner?.btnBg||'#ffffff';
+  document.getElementById('bm_btntransparent').checked = banner?.btnBgTransparent||false;
+  document.getElementById('bm_bg').value = banner?.bg||'#1A1A2E';
 
-  // Image or color
   const hasImg = !!(banner?.img);
   document.getElementById('bm_bgtype_color').checked = !hasImg;
   document.getElementById('bm_bgtype_image').checked = hasImg;
@@ -1169,17 +1256,22 @@ function openBannerModal(banner, idx){
     document.getElementById('bm_imgurl').value = banner.img.startsWith('data:') ? '' : banner.img;
     document.getElementById('bm_imgw').value = banner.imgW||1440;
     document.getElementById('bm_imgh').value = banner.imgH||520;
-    document.getElementById('bm_tag2').value = banner.tag||'';
+    document.getElementById('bm_overlay').value = Math.round((banner.overlay||0.35)*100);
+    document.getElementById('bm_overlay_val').textContent = Math.round((banner.overlay||0.35)*100)+'%';
     const prev = document.getElementById('bm_imgpreview');
     prev.src = banner.img;
     prev.removeAttribute('data-b64');
     document.getElementById('bm_img_preview_wrap').style.display='block';
   } else {
     document.getElementById('bm_imgurl').value='';
-    document.getElementById('bm_imgh').value=520;
     document.getElementById('bm_imgw').value=1440;
+    document.getElementById('bm_imgh').value=520;
+    document.getElementById('bm_overlay').value=35;
+    document.getElementById('bm_overlay_val').textContent='35%';
     document.getElementById('bm_img_preview_wrap').style.display='none';
   }
+
+  updateBtnPreview();
   document.getElementById('bannerModal').classList.add('open');
 }
 
@@ -1188,26 +1280,32 @@ function editBanner(i){ const S=getSettings(); openBannerModal(S.banners[i], i);
 function closeBannerModal(){ document.getElementById('bannerModal').classList.remove('open'); }
 
 function saveBanner(){
-  const title = document.getElementById('bm_title').value.trim();
-  if(!title){ showToast('El título es requerido'); return; }
   const isImg = document.getElementById('bm_bgtype_image').checked;
-  let img='', imgW=0, imgH=0;
+  let img='', imgW=0, imgH=0, overlay=0.35;
   if(isImg){
     const b64 = document.getElementById('bm_imgpreview').getAttribute('data-b64');
     img = b64 || document.getElementById('bm_imgurl').value.trim();
     imgW = parseInt(document.getElementById('bm_imgw').value)||1440;
     imgH = parseInt(document.getElementById('bm_imgh').value)||520;
+    overlay = parseInt(document.getElementById('bm_overlay').value)/100;
     if(!img){ showToast('Por favor sube o pega la URL de la imagen'); return; }
   }
-  const tag = isImg ? document.getElementById('bm_tag2').value.trim() : document.getElementById('bm_tag').value.trim();
+
   const banner = {
-    title,
+    title: document.getElementById('bm_title').value.trim(),
     subtitle: document.getElementById('bm_sub').value.trim(),
-    btn: document.getElementById('bm_btn').value.trim()||'Ver productos',
+    tag: document.getElementById('bm_tag').value.trim(),
+    btn: document.getElementById('bm_btn').value.trim(),
     link: document.getElementById('bm_link').value.trim()||'#todos',
+    btnPos: document.getElementById('bm_btnpos').value,
+    btnFont: document.getElementById('bm_btnfont').value,
+    btnColor: document.getElementById('bm_btncolor').value,
+    btnBg: document.getElementById('bm_btnbg').value,
+    btnBgTransparent: document.getElementById('bm_btntransparent').checked,
     bg: document.getElementById('bm_bg').value,
-    tag, img, imgW, imgH
+    img, imgW, imgH, overlay
   };
+
   const S = getSettings();
   const idx = parseInt(document.getElementById('bm_idx').value);
   if(idx>=0) S.banners[idx]=banner; else S.banners.push(banner);

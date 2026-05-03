@@ -169,8 +169,7 @@
     }
     .hero-slide.active { opacity: 1; pointer-events: all; }
 
-    .hero-content { max-width: 600px; z-index: 2; }
-
+    .hero-content { width:100%; z-index: 2; }
     .hero-tag {
       display: inline-block;
       background: rgba(255,255,255,0.18);
@@ -978,15 +977,29 @@ function renderHero(banners, interval=8){
   const el = document.getElementById('heroSection');
   el.innerHTML = banners.map((b,i)=>{
     const bgStyle = b.img
-      ? `background:url('${b.img}') center/cover no-repeat; background-size:${b.imgW||1440}px ${b.imgH||520}px;`
+      ? `background:url('${b.img}') center/cover no-repeat;`
       : `background:linear-gradient(135deg,${b.bg||'#111'} 0%,${b.bg||'#111'}bb 100%);`;
+
+    // Button position alignment
+    const posMap = { left:'flex-start', center:'center', right:'flex-end' };
+    const btnAlign = posMap[b.btnPos||'left'] || 'flex-start';
+
+    // Button styles
+    const btnBg = b.btnBgTransparent ? 'transparent' : (b.btnBg||'#ffffff');
+    const btnColor = b.btnColor || '#111111';
+    const btnBorder = b.btnBgTransparent ? `2px solid ${btnColor}` : 'none';
+    const btnFont = b.btnFont || 'inherit';
+    const btnStyle = `background:${btnBg};color:${btnColor};border:${btnBorder};font-family:${btnFont};`;
+
+    const showBtn = b.btn && b.btn.trim();
+
     return `<div class="hero-slide ${i===0?'active':''}" style="${bgStyle}">
-      ${b.img?'<div style="position:absolute;inset:0;background:rgba(0,0,0,0.35);"></div>':''}
-      <div class="hero-content" style="position:relative;z-index:2;">
+      ${b.img?`<div style="position:absolute;inset:0;background:rgba(0,0,0,${b.overlay||0.35});"></div>`:''}
+      <div class="hero-content" style="position:relative;z-index:2;width:100%;max-width:none;display:flex;flex-direction:column;align-items:${btnAlign};">
         ${b.tag?`<div class="hero-tag">${b.tag}</div>`:''}
-        <h1 class="hero-title">${b.title}</h1>
-        <p class="hero-subtitle">${b.subtitle}</p>
-        <a href="${b.link||'#todos'}" class="hero-btn">${b.btn||'Ver más'} →</a>
+        ${b.title?`<h1 class="hero-title">${b.title}</h1>`:''}
+        ${b.subtitle?`<p class="hero-subtitle">${b.subtitle}</p>`:''}
+        ${showBtn?`<a href="${b.link||'#todos'}" class="hero-btn" style="${btnStyle}">${b.btn} →</a>`:''}
       </div>
     </div>`;
   }).join('')+`<div class="hero-nav">${banners.map((_,i)=>`<button class="hero-dot ${i===0?'active':''}" onclick="gotoSlide(${i})"></button>`).join('')}</div>`;
