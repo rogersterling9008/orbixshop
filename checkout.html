@@ -414,23 +414,34 @@ function boot(){
   const logo = document.getElementById('navLogo');
   logo.innerHTML = S.storeName.slice(0,-1)+'<span>'+S.storeName.slice(-1)+'</span>';
   document.title = 'Checkout — '+S.storeName;
-  if(!cart.length){ window.location.href='index.html'; return; }
-  renderSummary(cart, getProducts());
 
-  // Populate commune chips
-  document.getElementById('communeChips').innerHTML =
-    [...SANTIAGO_COMMUNES].sort().map(c=>`<div class="c-chip">${c}</div>`).join('');
-
-  // Auto-expand comunas panel if arriving from footer "Pago contra entrega" link
+  // ── Scroll a comunas (debe chequearse ANTES del redirect por carrito vacío) ──
   if(sessionStorage.getItem('scrollToComunas')){
     sessionStorage.removeItem('scrollToComunas');
+    // Poblar chips de comunas
+    document.getElementById('communeChips').innerHTML =
+      [...SANTIAGO_COMMUNES].sort().map(c=>`<div class="c-chip">${c}</div>`).join('');
     setTimeout(()=>{
       const el = document.getElementById('comunas-santiago');
       if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
       document.getElementById('bannerFree').classList.add('show');
       document.getElementById('communePanel').classList.add('open');
-    }, 500);
+    }, 300);
+    // Si hay carrito, continuar normalmente; si no, mostrar solo la info de comunas
+    if(!cart.length){
+      // Mostrar página sin redirigir — el cliente solo viene a ver las comunas
+      renderSummary([], getProducts());
+      return;
+    }
   }
+
+  if(!cart.length){ window.location.href='index.html'; return; }
+
+  renderSummary(cart, getProducts());
+
+  // Populate commune chips (caso normal)
+  document.getElementById('communeChips').innerHTML =
+    [...SANTIAGO_COMMUNES].sort().map(c=>`<div class="c-chip">${c}</div>`).join('');
 
   // MP return detection
   const p = new URLSearchParams(window.location.search);
