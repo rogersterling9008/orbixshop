@@ -424,6 +424,18 @@
             <small style="color:var(--muted);font-size:12px;margin-top:4px;display:block;">Este webhook recibe el pedido y crea la preferencia de pago en MP. Déjalo vacío si no tienes aún.</small>
           </div>
         </div>
+        <!-- EmailJS (optional email notifications) -->
+        <div class="settings-section">
+          <div class="settings-section-title">📧 Notificaciones por Email (EmailJS — opcional)</div>
+          <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">Si quieres enviar emails automáticos al cliente cuando confirme su pedido, crea una cuenta gratis en <a href="https://emailjs.com" target="_blank">emailjs.com</a> y pega tus credenciales aquí. Si lo dejas vacío, solo se usará WhatsApp.</p>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">Public Key (EmailJS)</label><input class="form-control" id="s_ejskey" placeholder="user_xxxxxxxxxx"></div>
+            <div class="form-group"><label class="form-label">Service ID</label><input class="form-control" id="s_ejsservice" placeholder="service_xxxxxxx"></div>
+          </div>
+          <div class="form-group"><label class="form-label">Template ID</label><input class="form-control" id="s_ejstemplate" placeholder="template_xxxxxxx">
+            <small style="color:var(--muted);font-size:12px;margin-top:4px;display:block;">El template debe tener las variables: to_email, to_name, order_id, items_list, total, payment, address, store_name.</small>
+          </div>
+        </div>
         <!-- Categories -->
         <div class="settings-section">
           <div class="settings-section-title">🏷️ Categorías</div>
@@ -496,10 +508,49 @@
       <div class="form-group"><label class="form-label">Texto del botón</label><input class="form-control" id="bm_btn" placeholder="Ver productos"></div>
       <div class="form-group"><label class="form-label">Enlace del botón</label><input class="form-control" id="bm_link" placeholder="#todos"></div>
     </div>
-    <div class="form-row">
-      <div class="form-group"><label class="form-label">Color de fondo</label><input class="form-control" type="color" id="bm_bg" value="#1A1A2E"></div>
-      <div class="form-group"><label class="form-label">Etiqueta badge (opcional)</label><input class="form-control" id="bm_tag" placeholder="OFERTA ESPECIAL"></div>
+
+    <!-- FONDO: color o imagen -->
+    <div class="form-group">
+      <label class="form-label">Tipo de fondo</label>
+      <div style="display:flex;gap:10px;margin-bottom:10px;">
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:14px;">
+          <input type="radio" name="bm_bgtype" value="color" id="bm_bgtype_color" checked onchange="toggleBannerBg()"> Color sólido
+        </label>
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:14px;">
+          <input type="radio" name="bm_bgtype" value="image" id="bm_bgtype_image" onchange="toggleBannerBg()"> Imagen
+        </label>
+      </div>
+      <div id="bm_bg_color_wrap">
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Color de fondo</label><input class="form-control" type="color" id="bm_bg" value="#1A1A2E"></div>
+          <div class="form-group"><label class="form-label">Etiqueta badge (opcional)</label><input class="form-control" id="bm_tag" placeholder="OFERTA ESPECIAL"></div>
+        </div>
+      </div>
+      <div id="bm_bg_image_wrap" style="display:none;">
+        <div class="form-group">
+          <label class="form-label">URL de imagen</label>
+          <input class="form-control" id="bm_imgurl" placeholder="https://..." oninput="previewBannerImg()">
+          <div style="text-align:center;color:var(--muted);font-size:12px;margin:6px 0;">— o sube un archivo —</div>
+          <input type="file" accept="image/*" id="bm_imgfile" onchange="uploadBannerImg(this)" style="font-family:'DM Sans',sans-serif;font-size:13px;">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Ancho recomendado (px)</label>
+            <input class="form-control" type="number" id="bm_imgw" placeholder="1440" value="1440">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Alto recomendado (px)</label>
+            <input class="form-control" type="number" id="bm_imgh" placeholder="520" value="520">
+          </div>
+        </div>
+        <div id="bm_img_preview_wrap" style="display:none;margin-top:8px;">
+          <img id="bm_imgpreview" src="" alt="Vista previa" style="width:100%;height:120px;object-fit:cover;border-radius:8px;border:1px solid var(--border);">
+          <div style="font-size:11px;color:var(--muted);margin-top:4px;" id="bm_img_dims"></div>
+        </div>
+        <div class="form-group"><label class="form-label">Etiqueta badge (opcional)</label><input class="form-control" id="bm_tag2" placeholder="OFERTA ESPECIAL"></div>
+      </div>
     </div>
+
     <div class="modal-foot">
       <button class="btn btn-cancel" onclick="closeBannerModal()">Cancelar</button>
       <button class="btn btn-save" onclick="saveBanner()">💾 Guardar banner</button>
@@ -864,10 +915,10 @@ function renderBanners(){
     </div>
     ${banners.length ? banners.map((b,i)=>`
       <div class="banner-item">
-        <div class="banner-preview" style="background:${b.bg||'#111'};">${b.tag||'BANNER'}</div>
+        <div class="banner-preview" style="${b.img?`background:url('${b.img}') center/cover no-repeat`:`background:${b.bg||'#111'}`};">${b.img?'':b.tag||'BANNER'}</div>
         <div class="banner-info">
           <div class="banner-title-text">${b.title}</div>
-          <div class="banner-subtitle-text">${b.subtitle||''}</div>
+          <div class="banner-subtitle-text">${b.img?`🖼️ Con imagen${b.imgW?` (${b.imgW}×${b.imgH}px)`:''}`:(b.subtitle||'')}</div>
         </div>
         <div style="display:flex;gap:6px;flex-shrink:0;">
           <button class="action-btn" onclick="editBanner(${i})">✏️</button>
@@ -880,6 +931,42 @@ function renderBanners(){
   `;
 }
 
+function toggleBannerBg(){
+  const isImg = document.getElementById('bm_bgtype_image').checked;
+  document.getElementById('bm_bg_color_wrap').style.display = isImg?'none':'block';
+  document.getElementById('bm_bg_image_wrap').style.display = isImg?'block':'none';
+}
+
+function previewBannerImg(){
+  const url = document.getElementById('bm_imgurl').value;
+  if(!url){ document.getElementById('bm_img_preview_wrap').style.display='none'; return; }
+  const img = document.getElementById('bm_imgpreview');
+  img.src = url;
+  img.onload = ()=>{
+    document.getElementById('bm_img_preview_wrap').style.display='block';
+    document.getElementById('bm_img_dims').textContent=`Dimensiones reales: ${img.naturalWidth}×${img.naturalHeight}px`;
+  };
+}
+
+function uploadBannerImg(input){
+  if(!input.files[0]) return;
+  const reader = new FileReader();
+  reader.onload = e=>{
+    const img = document.getElementById('bm_imgpreview');
+    img.src = e.target.result;
+    img.setAttribute('data-b64', e.target.result);
+    document.getElementById('bm_imgurl').value='';
+    img.onload = ()=>{
+      document.getElementById('bm_img_preview_wrap').style.display='block';
+      document.getElementById('bm_img_dims').textContent=`Dimensiones reales: ${img.naturalWidth}×${img.naturalHeight}px`;
+      // Suggest dimensions
+      if(!document.getElementById('bm_imgw').value) document.getElementById('bm_imgw').value = img.naturalWidth;
+      if(!document.getElementById('bm_imgh').value) document.getElementById('bm_imgh').value = img.naturalHeight;
+    };
+  };
+  reader.readAsDataURL(input.files[0]);
+}
+
 function openBannerModal(banner, idx){
   document.getElementById('bannerModalTitle').textContent = banner?'Editar banner':'Agregar banner';
   document.getElementById('bm_idx').value = idx!==undefined ? idx : -1;
@@ -889,6 +976,28 @@ function openBannerModal(banner, idx){
   document.getElementById('bm_link').value = banner?.link||'#todos';
   document.getElementById('bm_bg').value = banner?.bg||'#1A1A2E';
   document.getElementById('bm_tag').value = banner?.tag||'';
+
+  // Image or color
+  const hasImg = !!(banner?.img);
+  document.getElementById('bm_bgtype_color').checked = !hasImg;
+  document.getElementById('bm_bgtype_image').checked = hasImg;
+  toggleBannerBg();
+
+  if(hasImg){
+    document.getElementById('bm_imgurl').value = banner.img.startsWith('data:') ? '' : banner.img;
+    document.getElementById('bm_imgw').value = banner.imgW||1440;
+    document.getElementById('bm_imgh').value = banner.imgH||520;
+    document.getElementById('bm_tag2').value = banner.tag||'';
+    const prev = document.getElementById('bm_imgpreview');
+    prev.src = banner.img;
+    prev.removeAttribute('data-b64');
+    document.getElementById('bm_img_preview_wrap').style.display='block';
+  } else {
+    document.getElementById('bm_imgurl').value='';
+    document.getElementById('bm_imgh').value=520;
+    document.getElementById('bm_imgw').value=1440;
+    document.getElementById('bm_img_preview_wrap').style.display='none';
+  }
   document.getElementById('bannerModal').classList.add('open');
 }
 
@@ -899,13 +1008,23 @@ function closeBannerModal(){ document.getElementById('bannerModal').classList.re
 function saveBanner(){
   const title = document.getElementById('bm_title').value.trim();
   if(!title){ showToast('El título es requerido'); return; }
+  const isImg = document.getElementById('bm_bgtype_image').checked;
+  let img='', imgW=0, imgH=0;
+  if(isImg){
+    const b64 = document.getElementById('bm_imgpreview').getAttribute('data-b64');
+    img = b64 || document.getElementById('bm_imgurl').value.trim();
+    imgW = parseInt(document.getElementById('bm_imgw').value)||1440;
+    imgH = parseInt(document.getElementById('bm_imgh').value)||520;
+    if(!img){ showToast('Por favor sube o pega la URL de la imagen'); return; }
+  }
+  const tag = isImg ? document.getElementById('bm_tag2').value.trim() : document.getElementById('bm_tag').value.trim();
   const banner = {
     title,
-    subtitle:document.getElementById('bm_sub').value.trim(),
-    btn:document.getElementById('bm_btn').value.trim()||'Ver productos',
-    link:document.getElementById('bm_link').value.trim()||'#todos',
-    bg:document.getElementById('bm_bg').value,
-    tag:document.getElementById('bm_tag').value.trim()
+    subtitle: document.getElementById('bm_sub').value.trim(),
+    btn: document.getElementById('bm_btn').value.trim()||'Ver productos',
+    link: document.getElementById('bm_link').value.trim()||'#todos',
+    bg: document.getElementById('bm_bg').value,
+    tag, img, imgW, imgH
   };
   const S = getSettings();
   const idx = parseInt(document.getElementById('bm_idx').value);
@@ -946,6 +1065,9 @@ function renderSettings(){
   document.getElementById('s_ann').value = S.announcement||'';
   document.getElementById('s_wp').value = S.whatsappNumber||'';
   document.getElementById('s_mp').value = S.mpWebhookUrl||'';
+  document.getElementById('s_ejskey').value = S.emailjsKey||'';
+  document.getElementById('s_ejsservice').value = S.emailjsService||'';
+  document.getElementById('s_ejstemplate').value = S.emailjsTemplate||'';
   document.getElementById('s_pwd').value = '';
   renderCatTags(S.categories||[]);
 }
@@ -985,6 +1107,9 @@ function saveSettings(){
   S.announcement = document.getElementById('s_ann').value.trim();
   S.whatsappNumber = document.getElementById('s_wp').value.trim();
   S.mpWebhookUrl = document.getElementById('s_mp').value.trim();
+  S.emailjsKey = document.getElementById('s_ejskey').value.trim();
+  S.emailjsService = document.getElementById('s_ejsservice').value.trim();
+  S.emailjsTemplate = document.getElementById('s_ejstemplate').value.trim();
   if(newPwd) S.adminPassword = newPwd;
   saveSettingsObj(S);
   showToast('✓ Configuración guardada','ok');

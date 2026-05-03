@@ -124,15 +124,23 @@
       justify-content: center;
     }
 
-    .admin-link {
-      color: var(--muted);
-      font-size: 13px;
-      text-decoration: none;
-      padding: 6px 12px;
-      border-radius: 6px;
-      transition: all 0.18s;
+    /* ── STAR RATINGS ── */
+    .stars-display { display:flex; align-items:center; gap:4px; margin-bottom:8px; }
+    .star-icon { font-size:13px; line-height:1; }
+    .rating-count { font-size:11px; color:var(--muted); }
+    .stars-interactive { display:flex; gap:3px; margin:10px 0 4px; }
+    .star-btn {
+      background:none; border:none; cursor:pointer;
+      font-size:22px; line-height:1; padding:2px;
+      transition:transform 0.15s;
+      filter: grayscale(1) opacity(0.4);
     }
-    .admin-link:hover { color: var(--primary); background: var(--bg); }
+    .star-btn:hover, .star-btn.lit { filter:none; transform:scale(1.15); }
+    .rating-label { font-size:13px; color:var(--muted); margin-bottom:6px; }
+    .rating-thanks { font-size:13px; color:var(--success); font-weight:600; }
+
+    /* admin hint — secret access */
+    .admin-hint { display:none; }
 
     /* ── HERO CAROUSEL ── */
     .hero {
@@ -675,7 +683,6 @@
       🛒 Carrito
       <span class="cart-badge" id="cartBadge">0</span>
     </button>
-    <a href="admin.html" class="admin-link">⚙️ Admin</a>
   </div>
 </nav>
 
@@ -759,7 +766,7 @@
       <div class="footer-title">Ayuda</div>
       <ul class="footer-links">
         <li><a href="#" onclick="document.querySelector('.question-wrap').scrollIntoView({behavior:'smooth'});return false;">Hacer consulta</a></li>
-        <li><a href="admin.html">Admin</a></li>
+        <li><a href="#" onclick="showToast('Contáctanos por WhatsApp para soporte')">Soporte</a></li>
       </ul>
     </div>
     <div>
@@ -927,16 +934,20 @@ let cur=0, timer;
 function renderHero(banners){
   if(!banners?.length) return;
   const el = document.getElementById('heroSection');
-  el.innerHTML = banners.map((b,i)=>`
-    <div class="hero-slide ${i===0?'active':''}" style="background:linear-gradient(135deg,${b.bg||'#111'} 0%,${b.bg||'#111'}bb 100%);">
-      <div class="hero-content">
+  el.innerHTML = banners.map((b,i)=>{
+    const bgStyle = b.img
+      ? `background:url('${b.img}') center/cover no-repeat; background-size:${b.imgW||1440}px ${b.imgH||520}px;`
+      : `background:linear-gradient(135deg,${b.bg||'#111'} 0%,${b.bg||'#111'}bb 100%);`;
+    return `<div class="hero-slide ${i===0?'active':''}" style="${bgStyle}">
+      ${b.img?'<div style="position:absolute;inset:0;background:rgba(0,0,0,0.35);"></div>':''}
+      <div class="hero-content" style="position:relative;z-index:2;">
         ${b.tag?`<div class="hero-tag">${b.tag}</div>`:''}
         <h1 class="hero-title">${b.title}</h1>
         <p class="hero-subtitle">${b.subtitle}</p>
         <a href="${b.link||'#todos'}" class="hero-btn">${b.btn||'Ver más'} →</a>
       </div>
-    </div>
-  `).join('')+`<div class="hero-nav">${banners.map((_,i)=>`<button class="hero-dot ${i===0?'active':''}" onclick="gotoSlide(${i})"></button>`).join('')}</div>`;
+    </div>`;
+  }).join('')+`<div class="hero-nav">${banners.map((_,i)=>`<button class="hero-dot ${i===0?'active':''}" onclick="gotoSlide(${i})"></button>`).join('')}</div>`;
   if(banners.length>1){ clearInterval(timer); timer=setInterval(()=>gotoSlide((cur+1)%banners.length),5000); }
 }
 
@@ -982,6 +993,43 @@ function filterBy(cat, btn){
   document.getElementById('todos').scrollIntoView({behavior:'smooth',block:'start'});
 }
 
+/* ── RATINGS ── */
+function getRatings(){ try{ return JSON.parse(localStorage.getItem('st_ratings')||'{}'); }catch(e){ return {}; } }
+function saveRatings(r){ localStorage.setItem('st_ratings', JSON.stringify(r)); }
+function getMyRatings(){ try{ return JSON.parse(localStorage.getItem('st_my_ratings')||'{}'); }catch(e){ return {}; } }
+
+function rateProduct(productId, stars){
+  const ratings = getRatings();
+  const mine = getMyRatings();
+  if(mine[productId]){ showToast('Ya calificaste este producto'); return; }
+  if(!ratings[productId]) ratings[productId]={count:0,total:0};
+  ratings[productId].count++;
+  ratings[productId].total += stars;
+  saveRatings(ratings);
+  mine[productId]=stars;
+  localStorage.setItem('st_my_ratings', JSON.stringify(mine));
+  // Re-render modal rating section
+  const avg = ratings[productId].total / ratings[productId].count;
+  const el = document.getElementById('ratingSection_'+productId);
+  if(el) el.innerHTML = `<div class="rating-thanks">✓ ¡Gracias! Calificaste con ${stars} ⭐</div><div class="stars-display">${starsHTML(avg)} <span class="rating-count">(${ratings[productId].count} reseña${ratings[productId].count!==1?'s':''})</span></div>`;
+  // Refresh grids
+  const prods = getProducts().filter(p=>p.active);
+  renderGrid('featuredGrid', prods.filter(p=>p.featured).length ? prods.filter(p=>p.featured) : prods.slice(0,4));
+  renderGrid('allGrid', activeCat==='all' ? prods : prods.filter(p=>p.cat===activeCat));
+}
+
+function starsHTML(avg, size=13){
+  const full = Math.floor(avg||0);
+  const half = (avg||0)-full >= 0.4;
+  let h='';
+  for(let i=1;i<=5;i++){
+    if(i<=full) h+=`<span class="star-icon" style="font-size:${size}px;color:#F59E0B;">★</span>`;
+    else if(i===full+1 && half) h+=`<span class="star-icon" style="font-size:${size}px;color:#F59E0B;">½</span>`;
+    else h+=`<span class="star-icon" style="font-size:${size}px;color:#D1D5DB;">★</span>`;
+  }
+  return h;
+}
+
 /* Product grid */
 function renderGrid(id, prods){
   const el = document.getElementById(id);
@@ -992,6 +1040,12 @@ function renderGrid(id, prods){
   el.innerHTML = prods.map(p=>{
     const disc = p.origPrice?Math.round((1-p.price/p.origPrice)*100):0;
     const img = p.img||'https://via.placeholder.com/280x210?text=Sin+imagen';
+    const ratings = getRatings();
+    const r = ratings[p.id];
+    const avg = r ? r.total/r.count : 0;
+    const ratingHtml = r
+      ? `<div class="stars-display">${starsHTML(avg)}<span class="rating-count">(${r.count})</span></div>`
+      : `<div class="stars-display"><span class="rating-count" style="font-size:11px;">Sin reseñas aún</span></div>`;
     return `<div class="product-card" onclick="openModal('${p.id}')">
       <div class="product-img-wrap">
         <img src="${img}" alt="${p.name}" loading="lazy">
@@ -1000,6 +1054,7 @@ function renderGrid(id, prods){
       <div class="product-info">
         <div class="product-cat">${p.cat}</div>
         <div class="product-name">${p.name}</div>
+        ${ratingHtml}
         <div class="product-prices">
           <span class="product-price">${fmtPrice(p.price)}</span>
           ${p.origPrice?`<span class="product-orig">${fmtPrice(p.origPrice)}</span>`:''}
@@ -1060,12 +1115,35 @@ function openModal(id){
   const disc = p.origPrice?Math.round((1-p.price/p.origPrice)*100):0;
   document.getElementById('modalImg').src = p.img||'https://via.placeholder.com/380x340?text=Sin+imagen';
   document.getElementById('modalImg').alt = p.name;
+  const ratings = getRatings();
+  const mine = getMyRatings();
+  const r = ratings[p.id];
+  const avg = r ? r.total/r.count : 0;
+  const alreadyRated = mine[p.id];
+
+  const ratingSection = alreadyRated
+    ? `<div id="ratingSection_${p.id}">
+        <div class="rating-thanks">✓ Calificaste con ${alreadyRated} ⭐</div>
+        <div class="stars-display">${starsHTML(avg,15)}<span class="rating-count">(${r.count} reseña${r.count!==1?'s':''})</span></div>
+       </div>`
+    : `<div id="ratingSection_${p.id}">
+        <div class="rating-label">${r?`${starsHTML(avg,15)} <span style="font-size:12px;color:var(--muted)">(${r.count} reseña${r.count!==1?'s':''})</span>`:'Sin reseñas aún — ¡sé el primero!'}</div>
+        <div class="rating-label" style="font-weight:600;color:var(--primary);">Califica este producto:</div>
+        <div class="stars-interactive" id="starsWrap_${p.id}">
+          ${[1,2,3,4,5].map(n=>`<button class="star-btn" id="star_${p.id}_${n}"
+            onmouseover="hoverStars('${p.id}',${n})"
+            onmouseout="resetStars('${p.id}')"
+            onclick="rateProduct('${p.id}',${n})">★</button>`).join('')}
+        </div>
+       </div>`;
+
   document.getElementById('modalInfo').innerHTML=`
     <div class="modal-cat">${p.cat}</div>
     <h2 class="modal-title">${p.name}</h2>
     <p class="modal-desc">${p.desc}</p>
     <div class="modal-price" style="color:var(--accent);">${fmtPrice(p.price)}</div>
     ${p.origPrice?`<div class="modal-orig">${fmtPrice(p.origPrice)}${disc>0?' · Ahorra '+disc+'%':''}</div>`:''}
+    ${ratingSection}
     <div class="modal-qty-row">
       <label>Cantidad:</label>
       <button class="qty-btn" onclick="setMQty(mQty-1)">−</button>
@@ -1080,6 +1158,19 @@ function openModal(id){
 }
 
 function setMQty(n){ mQty=Math.max(1,n); document.getElementById('mQtyDisplay').textContent=mQty; }
+
+function hoverStars(pid, n){
+  for(let i=1;i<=5;i++){
+    const s=document.getElementById(`star_${pid}_${i}`);
+    if(s) s.classList.toggle('lit', i<=n);
+  }
+}
+function resetStars(pid){
+  for(let i=1;i<=5;i++){
+    const s=document.getElementById(`star_${pid}_${i}`);
+    if(s) s.classList.remove('lit');
+  }
+}
 function onModalClick(e){ if(e.target===document.getElementById('modalOverlay')) closeModal(); }
 function closeModal(){ document.getElementById('modalOverlay').classList.remove('open'); document.body.style.overflow=''; }
 

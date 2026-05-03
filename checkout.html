@@ -7,6 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
   <style>
     *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
     :root {
@@ -146,9 +147,16 @@
       <div class="card-body">
         <div class="form-row">
           <div class="form-group"><label class="form-label">Nombre completo *</label><input class="form-input" id="c_name" placeholder="Ej: Juan Pérez"></div>
-          <div class="form-group"><label class="form-label">Email *</label><input class="form-input" type="email" id="c_email" placeholder="tu@email.com"></div>
+          <div class="form-group">
+            <label class="form-label">Email <span style="color:var(--muted);font-weight:400;">(opcional — para recibir confirmación)</span></label>
+            <input class="form-input" type="email" id="c_email" placeholder="tu@email.com">
+          </div>
         </div>
-        <div class="form-group"><label class="form-label">Teléfono / Celular *</label><input class="form-input" type="tel" id="c_phone" placeholder="+56 9 XXXX XXXX"></div>
+        <div class="form-group">
+          <label class="form-label">Teléfono / WhatsApp * <span style="color:var(--success);font-weight:600;">requerido</span></label>
+          <input class="form-input" type="tel" id="c_phone" placeholder="+56 9 XXXX XXXX">
+          <div style="font-size:12px;color:var(--muted);margin-top:4px;">📱 Te notificaremos el estado de tu pedido por WhatsApp</div>
+        </div>
       </div>
     </div>
 
@@ -419,11 +427,11 @@ function boot(){
   const oid = p.get('order_id');
   if(st==='approved'){
     const o = getOrders().find(o=>o.id===oid);
-    if(o){ o.status='confirmed'; saveOrders(getOrders().map(x=>x.id===oid?o:x)); sendWA(o,S); lastOrder=o; }
+    if(o){ o.status='confirmed'; saveOrders(getOrders().map(x=>x.id===oid?o:x)); sendWA(o,S); notifyCustomer(o,'confirmed'); lastOrder=o; }
     showSuccess(oid||uid(),'mercadopago');
   } else if(st==='pending'){
     const o = getOrders().find(o=>o.id===oid);
-    if(o){ sendWA(o,S); lastOrder=o; }
+    if(o){ sendWA(o,S); notifyCustomer(o,'confirmed'); lastOrder=o; }
     showSuccess(oid||uid(),'pending');
   } else if(st==='failure'){
     showToast('El pago fue rechazado. Intenta de nuevo.');
@@ -517,10 +525,12 @@ document.querySelector('#opt-mp input').checked=true;
 // ══════════════════════════════════════
 
 function validate(){
-  const reqs = [{id:'c_name',l:'Nombre'},{id:'c_email',l:'Email'},{id:'c_phone',l:'Teléfono'},{id:'c_commune',l:'Comuna'},{id:'c_addr',l:'Dirección'}];
+  const reqs = [{id:'c_name',l:'Nombre'},{id:'c_phone',l:'Teléfono'},{id:'c_commune',l:'Comuna'},{id:'c_addr',l:'Dirección'}];
   for(const f of reqs){
     if(!document.getElementById(f.id).value.trim()){ showToast('Por favor completa: '+f.l); document.getElementById(f.id).focus(); return false; }
   }
+  const phone = document.getElementById('c_phone').value.trim();
+  if(phone.replace(/\D/g,'').length < 8){ showToast('Ingresa un teléfono válido'); return false; }
   if(selectedPayment==='contra_entrega' && !SANTIAGO_COMMUNES.has(document.getElementById('c_commune').value)){
     showToast('Pago contra entrega solo disponible en la Provincia de Santiago');
     return false;
@@ -587,7 +597,8 @@ async function handleMP(order,S){
 
 async function handleEntrega(order,S){
   saveOrders([...getOrders(),order]); lastOrder=order;
-  sendWA(order,S);
+  sendWA(order,S);           // notify admin
+  notifyCustomer(order,'confirmed');  // notify customer
   showSuccess(order.id,'contra_entrega');
 }
 
@@ -719,6 +730,65 @@ function printLabel(){
   doc.text(S.storeName+' · '+ordNum, W/2, H-4, {align:'center'});
 
   doc.save('etiqueta-'+ordNum+'.pdf');
+
+  // Notify customer that order is being prepared
+  const S2 = getSettings();
+  notifyCustomer(order, 'preparing');
+  showToast('📦 Etiqueta descargada — notificando al cliente...','ok');
+}
+
+// ══════════════════════════════════════
+//  CUSTOMER NOTIFICATIONS
+// ══════════════════════════════════════
+
+function notifyCustomer(order, type='confirmed'){
+  const prods = getProducts();
+  const S = getSettings();
+
+  const itemsList = order.items.map(i=>{
+    const p = prods.find(pr=>pr.id===i.id);
+    return `  • ${p?p.name:i.id} × ${i.qty} = ${fmtPrice((p?p.price:0)*i.qty)}`;
+  }).join('\n');
+
+  const msgs = {
+    confirmed: `✅ *¡Pedido confirmado, ${order.customer.name}!*\n\nTu pedido *#${order.id.slice(-6).toUpperCase()}* ha sido recibido.\n\n📦 *Productos:*\n${itemsList}\n\n💰 *Total: ${fmtPrice(order.total)}*\n💳 Pago: ${order.paymentMethod==='mercadopago'?'MercadoPago':'Contra entrega'}\n\n📍 Entrega en: *${order.customer.commune}*\n\nTe contactaremos pronto para coordinar la entrega. ¡Gracias por tu compra! 🙌\n\n_${S.storeName}_`,
+    preparing: `📦 *Tu pedido está en preparación, ${order.customer.name}!*\n\nPedido *#${order.id.slice(-6).toUpperCase()}* — estamos preparando tu compra para despacho.\n\n¡Pronto estará en camino! 🚚\n\n_${S.storeName}_`
+  };
+
+  const phone = order.customer.phone.replace(/\D/g,'');
+  const waPhone = phone.startsWith('56') ? phone : '56'+phone;
+
+  setTimeout(()=>{
+    window.open(`https://wa.me/${waPhone}?text=${encodeURIComponent(msgs[type])}`, '_blank');
+  }, 1200);
+
+  // Email via EmailJS (si el cliente proporcionó email y EmailJS está configurado)
+  const email = order.customer.email;
+  const ejsKey = S.emailjsKey||'';
+  const ejsService = S.emailjsService||'';
+  const ejsTemplate = S.emailjsTemplate||'';
+
+  if(email && ejsKey && ejsService && ejsTemplate){
+    if(window.emailjs){
+      emailjs.init(ejsKey);
+      emailjs.send(ejsService, ejsTemplate, {
+        to_email: email,
+        to_name: order.customer.name,
+        order_id: '#'+order.id.slice(-6).toUpperCase(),
+        items_list: itemsList.replace(/\n/g,'<br>'),
+        total: fmtPrice(order.total),
+        payment: order.paymentMethod==='mercadopago'?'MercadoPago':'Contra entrega',
+        address: order.customer.address+', '+order.customer.commune,
+        store_name: S.storeName,
+        message_type: type==='confirmed'?'Pedido confirmado':'Pedido en preparación'
+      }).catch(()=>{}); // fail silently
+    }
+  } else if(email && type==='confirmed'){
+    // Fallback: mailto
+    const subject = encodeURIComponent(`✅ Pedido #${order.id.slice(-6).toUpperCase()} confirmado — ${S.storeName}`);
+    const body = encodeURIComponent(`Hola ${order.customer.name},\n\nTu pedido fue recibido.\n\n${itemsList}\n\nTotal: ${fmtPrice(order.total)}\n\nGracias por tu compra!\n${S.storeName}`);
+    setTimeout(()=> window.open(`mailto:${email}?subject=${subject}&body=${body}`,'_blank'), 2000);
+  }
 }
 
 function showToast(msg){
