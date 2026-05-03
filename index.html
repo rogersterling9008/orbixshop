@@ -71,8 +71,17 @@
       color: var(--primary);
       letter-spacing: -0.5px;
       white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
     .nav-logo span { color: var(--accent); }
+    .nav-logo-img {
+      width: 40px; height: 40px;
+      border-radius: 8px;
+      object-fit: cover;
+      flex-shrink: 0;
+    }
 
     .nav-cats {
       display: flex;
@@ -577,45 +586,68 @@
     .product-modal {
       background: white;
       border-radius: var(--radius-lg);
-      max-width: 780px; width: 100%;
+      max-width: 860px; width: 100%;
       display: grid; grid-template-columns: 1fr 1fr;
-      overflow: hidden; max-height: 90vh;
+      overflow: hidden; max-height: 92vh;
       transform: scale(0.92) translateY(16px);
       transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
     }
     .modal-overlay.open .product-modal { transform: scale(1) translateY(0); }
 
-    .modal-img {
-      width: 100%; height: 100%; min-height: 340px;
-      object-fit: cover; background: var(--bg);
-    }
+    /* Image carousel */
+    .modal-img-panel { position:relative; background:var(--bg); display:flex; flex-direction:column; }
+    .modal-img-main { width:100%; flex:1; min-height:300px; object-fit:cover; }
+    .modal-img-thumbs { display:flex; gap:6px; padding:8px; overflow-x:auto; background:white; border-top:1px solid var(--border); }
+    .modal-thumb { width:52px; height:52px; border-radius:6px; object-fit:cover; cursor:pointer; border:2px solid transparent; flex-shrink:0; transition:border-color .18s; }
+    .modal-thumb.active { border-color:var(--accent); }
+
     .modal-info {
-      padding: 36px; overflow-y: auto;
-      display: flex; flex-direction: column;
+      padding: 28px 28px 20px; overflow-y: auto;
+      display: flex; flex-direction: column; gap:0;
     }
-    .modal-cat { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; margin-bottom: 10px; }
-    .modal-title { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 700; margin-bottom: 12px; line-height: 1.3; }
-    .modal-desc { color: var(--muted); font-size: 15px; line-height: 1.7; margin-bottom: 20px; flex: 1; }
-    .modal-price { font-size: 30px; font-weight: 800; margin-bottom: 4px; }
-    .modal-orig { font-size: 15px; color: var(--muted); text-decoration: line-through; margin-bottom: 24px; }
-    .modal-qty-row { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+    .modal-cat { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; margin-bottom: 8px; }
+    .modal-title { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 700; margin-bottom: 10px; line-height: 1.3; }
+    .modal-desc { color: var(--muted); font-size: 14px; line-height: 1.7; margin-bottom: 14px; }
+    .modal-price { font-size: 28px; font-weight: 800; margin-bottom: 2px; }
+    .modal-orig { font-size: 14px; color: var(--muted); text-decoration: line-through; margin-bottom: 14px; }
+
+    /* Variants */
+    .variant-section { margin-bottom:14px; }
+    .variant-label { font-size:13px; font-weight:700; margin-bottom:6px; display:flex; gap:6px; align-items:center; }
+    .variant-selected { color:var(--accent); font-weight:600; }
+    .variant-pills { display:flex; flex-wrap:wrap; gap:6px; }
+    .variant-pill {
+      padding:5px 13px; border-radius:100px;
+      border:1.5px solid var(--border); background:white;
+      font-size:13px; font-weight:500; cursor:pointer;
+      transition:all .18s; color:var(--primary);
+    }
+    .variant-pill:hover { border-color:var(--accent); color:var(--accent); }
+    .variant-pill.selected { border-color:var(--accent); background:var(--accent); color:white; }
+
+    .modal-qty-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
     .modal-qty-row label { font-size: 14px; font-weight: 600; }
-    .modal-qty-input {
-      width: 36px; text-align: center;
-      font-size: 16px; font-weight: 700;
-      border: none; outline: none;
-      font-family: 'DM Sans', sans-serif;
-    }
-    .modal-add {
-      width: 100%;
-      background: var(--primary); color: white; border: none;
-      padding: 14px; border-radius: 8px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 15px; font-weight: 700;
-      cursor: pointer; transition: background 0.2s;
-    }
+    .modal-qty-input { width: 36px; text-align: center; font-size: 16px; font-weight: 700; border: none; outline: none; font-family: 'DM Sans', sans-serif; }
+    .modal-add { width: 100%; background: var(--primary); color: white; border: none; padding: 13px; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 700; cursor: pointer; transition: background 0.2s; }
     .modal-add:hover { background: var(--accent); }
-    .modal-stock { text-align: center; font-size: 13px; color: var(--muted); margin-top: 10px; }
+    .modal-stock { text-align: center; font-size: 13px; color: var(--muted); margin-top: 8px; }
+
+    /* Reviews section */
+    .reviews-section { margin-top:16px; border-top:1px solid var(--border); padding-top:14px; }
+    .reviews-title { font-family:'Syne',sans-serif; font-size:14px; font-weight:700; margin-bottom:10px; }
+    .review-item { padding:10px 0; border-bottom:1px solid var(--border); }
+    .review-item:last-child { border-bottom:none; }
+    .review-meta { display:flex; align-items:center; gap:8px; margin-bottom:4px; }
+    .review-author { font-size:13px; font-weight:600; }
+    .review-date { font-size:11px; color:var(--muted); }
+    .review-comment { font-size:13px; color:#555; line-height:1.5; }
+    .review-form { margin-top:12px; }
+    .review-textarea { width:100%; padding:9px 12px; border:1.5px solid var(--border); border-radius:8px; font-family:'DM Sans',sans-serif; font-size:13px; outline:none; resize:vertical; min-height:64px; transition:border-color .18s; }
+    .review-textarea:focus { border-color:var(--accent); }
+    .review-name-input { width:100%; padding:8px 12px; border:1.5px solid var(--border); border-radius:8px; font-family:'DM Sans',sans-serif; font-size:13px; outline:none; margin-bottom:8px; transition:border-color .18s; }
+    .review-name-input:focus { border-color:var(--accent); }
+    .review-submit { background:var(--primary); color:white; border:none; padding:9px 20px; border-radius:8px; font-family:'DM Sans',sans-serif; font-size:13px; font-weight:700; cursor:pointer; transition:background .2s; margin-top:8px; }
+    .review-submit:hover { background:var(--accent); }
 
     .modal-close {
       position: absolute; top: 14px; right: 14px;
@@ -797,7 +829,10 @@
 <!-- ── PRODUCT MODAL ── -->
 <div class="modal-overlay" id="modalOverlay" onclick="onModalClick(event)">
   <div class="product-modal" id="productModal">
-    <img class="modal-img" id="modalImg" src="" alt="">
+    <div class="modal-img-panel">
+      <img class="modal-img-main" id="modalImgMain" src="" alt="">
+      <div class="modal-img-thumbs" id="modalImgThumbs"></div>
+    </div>
     <div class="modal-info" id="modalInfo"></div>
   </div>
   <button class="modal-close" onclick="closeModal()">✕</button>
@@ -857,14 +892,16 @@ function fmtPrice(p){ return '$'+Number(p).toLocaleString('es-CL'); }
 //  CART LOGIC
 // ════════════════════════════════════════════
 
-function addToCart(id, qty=1){
+function addToCart(id, qty=1, variants={}){
   const prods = getProducts();
   const prod = prods.find(p=>p.id===id);
   if(!prod || prod.stock <= 0){ showToast('Sin stock disponible'); return; }
   let cart = getCart();
-  const ex = cart.find(i=>i.id===id);
+  // Match by id + variant combination
+  const varKey = JSON.stringify(variants);
+  const ex = cart.find(i=>i.id===id && JSON.stringify(i.variants||{})===varKey);
   if(ex){ ex.qty = Math.min(ex.qty+qty, prod.stock); }
-  else { cart.push({id, qty:Math.min(qty, prod.stock)}); }
+  else { cart.push({id, qty:Math.min(qty, prod.stock), variants}); }
   saveCart(cart);
   syncCartUI();
   showToast('✓ Agregado al carrito', 'success');
@@ -907,8 +944,13 @@ function boot(){
 
   // Meta
   document.title = S.storeName;
+  // Logo — image or text
   const logoEl = document.getElementById('navLogo');
-  logoEl.innerHTML = S.storeName.slice(0,-1)+'<span>'+S.storeName.slice(-1)+'</span>';
+  if(S.logoImg){
+    logoEl.innerHTML = `<img class="nav-logo-img" src="${S.logoImg}" alt="${S.storeName}"><span style="color:var(--primary);">${S.storeName}</span>`;
+  } else {
+    logoEl.innerHTML = S.storeName.slice(0,-1)+'<span>'+S.storeName.slice(-1)+'</span>';
+  }
   document.getElementById('footerBrand').innerHTML = S.storeName.slice(0,-1)+'<span>'+S.storeName.slice(-1)+'</span>';
   document.getElementById('footerBottom').innerHTML = `© ${new Date().getFullYear()} ${S.storeName} — Hecho con ❤️ en Chile`;
   document.getElementById('annBar').textContent = S.announcement;
@@ -1087,6 +1129,7 @@ function renderCartSidebar(){
       <img class="cart-item-img" src="${p.img||'https://via.placeholder.com/68'}" alt="${p.name}">
       <div class="cart-item-details">
         <div class="cart-item-name">${p.name}</div>
+        ${item.variants&&Object.keys(item.variants).length?`<div style="font-size:11px;color:var(--muted);margin-bottom:2px;">${Object.entries(item.variants).map(([k,v])=>`${k}: ${v}`).join(' · ')}</div>`:''}
         <div class="cart-item-price">${fmtPrice(p.price * item.qty)}</div>
         <div class="cart-item-controls">
           <button class="qty-btn" onclick="changeQty('${p.id}',-1)">−</button>
@@ -1108,13 +1151,32 @@ function renderCartSidebar(){
 
 /* Modal */
 let mQty=1;
+let mCurrentProd=null;
+let mSelectedVariants={};
+
 function openModal(id){
   const p = getProducts().find(pr=>pr.id===id);
   if(!p) return;
-  mQty=1;
+  mQty=1; mCurrentProd=p; mSelectedVariants={};
   const disc = p.origPrice?Math.round((1-p.price/p.origPrice)*100):0;
-  document.getElementById('modalImg').src = p.img||'https://via.placeholder.com/380x340?text=Sin+imagen';
-  document.getElementById('modalImg').alt = p.name;
+  const images = p.images?.length ? p.images : (p.img ? [p.img] : ['https://via.placeholder.com/400x400?text=Sin+imagen']);
+
+  // Image carousel
+  const mainImg = document.getElementById('modalImgMain');
+  mainImg.src = images[0];
+  mainImg.alt = p.name;
+  const thumbsEl = document.getElementById('modalImgThumbs');
+  if(images.length > 1){
+    thumbsEl.style.display='flex';
+    thumbsEl.innerHTML = images.map((src,i)=>
+      `<img class="modal-thumb ${i===0?'active':''}" src="${src}" alt="" onclick="switchModalImg(this,'${src}')">`
+    ).join('');
+  } else {
+    thumbsEl.style.display='none';
+    thumbsEl.innerHTML='';
+  }
+
+  // Ratings
   const ratings = getRatings();
   const mine = getMyRatings();
   const r = ratings[p.id];
@@ -1122,13 +1184,13 @@ function openModal(id){
   const alreadyRated = mine[p.id];
 
   const ratingSection = alreadyRated
-    ? `<div id="ratingSection_${p.id}">
+    ? `<div id="ratingSection_${p.id}" style="margin-bottom:10px;">
         <div class="rating-thanks">✓ Calificaste con ${alreadyRated} ⭐</div>
-        <div class="stars-display">${starsHTML(avg,15)}<span class="rating-count">(${r.count} reseña${r.count!==1?'s':''})</span></div>
+        <div class="stars-display">${starsHTML(avg,14)}<span class="rating-count">(${r.count} reseña${r.count!==1?'s':''})</span></div>
        </div>`
-    : `<div id="ratingSection_${p.id}">
-        <div class="rating-label">${r?`${starsHTML(avg,15)} <span style="font-size:12px;color:var(--muted)">(${r.count} reseña${r.count!==1?'s':''})</span>`:'Sin reseñas aún — ¡sé el primero!'}</div>
-        <div class="rating-label" style="font-weight:600;color:var(--primary);">Califica este producto:</div>
+    : `<div id="ratingSection_${p.id}" style="margin-bottom:10px;">
+        <div class="rating-label">${r?`${starsHTML(avg,14)} <span style="font-size:12px;color:var(--muted)">(${r.count})</span>`:'Sin reseñas aún'}</div>
+        <div class="rating-label" style="font-weight:600;font-size:12px;margin-top:4px;">Tu calificación:</div>
         <div class="stars-interactive" id="starsWrap_${p.id}">
           ${[1,2,3,4,5].map(n=>`<button class="star-btn" id="star_${p.id}_${n}"
             onmouseover="hoverStars('${p.id}',${n})"
@@ -1137,24 +1199,119 @@ function openModal(id){
         </div>
        </div>`;
 
+  // Variants HTML
+  const variantsHTML = (p.variants||[]).map(v=>`
+    <div class="variant-section">
+      <div class="variant-label">${v.name}: <span class="variant-selected" id="vsel_${p.id}_${v.name}">—</span></div>
+      <div class="variant-pills">
+        ${(v.options||[]).map(opt=>`
+          <button class="variant-pill" onclick="selectVariant('${p.id}','${v.name}','${opt}',this)">${opt}</button>
+        `).join('')}
+      </div>
+    </div>
+  `).join('');
+
+  // Reviews HTML
+  const reviews = getReviews(p.id);
+  const reviewsList = reviews.length
+    ? reviews.map(rv=>`
+        <div class="review-item">
+          <div class="review-meta">
+            <span class="review-author">👤 ${rv.name||'Cliente'}</span>
+            <span>${starsHTML(rv.stars,12)}</span>
+            <span class="review-date">${new Date(rv.date).toLocaleDateString('es-CL')}</span>
+          </div>
+          <div class="review-comment">${rv.comment}</div>
+        </div>`).join('')
+    : '<div style="font-size:13px;color:var(--muted);padding:8px 0;">Aún no hay comentarios. ¡Sé el primero!</div>';
+
   document.getElementById('modalInfo').innerHTML=`
     <div class="modal-cat">${p.cat}</div>
     <h2 class="modal-title">${p.name}</h2>
-    <p class="modal-desc">${p.desc}</p>
+    <p class="modal-desc">${p.desc||''}</p>
     <div class="modal-price" style="color:var(--accent);">${fmtPrice(p.price)}</div>
     ${p.origPrice?`<div class="modal-orig">${fmtPrice(p.origPrice)}${disc>0?' · Ahorra '+disc+'%':''}</div>`:''}
     ${ratingSection}
+    ${variantsHTML}
     <div class="modal-qty-row">
       <label>Cantidad:</label>
       <button class="qty-btn" onclick="setMQty(mQty-1)">−</button>
       <span class="modal-qty-input" id="mQtyDisplay">1</span>
       <button class="qty-btn" onclick="setMQty(mQty+1)">+</button>
     </div>
-    <button class="modal-add" onclick="addToCart('${p.id}',mQty);closeModal();">🛒 Agregar al carrito</button>
+    <button class="modal-add" onclick="addToCartFromModal('${p.id}')">🛒 Agregar al carrito</button>
     <div class="modal-stock">${p.stock>0?'✓ '+p.stock+' en stock':'✗ Sin stock'}</div>
+
+    <div class="reviews-section">
+      <div class="reviews-title">💬 Reseñas (${reviews.length})</div>
+      <div id="reviewsList_${p.id}">${reviewsList}</div>
+      <div class="review-form" id="reviewForm_${p.id}">
+        <input class="review-name-input" id="rname_${p.id}" placeholder="Tu nombre (opcional)">
+        <textarea class="review-textarea" id="rtext_${p.id}" placeholder="Comparte tu experiencia con este producto..."></textarea>
+        <button class="review-submit" onclick="submitReview('${p.id}')">Publicar reseña →</button>
+      </div>
+    </div>
   `;
   document.getElementById('modalOverlay').classList.add('open');
   document.body.style.overflow='hidden';
+}
+
+function switchModalImg(thumb, src){
+  document.getElementById('modalImgMain').src = src;
+  document.querySelectorAll('.modal-thumb').forEach(t=>t.classList.remove('active'));
+  thumb.classList.add('active');
+}
+
+function selectVariant(pid, varName, opt, btn){
+  mSelectedVariants[varName] = opt;
+  // Update UI — highlight selected pill within this variant group
+  btn.closest('.variant-pills').querySelectorAll('.variant-pill').forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected');
+  const sel = document.getElementById(`vsel_${pid}_${varName}`);
+  if(sel) sel.textContent = opt;
+}
+
+function addToCartFromModal(id){
+  const p = getProducts().find(pr=>pr.id===id);
+  if(!p) return;
+  // Check all variants selected
+  const required = (p.variants||[]).filter(v=>v.options?.length>0);
+  for(const v of required){
+    if(!mSelectedVariants[v.name]){
+      showToast(`Por favor elige: ${v.name}`); return;
+    }
+  }
+  addToCart(id, mQty, {...mSelectedVariants});
+  closeModal();
+}
+
+// ── REVIEWS ──
+function getReviews(pid){ try{ return JSON.parse(localStorage.getItem(`st_reviews_${pid}`)||'[]'); }catch(e){ return []; } }
+function saveReviews(pid, rv){ localStorage.setItem(`st_reviews_${pid}`, JSON.stringify(rv)); }
+
+function submitReview(pid){
+  const text = document.getElementById(`rtext_${pid}`).value.trim();
+  const name = document.getElementById(`rname_${pid}`).value.trim()||'Cliente anónimo';
+  if(!text){ showToast('Escribe un comentario antes de publicar'); return; }
+  const mine = getMyRatings();
+  const stars = mine[pid]||0;
+  const reviews = getReviews(pid);
+  reviews.unshift({ name, comment:text, stars, date:Date.now() });
+  saveReviews(pid, reviews);
+  // Update UI
+  const listEl = document.getElementById(`reviewsList_${pid}`);
+  if(listEl) listEl.innerHTML = reviews.map(rv=>`
+    <div class="review-item">
+      <div class="review-meta">
+        <span class="review-author">👤 ${rv.name}</span>
+        <span>${starsHTML(rv.stars,12)}</span>
+        <span class="review-date">${new Date(rv.date).toLocaleDateString('es-CL')}</span>
+      </div>
+      <div class="review-comment">${rv.comment}</div>
+    </div>`).join('');
+  document.getElementById(`rtext_${pid}`).value='';
+  document.getElementById(`rname_${pid}`).value='';
+  showToast('✓ Reseña publicada, ¡gracias!','success');
 }
 
 function setMQty(n){ mQty=Math.max(1,n); document.getElementById('mQtyDisplay').textContent=mQty; }
