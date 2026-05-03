@@ -392,6 +392,24 @@ const COMMUNE_REGION = {};
 ['Punta Arenas','Puerto Natales'].forEach(c=>COMMUNE_REGION[c]='Magallanes');
 ['Coyhaique'].forEach(c=>COMMUNE_REGION[c]='Aysén');
 
+// ══════════════════════════════════════
+//  BLUEEXPRESS — TARIFAS POR REGIÓN (≤1kg)
+//  Fuente: tarifario BlueExpress Pyme 2024
+// ══════════════════════════════════════
+const BX_RATES = {
+  'Metropolitana de Santiago': 3990,
+  "Valparaíso": 4490, "O'Higgins": 4490,
+  'Maule': 4990, 'Ñuble': 4990,
+  'Biobío': 5490, 'La Araucanía': 5990,
+  'Los Ríos': 6490, 'Los Lagos': 6990,
+  'Coquimbo': 5490, 'Atacama': 6490,
+  'Antofagasta': 7490, 'Tarapacá': 7990,
+  'Arica y Parinacota': 8490,
+  'Magallanes': 8990, 'Aysén': 8990,
+};
+let currentShippingCost = 0;
+function getShippingCost(region){ return BX_RATES[region] || 6990; }
+
 function getSettings(){ try{ return Object.assign({storeName:'MiTienda',whatsappNumber:'56991065770',mpWebhookUrl:''},JSON.parse(localStorage.getItem('st_settings')||'{}')); }catch(e){ return {storeName:'MiTienda',whatsappNumber:'56991065770',mpWebhookUrl:''}; } }
 function getProducts(){ try{ return JSON.parse(localStorage.getItem('st_products')||'[]'); }catch(e){ return []; } }
 function getCart(){ try{ return JSON.parse(localStorage.getItem('st_cart')||'[]'); }catch(e){ return []; } }
@@ -461,10 +479,10 @@ function boot(){
 }
 
 function renderSummary(cart, prods){
-  let html='', total=0, count=0;
+  let html='', subtotal=0, count=0;
   cart.forEach(item=>{
     const p=prods.find(pr=>pr.id===item.id); if(!p) return;
-    const sub=p.price*item.qty; total+=sub; count+=item.qty;
+    const sub=p.price*item.qty; subtotal+=sub; count+=item.qty;
     html+=`<div class="order-item">
       <div class="item-img-wrap">
         <img class="oi-img" src="${p.img||'https://via.placeholder.com/56'}" alt="${p.name}">
@@ -475,11 +493,33 @@ function renderSummary(cart, prods){
     </div>`;
   });
   html+=`<div class="totals">
-    <div class="total-row"><span>${count} producto${count!==1?'s':''}</span><span>${fmtPrice(total)}</span></div>
-    <div class="total-row"><span>Despacho</span><span id="shipVal" style="font-weight:600;color:var(--muted);">Selecciona tu comuna</span></div>
-    <div class="total-final"><span>Total</span><strong>${fmtPrice(total)}</strong></div>
+    <div class="total-row"><span>${count} producto${count!==1?'s':''}</span><span>${fmtPrice(subtotal)}</span></div>
+    <div class="total-row" id="shipRow">
+      <span>Despacho</span>
+      <span id="shipVal" style="font-weight:600;color:var(--muted);">Selecciona tu comuna</span>
+    </div>
+    <div class="total-final"><span>Total a pagar</span><strong id="grandTotal">${fmtPrice(subtotal)}</strong></div>
   </div>`;
   document.getElementById('orderSummary').innerHTML = html;
+}
+
+function updateShippingDisplay(){
+  const sv = document.getElementById('shipVal');
+  const gt = document.getElementById('grandTotal');
+  if(!sv || !gt) return;
+  const cart = getCart(), prods = getProducts();
+  const subtotal = cart.reduce((s,i)=>{ const p=prods.find(pr=>pr.id===i.id); return s+(p?p.price*i.qty:0); }, 0);
+  const grand = subtotal + currentShippingCost;
+  gt.textContent = fmtPrice(grand);
+  if(currentShippingCost === 0 && document.getElementById('c_commune').value){
+    sv.innerHTML = '<span style="color:var(--success);font-weight:700;">🟢 Gratis (Provincia Santiago)</span>';
+  } else if(currentShippingCost > 0){
+    const region = document.getElementById('c_region').value;
+    sv.innerHTML = `<span style="color:#1e40af;font-weight:700;">📦 ${fmtPrice(currentShippingCost)}</span> <small style="color:var(--muted);font-weight:400;">(BlueExpress · ${region})</small>`;
+  } else {
+    sv.textContent = 'Selecciona tu comuna';
+    sv.style.color = 'var(--muted)';
+  }
 }
 
 // ══════════════════════════════════════
@@ -489,36 +529,48 @@ function renderSummary(cart, prods){
 function onCommuneChange(){
   const commune = document.getElementById('c_commune').value;
   const isSantiago = SANTIAGO_COMMUNES.has(commune);
-  document.getElementById('c_region').value = COMMUNE_REGION[commune]||'';
+  const region = COMMUNE_REGION[commune]||'';
+  document.getElementById('c_region').value = region;
 
   const bFree = document.getElementById('bannerFree');
   const bBX   = document.getElementById('bannerBX');
   const optE  = document.getElementById('opt-entrega');
   const eDesc = document.getElementById('entregaDesc');
   const bxN   = document.getElementById('bxNote');
-  const sv    = document.getElementById('shipVal');
 
   if(!commune){
+    currentShippingCost = 0;
     bFree.classList.remove('show'); bBX.classList.remove('show');
     optE.classList.add('disabled'); bxN.classList.remove('show');
-    if(sv){ sv.textContent='Selecciona tu comuna'; sv.style.color='var(--muted)'; }
+    updateShippingDisplay();
     return;
   }
 
   if(isSantiago){
+    currentShippingCost = 0;
     bFree.classList.add('show'); bBX.classList.remove('show');
     optE.classList.remove('disabled');
     eDesc.textContent = 'Paga cuando te llegue el pedido · envío gratis en '+commune;
     bxN.classList.remove('show');
-    if(sv){ sv.innerHTML='<span style="color:var(--success);font-weight:700;">🟢 Gratis (Provincia Santiago)</span>'; }
   } else {
+    currentShippingCost = getShippingCost(region);
     bFree.classList.remove('show'); bBX.classList.add('show');
     optE.classList.add('disabled');
     eDesc.textContent = 'No disponible en tu zona (solo Provincia de Santiago)';
     if(selectedPayment==='contra_entrega') selectPayment('mercadopago');
     bxN.classList.add('show');
-    if(sv){ sv.innerHTML='<span style="color:#1e40af;font-weight:700;">📦 BlueExpress (pagas al recibir)</span>'; }
+
+    // Actualizar descripción del banner BX con precio de envío
+    const bxBanner = document.getElementById('bannerBX');
+    const bxContent = bxBanner.querySelector('div:last-child');
+    if(bxContent){
+      bxContent.innerHTML = `<strong>Envío vía BlueExpress — ${fmtPrice(currentShippingCost)}</strong><br>
+        Tu comuna pertenece a la región <strong>${region}</strong>. El costo de envío se suma al total de tu compra y se paga junto con el pedido por MercadoPago.<br>
+        <small style="opacity:.85;">Peso estimado: hasta 1 kg · Tarifa BlueExpress Pyme</small>`;
+    }
   }
+
+  updateShippingDisplay();
 }
 
 function toggleList(){
@@ -563,8 +615,10 @@ function validate(){
 
 function buildOrder(){
   const cart=getCart(), prods=getProducts();
-  const total=cart.reduce((s,i)=>{const p=prods.find(pr=>pr.id===i.id);return s+(p?p.price*i.qty:0);},0);
   const commune=document.getElementById('c_commune').value;
+  const subtotal=cart.reduce((s,i)=>{const p=prods.find(pr=>pr.id===i.id);return s+(p?p.price*i.qty:0);},0);
+  const shippingCost = currentShippingCost;
+  const total = subtotal + shippingCost;
   return {
     id:uid(),
     customer:{
@@ -576,7 +630,10 @@ function buildOrder(){
       region:document.getElementById('c_region').value.trim(),
       notes:document.getElementById('c_notes').value.trim()
     },
-    items:cart, total,
+    items:cart,
+    subtotal,
+    shippingCost,
+    total,
     paymentMethod:selectedPayment,
     shipping:SANTIAGO_COMMUNES.has(commune)?'gratis':'blueexpress',
     status:'pending',
@@ -599,9 +656,28 @@ async function handleMP(order,S){
   document.getElementById('mpLoading').classList.add('show');
   document.getElementById('submitBtn').disabled=true;
   try {
+    // Construir items para MP (productos + envío si aplica)
+    const mpItems = order.items.map(item=>{
+      const p=getProducts().find(pr=>pr.id===item.id);
+      return {id:item.id, title:p?.name||item.id, unit_price:p?.price||0, quantity:item.qty};
+    });
+
+    // Agregar envío BlueExpress como ítem separado
+    if(order.shippingCost > 0){
+      mpItems.push({
+        id: 'shipping-bx',
+        title: `Envío BlueExpress — ${order.customer.region}`,
+        unit_price: order.shippingCost,
+        quantity: 1
+      });
+    }
+
     const r=await fetch(S.mpWebhookUrl,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
-      order_id:order.id, total:order.total, currency:'CLP', customer:order.customer,
-      items:order.items.map(item=>{const p=getProducts().find(pr=>pr.id===item.id);return{id:item.id,title:p?.name||item.id,unit_price:p?.price||0,quantity:item.qty};}),
+      order_id:order.id,
+      total:order.total,
+      currency:'CLP',
+      customer:order.customer,
+      items: mpItems,
       back_urls:{
         success:location.origin+location.pathname+'?status=approved&order_id='+order.id,
         failure:location.origin+location.pathname+'?status=failure',
@@ -632,8 +708,13 @@ function sendWA(order,S){
   const prods=getProducts();
   const items=order.items.map(i=>{const p=prods.find(pr=>pr.id===i.id);return`  • ${p?p.name:i.id} × ${i.qty} = ${fmtPrice((p?p.price:0)*i.qty)}`;}).join('\n');
   const payL=order.paymentMethod==='mercadopago'?'💳 MercadoPago (pagado)':'🏠 Contra entrega (cobrar al entregar)';
-  const shipL=order.shipping==='gratis'?'🟢 GRATIS — Provincia Santiago':'📦 BlueExpress — cliente paga al recibir';
-  const msg=`🛍️ *NUEVO PEDIDO #${order.id.slice(-6).toUpperCase()}*\n────────────────────\n👤 *Cliente*\nNombre: ${order.customer.name}\nTeléfono: ${order.customer.phone}\nEmail: ${order.customer.email}\n\n📦 *Productos*\n${items}\n\n💰 *Total: ${fmtPrice(order.total)}*\n💳 *Pago:* ${payL}\n🚚 *Envío:* ${shipL}\n\n🏠 *Dirección*\n${order.customer.address}\n*${order.customer.commune}*, Región ${order.customer.region}${order.customer.notes?'\n\n📝 Notas: '+order.customer.notes:''}\n────────────────────\n🔄 Devoluciones hasta 7 días de recibido`;
+  const shipL=order.shipping==='gratis'
+    ? '🟢 GRATIS — Provincia Santiago'
+    : `📦 BlueExpress ${fmtPrice(order.shippingCost||0)} — ${order.customer.region}`;
+  const totalLine = order.shippingCost>0
+    ? `💰 *Subtotal productos:* ${fmtPrice(order.subtotal||order.total)}\n🚚 *Envío BlueExpress:* ${fmtPrice(order.shippingCost)}\n💰 *TOTAL COBRADO:* ${fmtPrice(order.total)}`
+    : `💰 *Total:* ${fmtPrice(order.total)} (envío gratis)`;
+  const msg=`🛍️ *NUEVO PEDIDO #${order.id.slice(-6).toUpperCase()}*\n────────────────────\n👤 *Cliente*\nNombre: ${order.customer.name}\nTeléfono: ${order.customer.phone}\nEmail: ${order.customer.email}\n\n📦 *Productos*\n${items}\n\n${totalLine}\n💳 *Pago:* ${payL}\n🚚 *Envío:* ${shipL}\n\n🏠 *Dirección*\n${order.customer.address}\n*${order.customer.commune}*, Región ${order.customer.region}${order.customer.notes?'\n\n📝 Notas: '+order.customer.notes:''}\n────────────────────\n🔄 Devoluciones hasta 7 días de recibido`;
   setTimeout(()=>window.open(`https://wa.me/${S.whatsappNumber}?text=${encodeURIComponent(msg)}`,'_blank'),800);
 }
 
