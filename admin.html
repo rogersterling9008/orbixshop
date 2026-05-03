@@ -482,9 +482,11 @@
         <!-- Categories -->
         <div class="settings-section">
           <div class="settings-section-title">🏷️ Categorías</div>
+          <small style="color:var(--muted);font-size:12px;display:block;margin-bottom:12px;">💡 Dimensión recomendada para imagen de categoría: <strong>400×200 px</strong> (horizontal). Haz clic en ✏️ para agregar una imagen a cada categoría.</small>
           <div id="catTagsWrap"></div>
-          <div style="display:flex;gap:8px;margin-top:12px;">
-            <input class="form-control" id="newCatInput" placeholder="Nueva categoría..." style="flex:1;">
+          <div style="display:flex;gap:8px;margin-top:14px;">
+            <input class="form-control" id="newCatInput" placeholder="Nueva categoría..." style="flex:1;"
+              onkeydown="if(event.key==='Enter') addCategory()">
             <button class="btn btn-save" onclick="addCategory()">+ Agregar</button>
           </div>
         </div>
@@ -495,6 +497,38 @@
     </div><!-- /tab-content -->
   </div><!-- /main -->
 </div><!-- /admin-wrap -->
+
+<!-- ── CATEGORY IMAGE MODAL ── -->
+<div class="modal-bg" id="catImgModal">
+  <div class="modal-box" style="max-width:480px;">
+    <div class="modal-head">
+      <h3 id="catImgModalTitle">Imagen de categoría</h3>
+      <button class="modal-close" onclick="closeCatImgModal()">✕</button>
+    </div>
+    <input type="hidden" id="cim_name">
+    <div style="background:var(--bg);border-radius:var(--radius);padding:14px;margin-bottom:14px;">
+      <div style="font-size:12px;color:var(--muted);margin-bottom:10px;">📐 Dimensión recomendada: <strong>400×200 px</strong> · Formatos: JPG, PNG, WebP</div>
+      <div class="form-group">
+        <label class="form-label">URL de imagen</label>
+        <input class="form-control" id="cim_url" placeholder="https://..." oninput="previewCatImg()">
+      </div>
+      <div style="text-align:center;color:var(--muted);font-size:12px;margin:8px 0;">— o sube un archivo —</div>
+      <input type="file" accept="image/*" id="cim_file" onchange="uploadCatImg(this)" style="font-family:'DM Sans',sans-serif;font-size:13px;">
+      <div id="cim_preview_wrap" style="display:none;margin-top:12px;">
+        <img id="cim_preview" src="" alt="Vista previa"
+          style="width:100%;height:120px;object-fit:cover;border-radius:8px;border:1px solid var(--border);">
+        <div id="cim_dims" style="font-size:11px;color:var(--muted);margin-top:4px;"></div>
+      </div>
+    </div>
+    <div class="modal-foot" style="justify-content:space-between;">
+      <button class="btn" style="color:#EF4444;border-color:#EF4444;" onclick="removeCatImg()">🗑️ Quitar imagen</button>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-cancel" onclick="closeCatImgModal()">Cancelar</button>
+        <button class="btn btn-save" onclick="saveCatImg()">💾 Guardar</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- ── PRODUCT MODAL ── -->
 <div class="modal-bg" id="prodModal">
@@ -558,6 +592,7 @@
       <button class="modal-close" onclick="closeBannerModal()">✕</button>
     </div>
     <input type="hidden" id="bm_idx">
+    <input type="hidden" id="bm_current_img">  <!-- preserves existing image -->
 
     <!-- TEXTO (todo opcional) -->
     <div style="background:var(--bg);border-radius:var(--radius);padding:14px;margin-bottom:14px;">
@@ -1188,10 +1223,10 @@ function uploadBannerImg(input){
     img.src = e.target.result;
     img.setAttribute('data-b64', e.target.result);
     document.getElementById('bm_imgurl').value='';
+    document.getElementById('bm_current_img').value=''; // clear so new upload takes over
     img.onload = ()=>{
       document.getElementById('bm_img_preview_wrap').style.display='block';
       document.getElementById('bm_img_dims').textContent=`Dimensiones reales: ${img.naturalWidth}×${img.naturalHeight}px`;
-      // Suggest dimensions
       if(!document.getElementById('bm_imgw').value) document.getElementById('bm_imgw').value = img.naturalWidth;
       if(!document.getElementById('bm_imgh').value) document.getElementById('bm_imgh').value = img.naturalHeight;
     };
@@ -1253,6 +1288,7 @@ function openBannerModal(banner, idx){
   toggleBannerBg();
 
   if(hasImg){
+    document.getElementById('bm_current_img').value = banner.img; // preserve existing
     document.getElementById('bm_imgurl').value = banner.img.startsWith('data:') ? '' : banner.img;
     document.getElementById('bm_imgw').value = banner.imgW||1440;
     document.getElementById('bm_imgh').value = banner.imgH||520;
@@ -1263,6 +1299,7 @@ function openBannerModal(banner, idx){
     prev.removeAttribute('data-b64');
     document.getElementById('bm_img_preview_wrap').style.display='block';
   } else {
+    document.getElementById('bm_current_img').value = '';
     document.getElementById('bm_imgurl').value='';
     document.getElementById('bm_imgw').value=1440;
     document.getElementById('bm_imgh').value=520;
@@ -1284,7 +1321,9 @@ function saveBanner(){
   let img='', imgW=0, imgH=0, overlay=0.35;
   if(isImg){
     const b64 = document.getElementById('bm_imgpreview').getAttribute('data-b64');
-    img = b64 || document.getElementById('bm_imgurl').value.trim();
+    const urlInput = document.getElementById('bm_imgurl').value.trim();
+    const currentImg = document.getElementById('bm_current_img').value; // preserved
+    img = b64 || urlInput || currentImg; // use new upload, new URL, or keep existing
     imgW = parseInt(document.getElementById('bm_imgw').value)||1440;
     imgH = parseInt(document.getElementById('bm_imgh').value)||520;
     overlay = parseInt(document.getElementById('bm_overlay').value)/100;
@@ -1387,9 +1426,28 @@ function removeLogo(){
 }
 
 function renderCatTags(cats){
-  document.getElementById('catTagsWrap').innerHTML = cats.map((c,i)=>
-    `<span class="cat-tag">${c} <button onclick="removeCat(${i})">×</button></span>`
-  ).join('');
+  const S = getSettings();
+  const catImages = S.catImages||{};
+  document.getElementById('catTagsWrap').innerHTML = cats.length
+    ? `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;">
+        ${cats.map((c,i)=>{
+          const img = catImages[c];
+          return `<div style="background:white;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;">
+            ${img
+              ? `<img src="${img}" alt="${c}" style="width:100%;height:70px;object-fit:cover;display:block;">`
+              : `<div style="width:100%;height:70px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:28px;">${S.catIcons?.[c]||'📦'}</div>`
+            }
+            <div style="padding:8px 10px;display:flex;align-items:center;justify-content:space-between;gap:6px;">
+              <span style="font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${c}</span>
+              <div style="display:flex;gap:4px;flex-shrink:0;">
+                <button class="action-btn" style="font-size:11px;" onclick="openCatImgModal('${c}')">✏️ Imagen</button>
+                <button class="action-btn danger" style="font-size:11px;" onclick="removeCat(${i})">🗑️</button>
+              </div>
+            </div>
+          </div>`;
+        }).join('')}
+      </div>`
+    : '<div style="font-size:13px;color:var(--muted);padding:8px;">Sin categorías — agrega una abajo.</div>';
 }
 
 function addCategory(){
@@ -1407,10 +1465,89 @@ function addCategory(){
 }
 
 function removeCat(i){
+  if(!confirm('¿Eliminar esta categoría?')) return;
   const S=getSettings();
+  const catName = S.categories[i];
   S.categories.splice(i,1);
+  // Also remove its image
+  if(S.catImages && S.catImages[catName]) delete S.catImages[catName];
   saveSettingsObj(S);
   renderCatTags(S.categories);
+}
+
+// ── CATEGORY IMAGE MODAL ──
+function openCatImgModal(catName){
+  const S = getSettings();
+  const catImages = S.catImages||{};
+  document.getElementById('catImgModalTitle').textContent = `Imagen — ${catName}`;
+  document.getElementById('cim_name').value = catName;
+  document.getElementById('cim_url').value = '';
+  document.getElementById('cim_file').value = '';
+  const existing = catImages[catName];
+  const prev = document.getElementById('cim_preview');
+  prev.removeAttribute('data-b64');
+  if(existing){
+    prev.src = existing;
+    document.getElementById('cim_preview_wrap').style.display='block';
+    if(!existing.startsWith('data:')) document.getElementById('cim_url').value = existing;
+  } else {
+    document.getElementById('cim_preview_wrap').style.display='none';
+  }
+  document.getElementById('catImgModal').classList.add('open');
+}
+
+function closeCatImgModal(){
+  document.getElementById('catImgModal').classList.remove('open');
+}
+
+function previewCatImg(){
+  const url = document.getElementById('cim_url').value.trim();
+  if(!url){ document.getElementById('cim_preview_wrap').style.display='none'; return; }
+  const img = document.getElementById('cim_preview');
+  img.src = url;
+  img.removeAttribute('data-b64');
+  img.onload = ()=>{ document.getElementById('cim_preview_wrap').style.display='block'; };
+}
+
+function uploadCatImg(input){
+  if(!input.files[0]) return;
+  const reader = new FileReader();
+  reader.onload = e=>{
+    const img = document.getElementById('cim_preview');
+    img.src = e.target.result;
+    img.setAttribute('data-b64', e.target.result);
+    document.getElementById('cim_url').value='';
+    img.onload = ()=>{
+      document.getElementById('cim_preview_wrap').style.display='block';
+      document.getElementById('cim_dims').textContent=`Dimensiones: ${img.naturalWidth}×${img.naturalHeight}px`;
+    };
+  };
+  reader.readAsDataURL(input.files[0]);
+}
+
+function saveCatImg(){
+  const catName = document.getElementById('cim_name').value;
+  const b64 = document.getElementById('cim_preview').getAttribute('data-b64');
+  const url = document.getElementById('cim_url').value.trim();
+  const img = b64 || url;
+  if(!img){ showToast('Agrega una imagen primero'); return; }
+  const S = getSettings();
+  if(!S.catImages) S.catImages={};
+  S.catImages[catName] = img;
+  saveSettingsObj(S);
+  closeCatImgModal();
+  renderCatTags(S.categories);
+  showToast(`✓ Imagen guardada para "${catName}"`, 'ok');
+}
+
+function removeCatImg(){
+  const catName = document.getElementById('cim_name').value;
+  const S = getSettings();
+  if(S.catImages) delete S.catImages[catName];
+  saveSettingsObj(S);
+  closeCatImgModal();
+  renderCatTags(S.categories);
+  showToast('Imagen eliminada','ok');
 }
 
 function saveSettings(){

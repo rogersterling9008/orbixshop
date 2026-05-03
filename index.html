@@ -274,22 +274,30 @@
     .cat-card {
       background: white;
       border-radius: var(--radius-lg);
-      padding: 24px 12px;
+      padding: 0;
       text-align: center;
       cursor: pointer;
       border: 2px solid var(--border);
       transition: all 0.22s;
       text-decoration: none;
       color: var(--primary);
+      overflow: hidden;
     }
     .cat-card:hover {
       border-color: var(--accent);
       transform: translateY(-4px);
       box-shadow: var(--shadow-lg);
     }
-    .cat-icon { font-size: 30px; margin-bottom: 8px; }
+    .cat-card-img {
+      width: 100%;
+      height: 90px;
+      object-fit: cover;
+      display: block;
+    }
+    .cat-card-body { padding: 10px 8px 12px; }
+    .cat-icon { font-size: 30px; margin-bottom: 4px; }
     .cat-name { font-size: 13px; font-weight: 600; }
-    .cat-count { font-size: 11px; color: var(--muted); margin-top: 4px; }
+    .cat-count { font-size: 11px; color: var(--muted); margin-top: 3px; }
 
     /* ── PRODUCTS ── */
     .products-grid {
@@ -783,7 +791,7 @@
   <div class="footer-grid">
     <div>
       <div class="footer-brand" id="footerBrand">Mi<span>Tienda</span></div>
-      <p class="footer-desc">Tu tienda de confianza con los mejores productos. Despacho a todo Chile, paga como más te convenga.</p>
+      <p class="footer-desc">Tu tienda de confianza con los mejores productos. Despacho a todo Chile.</p>
     </div>
     <div>
       <div class="footer-title">Tienda</div>
@@ -804,7 +812,7 @@
       <div class="footer-title">Pagos</div>
       <ul class="footer-links">
         <li><a href="#">MercadoPago</a></li>
-        <li><a href="#">Pago contra entrega</a></li>
+        <li><a href="checkout.html#comunas-santiago" onclick="sessionStorage.setItem('scrollToComunas','1')">Pago contra entrega</a></li>
         <li><a href="#">Despacho Chile</a></li>
       </ul>
     </div>
@@ -1014,14 +1022,22 @@ function gotoSlide(n){
 
 /* Categories */
 function renderCats(cats, icons, prods){
+  const S = getSettings();
+  const catImages = S.catImages||{};
   const el = document.getElementById('catGrid');
   el.innerHTML = (cats||[]).map(c=>{
     const cnt = prods.filter(p=>p.cat===c).length;
     const ico = (icons&&icons[c])||'📦';
+    const img = catImages[c];
     return `<a class="cat-card" href="#" onclick="filterBy('${c}');return false;">
-      <div class="cat-icon">${ico}</div>
-      <div class="cat-name">${c}</div>
-      <div class="cat-count">${cnt} producto${cnt!==1?'s':''}</div>
+      ${img
+        ? `<img class="cat-card-img" src="${img}" alt="${c}" loading="lazy">`
+        : `<div class="cat-card-body"><div class="cat-icon">${ico}</div></div>`
+      }
+      <div class="cat-card-body" style="${img?'':'padding-top:0;'}">
+        <div class="cat-name">${c}</div>
+        <div class="cat-count">${cnt} producto${cnt!==1?'s':''}</div>
+      </div>
     </a>`;
   }).join('');
 }
