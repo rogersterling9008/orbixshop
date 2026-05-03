@@ -165,8 +165,8 @@
       <div class="card-head"><div class="card-title">2. Dirección de entrega</div></div>
       <div class="card-body">
 
+        <div id="comunas-santiago" style="scroll-margin-top:80px;"></div>
         <div class="form-group">
-          <label class="form-label">Comuna *</label>
           <select class="form-input" id="c_commune" onchange="onCommuneChange()">
             <option value="">— Selecciona tu comuna —</option>
             <optgroup label="✅ Provincia de Santiago — Envío GRATIS contra entrega">
@@ -239,7 +239,7 @@
         </div>
 
         <!-- BANNER ENVÍO GRATIS -->
-        <div class="ship-banner free" id="bannerFree">
+        <div class="ship-banner free" id="bannerFree" style="scroll-margin-top:80px;">
           <div class="ship-icon">🟢</div>
           <div>
             <strong>¡Envío GRATIS para tu comuna!</strong><br>
@@ -420,6 +420,17 @@ function boot(){
   // Populate commune chips
   document.getElementById('communeChips').innerHTML =
     [...SANTIAGO_COMMUNES].sort().map(c=>`<div class="c-chip">${c}</div>`).join('');
+
+  // Auto-expand comunas panel if arriving from footer "Pago contra entrega" link
+  if(sessionStorage.getItem('scrollToComunas')){
+    sessionStorage.removeItem('scrollToComunas');
+    setTimeout(()=>{
+      const el = document.getElementById('comunas-santiago');
+      if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
+      document.getElementById('bannerFree').classList.add('show');
+      document.getElementById('communePanel').classList.add('open');
+    }, 500);
+  }
 
   // MP return detection
   const p = new URLSearchParams(window.location.search);
