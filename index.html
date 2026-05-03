@@ -960,7 +960,7 @@ function boot(){
     `<li><a href="#" onclick="filterBy('${c}');return false;">${c}</a></li>`
   ).join('');
 
-  renderHero(S.banners);
+  renderHero(S.banners, S.bannerInterval||8);
   renderCats(S.categories, S.catIcons, prods);
 
   const featured = prods.filter(p=>p.featured);
@@ -973,7 +973,7 @@ function boot(){
 
 /* Hero */
 let cur=0, timer;
-function renderHero(banners){
+function renderHero(banners, interval=8){
   if(!banners?.length) return;
   const el = document.getElementById('heroSection');
   el.innerHTML = banners.map((b,i)=>{
@@ -990,7 +990,7 @@ function renderHero(banners){
       </div>
     </div>`;
   }).join('')+`<div class="hero-nav">${banners.map((_,i)=>`<button class="hero-dot ${i===0?'active':''}" onclick="gotoSlide(${i})"></button>`).join('')}</div>`;
-  if(banners.length>1){ clearInterval(timer); timer=setInterval(()=>gotoSlide((cur+1)%banners.length),5000); }
+  if(banners.length>1){ clearInterval(timer); timer=setInterval(()=>gotoSlide((cur+1)%banners.length), interval*1000); }
 }
 
 function gotoSlide(n){

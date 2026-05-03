@@ -1071,8 +1071,20 @@ function updateOrderStatus(){
 function renderBanners(){
   const S = getSettings();
   const banners = S.banners||[];
+  const interval = S.bannerInterval||8;
   document.getElementById('bannerList').innerHTML=`
-    <div style="margin-bottom:16px;display:flex;justify-content:flex-end;">
+    <div style="background:white;border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px 20px;margin-bottom:16px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+      <div style="font-family:'Syne',sans-serif;font-size:14px;font-weight:700;">⏱️ Velocidad de rotación</div>
+      <div style="display:flex;align-items:center;gap:10px;flex:1;">
+        <input type="range" min="3" max="20" step="1" value="${interval}" id="bannerIntervalSlider"
+          oninput="document.getElementById('bannerIntervalVal').textContent=this.value+'s'"
+          style="flex:1;accent-color:var(--accent);">
+        <span id="bannerIntervalVal" style="font-weight:700;min-width:36px;">${interval}s</span>
+      </div>
+      <button class="btn btn-save" style="padding:8px 16px;" onclick="saveBannerInterval()">Guardar</button>
+      <small style="width:100%;color:var(--muted);font-size:12px;">Mínimo 3 segundos · Máximo 20 segundos · Actual: ${interval}s por banner</small>
+    </div>
+    <div style="display:flex;justify-content:flex-end;margin-bottom:12px;">
       <button class="btn btn-save" onclick="openBannerModal()">+ Agregar banner</button>
     </div>
     ${banners.length ? banners.map((b,i)=>`
@@ -1091,6 +1103,14 @@ function renderBanners(){
       </div>
     `).join('') : '<div style="text-align:center;padding:40px;color:var(--muted);">No hay banners. Agrega uno.</div>'}
   `;
+}
+
+function saveBannerInterval(){
+  const val = parseInt(document.getElementById('bannerIntervalSlider').value)||8;
+  const S = getSettings();
+  S.bannerInterval = val;
+  saveSettingsObj(S);
+  showToast(`✓ Rotación guardada: cada ${val} segundos`,'ok');
 }
 
 function toggleBannerBg(){
