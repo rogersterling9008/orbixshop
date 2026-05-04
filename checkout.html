@@ -411,6 +411,20 @@ let currentShippingCost = 0;
 function getShippingCost(region){ return BX_RATES[region] || 6990; }
 
 function getSettings(){ try{ return Object.assign({storeName:'MiTienda',whatsappNumber:'56991065770',mpWebhookUrl:''},JSON.parse(localStorage.getItem('st_settings')||'{}')); }catch(e){ return {storeName:'MiTienda',whatsappNumber:'56991065770',mpWebhookUrl:''}; } }
+
+// ── Descuenta stock de los productos vendidos ──
+function decrementStock(orderItems){
+  const prods = getProducts();
+  let changed = false;
+  orderItems.forEach(item=>{
+    const p = prods.find(pr=>pr.id===item.id);
+    if(p){
+      p.stock = Math.max(0, (p.stock||0) - item.qty);
+      changed = true;
+    }
+  });
+  if(changed) localStorage.setItem('st_products', JSON.stringify(prods));
+}
 function getProducts(){ try{ return JSON.parse(localStorage.getItem('st_products')||'[]'); }catch(e){ return []; } }
 function getCart(){ try{ return JSON.parse(localStorage.getItem('st_cart')||'[]'); }catch(e){ return []; } }
 function clearCart(){ localStorage.removeItem('st_cart'); }
@@ -467,7 +481,7 @@ function boot(){
   const oid = p.get('order_id');
   if(st==='approved'){
     const o = getOrders().find(o=>o.id===oid);
-    if(o){ o.status='confirmed'; saveOrders(getOrders().map(x=>x.id===oid?o:x)); sendWA(o,S); notifyCustomer(o,'confirmed'); lastOrder=o; }
+    if(o){ o.status='confirmed'; saveOrders(getOrders().map(x=>x.id===oid?o:x)); decrementStock(o.items); sendWA(o,S); notifyCustomer(o,'confirmed'); lastOrder=o; }
     showSuccess(oid||uid(),'mercadopago');
   } else if(st==='pending'){
     const o = getOrders().find(o=>o.id===oid);
@@ -695,8 +709,9 @@ async function handleMP(order,S){
 
 async function handleEntrega(order,S){
   saveOrders([...getOrders(),order]); lastOrder=order;
-  sendWA(order,S);           // notify admin
-  notifyCustomer(order,'confirmed');  // notify customer
+  decrementStock(order.items);       // ← descontar stock
+  sendWA(order,S);                   // notify admin
+  notifyCustomer(order,'confirmed'); // notify customer
   showSuccess(order.id,'contra_entrega');
 }
 
@@ -744,8 +759,8 @@ function printLabel(){
   const S = getSettings();
   const { jsPDF } = window.jspdf;
 
-  const doc = new jsPDF({ unit:'mm', format:[100,150], orientation:'portrait' });
-  const W=100, H=150, P=7;
+  const doc = new jsPDF({ unit:'mm', format:[100,170], orientation:'portrait' });
+  const W=100, H=170, P=7;
 
   // BG white
   doc.setFillColor(255,255,255); doc.rect(0,0,W,H,'F');
@@ -776,7 +791,7 @@ function printLabel(){
   const hline=y=>{ doc.setDrawColor(225,222,217); doc.setLineWidth(0.3); doc.line(P,y,W-P,y); };
 
   // ── DESTINATARIO ──
-  let y=57;
+  let y=52;
   doc.setFontSize(7); doc.setFont('helvetica','bold'); doc.setTextColor(160,155,148);
   doc.text('DESTINATARIO', P, y); y+=5;
 
@@ -785,10 +800,9 @@ function printLabel(){
   doc.text(nameLines, P, y); y+=nameLines.length*6+1;
 
   doc.setFontSize(9); doc.setFont('helvetica','normal'); doc.setTextColor(55,55,55);
-  doc.text('Tel: '+order.customer.phone, P, y); y+=5;
-  doc.text('Email: '+order.customer.email, P, y); y+=7;
+  doc.text('Tel: '+order.customer.phone, P, y); y+=6;
 
-  hline(y); y+=6;
+  hline(y); y+=5;
 
   // ── DIRECCIÓN ──
   doc.setFontSize(7); doc.setFont('helvetica','bold'); doc.setTextColor(160,155,148);
@@ -796,20 +810,20 @@ function printLabel(){
 
   doc.setFontSize(10); doc.setFont('helvetica','normal'); doc.setTextColor(40,40,40);
   const addrLines=doc.splitTextToSize(order.customer.address, W-P*2);
-  doc.text(addrLines, P, y); y+=addrLines.length*5+4;
+  doc.text(addrLines, P, y); y+=addrLines.length*5+3;
 
   // ── COMMUNE — CENTRADA, NEGRITA, DESTACADA ──
-  doc.setFillColor(240,236,228); doc.roundedRect(P,y-3,W-P*2,16,2,2,'F');
+  doc.setFillColor(240,236,228); doc.roundedRect(P,y-2,W-P*2,15,2,2,'F');
   doc.setDrawColor(210,200,185); doc.setLineWidth(0.4);
-  doc.roundedRect(P,y-3,W-P*2,16,2,2,'S');
-  doc.setFont('helvetica','bold'); doc.setFontSize(18); doc.setTextColor(17,17,17);
-  doc.text(order.customer.commune.toUpperCase(), W/2, y+8.5, {align:'center'});
-  y+=20;
+  doc.roundedRect(P,y-2,W-P*2,15,2,2,'S');
+  doc.setFont('helvetica','bold'); doc.setFontSize(16); doc.setTextColor(17,17,17);
+  doc.text(order.customer.commune.toUpperCase(), W/2, y+8, {align:'center'});
+  y+=18;
 
   doc.setFontSize(8); doc.setFont('helvetica','normal'); doc.setTextColor(110,105,98);
-  doc.text('Región '+order.customer.region, W/2, y, {align:'center'}); y+=7;
+  doc.text('Región '+order.customer.region, W/2, y, {align:'center'}); y+=6;
 
-  hline(y); y+=6;
+  hline(y); y+=5;
 
   // ── PAGO Y DESPACHO ──
   doc.setFontSize(7); doc.setFont('helvetica','bold'); doc.setTextColor(160,155,148);

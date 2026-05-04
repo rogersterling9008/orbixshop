@@ -1117,10 +1117,13 @@ function renderGrid(id, prods){
     const ratingHtml = r
       ? `<div class="stars-display">${starsHTML(avg)}<span class="rating-count">(${r.count})</span></div>`
       : `<div class="stars-display"><span class="rating-count" style="font-size:11px;">Sin reseñas aún</span></div>`;
-    return `<div class="product-card" onclick="openModal('${p.id}')">
+    const sinStock = p.stock <= 0;
+    return `<div class="product-card" onclick="${sinStock ? '' : `openModal('${p.id}')`}" style="${sinStock ? 'opacity:.65;cursor:default;' : ''}">
       <div class="product-img-wrap">
         <img src="${img}" alt="${p.name}" loading="lazy">
-        ${disc>0?`<div class="product-badge">-${disc}%</div>`:''}
+        ${sinStock
+          ? `<div class="product-badge" style="background:#6B7280;">Sin stock</div>`
+          : disc>0 ? `<div class="product-badge">-${disc}%</div>` : ''}
       </div>
       <div class="product-info">
         <div class="product-cat">${p.cat}</div>
@@ -1130,9 +1133,10 @@ function renderGrid(id, prods){
           <span class="product-price">${fmtPrice(p.price)}</span>
           ${p.origPrice?`<span class="product-orig">${fmtPrice(p.origPrice)}</span>`:''}
         </div>
-        <button class="atc-btn" onclick="event.stopPropagation();addToCart('${p.id}')">
-          🛒 Agregar al carrito
-        </button>
+        ${sinStock
+          ? `<button class="atc-btn" disabled style="background:#9CA3AF;cursor:not-allowed;">✗ Sin stock</button>`
+          : `<button class="atc-btn" onclick="event.stopPropagation();addToCart('${p.id}')">🛒 Agregar al carrito</button>`
+        }
       </div>
     </div>`;
   }).join('');
@@ -1268,8 +1272,12 @@ function openModal(id){
       <span class="modal-qty-input" id="mQtyDisplay">1</span>
       <button class="qty-btn" onclick="setMQty(mQty+1)">+</button>
     </div>
-    <button class="modal-add" onclick="addToCartFromModal('${p.id}')">🛒 Agregar al carrito</button>
-    <div class="modal-stock">${p.stock>0?'✓ '+p.stock+' en stock':'✗ Sin stock'}</div>
+    ${p.stock > 0
+      ? `<button class="modal-add" onclick="addToCartFromModal('${p.id}')">🛒 Agregar al carrito</button>
+         <div class="modal-stock">✓ ${p.stock} en stock</div>`
+      : `<button class="modal-add" disabled style="background:#9CA3AF;cursor:not-allowed;">✗ Sin stock</button>
+         <div class="modal-stock" style="color:#EF4444;font-weight:600;">Producto agotado</div>`
+    }
 
     <div class="reviews-section">
       <div class="reviews-title">💬 Reseñas (${reviews.length})</div>

@@ -872,7 +872,7 @@ function renderProducts(){
       <td><div style="font-weight:600;">${p.name}</div></td>
       <td><span class="badge badge-gray">${p.cat}</span></td>
       <td><strong>${fmtPrice(p.price)}</strong>${p.origPrice?`<br><small style="color:var(--muted);text-decoration:line-through;">${fmtPrice(p.origPrice)}</small>`:''}</td>
-      <td>${p.stock}</td>
+      <td style="font-weight:600;color:${p.stock<=0?'#EF4444':p.stock<=5?'#F59E0B':'#10B981'};">${p.stock<=0?'⚠ Agotado':p.stock}</td>
       <td>${p.active?'<span class="badge badge-green">Activo</span>':'<span class="badge badge-red">Inactivo</span>'}</td>
       <td>${p.featured?'<span class="badge badge-yellow">⭐ Sí</span>':'<span style="color:var(--muted);font-size:12px;">No</span>'}</td>
       <td style="white-space:nowrap;">
