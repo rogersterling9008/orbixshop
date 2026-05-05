@@ -695,7 +695,7 @@
         </div>
         <div class="form-group">
           <label class="form-label">Oscurecimiento de imagen (overlay) <span id="bm_overlay_val">35%</span></label>
-          <input type="range" min="0" max="80" step="5" value="35" id="bm_overlay"
+          <input type="range" min="0" max="80" step="1" value="35" id="bm_overlay"
             oninput="document.getElementById('bm_overlay_val').textContent=this.value+'%'"
             style="width:100%;accent-color:var(--accent);">
           <small style="color:var(--muted);font-size:11px;">0% = imagen original · 80% = muy oscura</small>
@@ -1364,8 +1364,8 @@ function openBannerModal(banner, idx){
     document.getElementById('bm_imgurl').value = banner.img.startsWith('data:') ? '' : banner.img;
     document.getElementById('bm_imgw').value = banner.imgW||1440;
     document.getElementById('bm_imgh').value = banner.imgH||520;
-    document.getElementById('bm_overlay').value = Math.round((banner.overlay||0.35)*100);
-    document.getElementById('bm_overlay_val').textContent = Math.round((banner.overlay||0.35)*100)+'%';
+    document.getElementById('bm_overlay').value = Math.round((banner.overlay != null ? banner.overlay : 0.35)*100);
+    document.getElementById('bm_overlay_val').textContent = Math.round((banner.overlay != null ? banner.overlay : 0.35)*100)+'%';
     const prev = document.getElementById('bm_imgpreview');
     prev.src = banner.img;
     prev.removeAttribute('data-b64');
