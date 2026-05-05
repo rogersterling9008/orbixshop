@@ -854,36 +854,68 @@
 // ════════════════════════════════════════════
 
 const DEFAULT_SETTINGS = {
-  storeName: 'SyA Store',
+  storeName: 'MiTienda',
   storeSlogan: 'Los mejores productos al mejor precio',
-  announcement: '🚚 Despacho a todo Chile · Rapido y seguro',
+  announcement: '🚚 Despacho a todo Chile · Pago al recibir o con MercadoPago',
   whatsappNumber: '56991065770',
-  adminPassword: '12345678',
-  mpWebhookUrl: 'https://scalding-browsing-sly.ngrok-free.dev/webhook/mp-crear-preferencia',
+  adminPassword: 'admin2024',
+  mpWebhookUrl: '',
   currency: 'CLP',
-  categories: ['Hogar','Ropa','Deportes','Juguetes','Camisetas de Futbol'],
-  catIcons: {'Electrónica':'💻','Hogar':'🏠','Ropa':'👗','Deportes':'⚽','Juguetes':'🎮','Camisetas de Futbol':'⚽','Otros':'📦'},
+  categories: ['Electrónica','Hogar','Ropa','Deportes','Juguetes','Otros'],
+  catIcons:   {'Electrónica':'💻','Hogar':'🏠','Ropa':'👗','Deportes':'⚽','Juguetes':'🎮','Otros':'📦'},
   banners: [
-    { title:'', subtitle:'', tag:'', btn:'', link:'#todos', btnPos:'left', btnFont:"'Syne', sans-serif", btnColor:'#111111', btnBg:'#c0c0c0', btnBgTransparent:true, bg:'#1a1a2e', img:'', bannerInterval:12 }
+    { title:'¡Bienvenido a nuestra tienda!', subtitle:'Los mejores productos al mejor precio. Despacho a todo Chile.', btn:'Ver productos', link:'#todos', bg:'#1A1A2E', tag:'NUEVA COLECCIÓN' },
+    { title:'Dos formas de pagar', subtitle:'Acepta MercadoPago con tarjeta o paga cuando llegue tu pedido.', btn:'Comprar ahora', link:'#todos', bg:'#FF4D00', tag:'MÚLTIPLES PAGOS' },
+    { title:'Despacho rápido', subtitle:'Enviamos a todo Chile de forma rápida y segura.', btn:'Ver catálogo', link:'#todos', bg:'#14532d', tag:'ENVÍO RÁPIDO' }
   ]
 };
 
 const SAMPLE_PRODUCTS = [
-  { id:'moqgdn2od1nh7', name:'Camiseta U de Chile 2026', cat:'Camisetas de Futbol', desc:'', price:19990, origPrice:24990, stock:10, img:'https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcRLYBWMduHuj60lKVqg2ivebc-K3IqNCKJhn283HqN7N4C0PuHCI0ppEGuWQkSjETotWA6qjeD9', images:['https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcRLYBWMduHuj60lKVqg2ivebc-K3IqNCKJhn283HqN7N4C0PuHCI0ppEGuWQkSjETotWA6qjeD9'], variants:[{name:'Jugador',options:['Aranguiz','Vargas']},{name:'Talla',options:['8','10','12','14','16','S','M','L','XL']}], featured:false, active:true },
   { id:'sp1', name:'Auriculares Bluetooth Pro', desc:'Auriculares inalámbricos con cancelación de ruido activa, 30h de batería y sonido premium.', price:29990, origPrice:49990, cat:'Electrónica', img:'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&q=80', stock:15, featured:true, active:true },
   { id:'sp2', name:'Lámpara LED Escritorio', desc:'Lámpara con 3 modos de luz, puerto USB y cuello flexible. Ideal para el home office.', price:18990, origPrice:28990, cat:'Hogar', img:'https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=500&q=80', stock:20, featured:true, active:true },
-  { id:'sp3', name:'Mochila Urbana Resistente', desc:'Mochila impermeable con compartimento para laptop de 15\", múltiples bolsillos y diseño ergonómico.', price:24990, origPrice:39990, cat:'Ropa', img:'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=500&q=80', stock:10, featured:true, active:true },
+  { id:'sp3', name:'Mochila Urbana Resistente', desc:'Mochila impermeable con compartimento para laptop de 15", múltiples bolsillos y diseño ergonómico.', price:24990, origPrice:39990, cat:'Ropa', img:'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=500&q=80', stock:10, featured:true, active:true },
   { id:'sp4', name:'Zapatillas Running', desc:'Zapatillas deportivas con suela amortiguada, transpirables y ligeras. Tallas 38-44.', price:34990, origPrice:55990, cat:'Deportes', img:'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500&q=80', stock:8, featured:false, active:true },
   { id:'sp5', name:'Smartwatch Sport', desc:'Reloj inteligente con monitor cardíaco, GPS integrado, resistente al agua y 7 días de batería.', price:49990, origPrice:79990, cat:'Electrónica', img:'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&q=80', stock:12, featured:true, active:true },
   { id:'sp6', name:'Set Utensilios Cocina', desc:'Set de 5 utensilios en acero inoxidable con mango ergonómico. Espátula, cucharon, pinzas, espumadera y batidor.', price:12990, origPrice:21990, cat:'Hogar', img:'https://images.unsplash.com/photo-1556911220-bff31c812dba?w=500&q=80', stock:25, featured:false, active:true }
 ];
 
 // ════════════════════════════════════════════
-//  DATA LAYER
+//  CLOUD SYNC — GitHub como base de datos
 // ════════════════════════════════════════════
+const REPO_OWNER = 'SYASTORE2020';
+const REPO_NAME  = 'SYA.CL';
+const RAW_BASE   = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main`;
+
+let _cloudConfig = null;
+let _cloudMedia  = null;
+
+async function fetchCloud(){
+  try {
+    const t = Date.now(); // cache buster
+    const [cfgRes, mediaRes] = await Promise.all([
+      fetch(`${RAW_BASE}/store-config.json?t=${t}`),
+      fetch(`${RAW_BASE}/store-media.json?t=${t}`)
+    ]);
+    if(cfgRes.ok)   _cloudConfig = await cfgRes.json();
+    if(mediaRes.ok) _cloudMedia  = await mediaRes.json();
+    // Merge and save to localStorage as cache
+    if(_cloudConfig){
+      const merged = Object.assign({}, _cloudConfig, _cloudMedia||{});
+      localStorage.setItem('st_settings', JSON.stringify(merged));
+    }
+    if(_cloudConfig?.products){
+      localStorage.setItem('st_products', JSON.stringify(_cloudConfig.products));
+    }
+  } catch(e){
+    console.warn('Cloud fetch failed, using localStorage cache:', e);
+  }
+}
 
 function getSettings(){
-  try { return Object.assign({}, DEFAULT_SETTINGS, JSON.parse(localStorage.getItem('st_settings')||'{}')); } catch(e){ return {...DEFAULT_SETTINGS}; }
+  try {
+    const local = JSON.parse(localStorage.getItem('st_settings')||'{}');
+    return Object.assign({}, DEFAULT_SETTINGS, local);
+  } catch(e){ return {...DEFAULT_SETTINGS}; }
 }
 function getProducts(){
   const s = localStorage.getItem('st_products');
@@ -944,13 +976,19 @@ function syncCartUI(){
 //  RENDER
 // ════════════════════════════════════════════
 
-function boot(){
+async function boot(){
+  // Mostrar tienda con datos en caché mientras carga la nube
+  renderWithData();
+  // Luego cargar datos frescos de la nube y re-renderizar
+  await fetchCloud();
+  renderWithData();
+}
+
+function renderWithData(){
   const S = getSettings();
   const prods = getProducts().filter(p=>p.active);
 
-  // Meta
   document.title = S.storeName;
-  // Logo — image or text
   const logoEl = document.getElementById('navLogo');
   if(S.logoImg){
     logoEl.innerHTML = `<img class="nav-logo-img" src="${S.logoImg}" alt="${S.storeName}"><span style="color:var(--primary);">${S.storeName}</span>`;
@@ -961,7 +999,6 @@ function boot(){
   document.getElementById('footerBottom').innerHTML = `© ${new Date().getFullYear()} ${S.storeName} — Hecho con ❤️ en Chile`;
   document.getElementById('annBar').textContent = S.announcement;
 
-  // Nav cats
   document.getElementById('navCats').innerHTML = (S.categories||[]).slice(0,5).map(c=>
     `<li><a href="#" onclick="filterBy('${c}');return false;">${c}</a></li>`
   ).join('');
@@ -971,7 +1008,6 @@ function boot(){
 
   const featured = prods.filter(p=>p.featured);
   renderGrid('featuredGrid', featured.length ? featured : prods.slice(0,4));
-
   renderFilters(S.categories, prods);
   renderGrid('allGrid', prods);
   syncCartUI();

@@ -428,6 +428,21 @@
         <!-- Store Info -->
         <div class="settings-section">
           <div class="settings-section-title">🏪 Información de la tienda</div>
+
+          <!-- CLOUD SYNC TOKEN -->
+          <div style="background:linear-gradient(135deg,#1e3a5f,#1e40af);border-radius:var(--radius);padding:14px;margin-bottom:16px;color:white;">
+            <div style="font-size:13px;font-weight:700;margin-bottom:6px;">☁️ Sincronización en la nube</div>
+            <div style="font-size:12px;opacity:.85;margin-bottom:10px;">Con tu token de GitHub, cada cambio que guardes se refleja automáticamente en todos los dispositivos.</div>
+            <div style="display:flex;gap:8px;align-items:center;">
+              <input class="form-control" id="s_ghtoken" type="password"
+                placeholder="ghp_xxxxxxxxxxxxxxxxxxxx"
+                value=""
+                style="flex:1;background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.3);color:white;"
+                oninput="localStorage.setItem('gh_token',this.value)">
+              <button class="btn btn-save" style="white-space:nowrap;padding:8px 14px;" onclick="forceSyncNow()">🔄 Sincronizar ahora</button>
+            </div>
+            <div id="syncStatus" style="font-size:11px;margin-top:6px;opacity:.8;"></div>
+          </div>
           <div class="form-row">
             <div class="form-group"><label class="form-label">Nombre de la tienda</label><input class="form-control" id="s_name" placeholder="MiTienda"></div>
             <div class="form-group"><label class="form-label">Slogan</label><input class="form-control" id="s_slogan" placeholder="Los mejores precios..."></div>
@@ -730,26 +745,85 @@
 // ════════════════════════════════════════════
 
 const DEFAULT_SETTINGS = {
-  storeName:'SyA Store', storeSlogan:'Los mejores productos al mejor precio',
-  announcement:'🚚 Despacho a todo Chile · Rapido y seguro',
-  whatsappNumber:'56991065770', adminPassword:'12345678',
-  mpWebhookUrl:'https://scalding-browsing-sly.ngrok-free.dev/webhook/mp-crear-preferencia', currency:'CLP',
-  categories:['Hogar','Ropa','Deportes','Juguetes','Camisetas de Futbol'],
-  catIcons:{'Electrónica':'💻','Hogar':'🏠','Ropa':'👗','Deportes':'⚽','Juguetes':'🎮','Camisetas de Futbol':'⚽','Otros':'📦'},
+  storeName:'MiTienda', storeSlogan:'Los mejores productos al mejor precio',
+  announcement:'🚚 Despacho a todo Chile · Pago al recibir o con MercadoPago',
+  whatsappNumber:'56991065770', adminPassword:'admin2024',
+  mpWebhookUrl:'', currency:'CLP',
+  categories:['Electrónica','Hogar','Ropa','Deportes','Juguetes','Otros'],
+  catIcons:{'Electrónica':'💻','Hogar':'🏠','Ropa':'👗','Deportes':'⚽','Juguetes':'🎮','Otros':'📦'},
   banners:[
-    {title:'', subtitle:'', tag:'', btn:'', link:'#todos', btnPos:'left', btnFont:"'Syne', sans-serif", btnColor:'#111111', btnBg:'#c0c0c0', btnBgTransparent:true, bg:'#1a1a2e', img:'', bannerInterval:12}
+    {title:'¡Bienvenido a nuestra tienda!', subtitle:'Los mejores productos al mejor precio. Despacho a todo Chile.', btn:'Ver productos', link:'#todos', bg:'#1A1A2E', tag:'NUEVA COLECCIÓN'},
+    {title:'Dos formas de pagar', subtitle:'Acepta MercadoPago con tarjeta o paga cuando llegue tu pedido.', btn:'Comprar ahora', link:'#todos', bg:'#FF4D00', tag:'MÚLTIPLES PAGOS'},
+    {title:'Despacho rápido', subtitle:'Enviamos a todo Chile de forma rápida y segura.', btn:'Ver catálogo', link:'#todos', bg:'#14532d', tag:'ENVÍO RÁPIDO'}
   ]
 };
 
 function getSettings(){ try{ return Object.assign({},DEFAULT_SETTINGS,JSON.parse(localStorage.getItem('st_settings')||'{}')); }catch(e){ return{...DEFAULT_SETTINGS}; } }
-function saveSettingsObj(s){ localStorage.setItem('st_settings',JSON.stringify(s)); }
 function getProducts(){ try{ return JSON.parse(localStorage.getItem('st_products')||'[]'); }catch(e){ return []; } }
-function saveProducts(p){ localStorage.setItem('st_products',JSON.stringify(p)); }
 function getOrders(){ try{ return JSON.parse(localStorage.getItem('st_orders')||'[]'); }catch(e){ return []; } }
 function saveOrders(o){ localStorage.setItem('st_orders',JSON.stringify(o)); }
 function fmtPrice(p){ return '$'+Number(p).toLocaleString('es-CL'); }
 function fmtDate(d){ return new Date(d).toLocaleString('es-CL',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}); }
 function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
+
+// ════════════════════════════════════════════
+//  CLOUD SYNC — GitHub como base de datos
+// ════════════════════════════════════════════
+const REPO_OWNER = 'SYASTORE2020';
+const REPO_NAME  = 'SYA.CL';
+const API_BASE   = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents`;
+
+function getGHToken(){ return localStorage.getItem('gh_token')||''; }
+
+async function getFileSha(path){
+  const token = getGHToken(); if(!token) return null;
+  try {
+    const r = await fetch(`${API_BASE}/${path}`,{headers:{'Authorization':`token ${token}`,'Accept':'application/vnd.github.v3+json'}});
+    if(r.ok){ const d=await r.json(); return d.sha; }
+  } catch(e){}
+  return null;
+}
+
+async function pushToGitHub(path, content, msg){
+  const token = getGHToken(); if(!token) return false;
+  try {
+    const sha = await getFileSha(path);
+    const r = await fetch(`${API_BASE}/${path}`,{
+      method:'PUT',
+      headers:{'Authorization':`token ${token}`,'Content-Type':'application/json','Accept':'application/vnd.github.v3+json'},
+      body: JSON.stringify({ message:msg||`Update ${path}`, content:btoa(unescape(encodeURIComponent(content))), ...(sha?{sha}:{}) })
+    });
+    return r.ok;
+  } catch(e){ return false; }
+}
+
+async function syncToCloud(){
+  const S = getSettings();
+  const prods = getProducts();
+  const config = {
+    storeName:S.storeName, storeSlogan:S.storeSlogan, announcement:S.announcement,
+    whatsappNumber:S.whatsappNumber, mpWebhookUrl:S.mpWebhookUrl, currency:S.currency||'CLP',
+    categories:S.categories||[], catIcons:S.catIcons||{}, catImages:S.catImages||{},
+    emailjsKey:S.emailjsKey||'', emailjsService:S.emailjsService||'', emailjsTemplate:S.emailjsTemplate||'',
+    bannerInterval:S.bannerInterval||8, adminPassword:S.adminPassword, products:prods, _v:Date.now()
+  };
+  const media = { logoImg:S.logoImg||'', banners:S.banners||[], _v:Date.now() };
+  const [cfgOk, mediaOk] = await Promise.all([
+    pushToGitHub('store-config.json', JSON.stringify(config,null,2), '🔄 Admin: update config'),
+    pushToGitHub('store-media.json',  JSON.stringify(media,null,2),  '🔄 Admin: update media')
+  ]);
+  return cfgOk;
+}
+
+function saveSettingsObj(s){
+  localStorage.setItem('st_settings', JSON.stringify(s));
+  if(getGHToken()) syncToCloud().then(ok=>{ if(ok) showToast('✓ Sincronizado a la nube ☁️','ok'); else showToast('⚠ Error al sincronizar con GitHub'); });
+}
+
+function saveProducts(p){
+  localStorage.setItem('st_products', JSON.stringify(p));
+  if(getGHToken()) syncToCloud();
+}
 
 // ════════════════════════════════════════════
 //  LOGIN
@@ -1386,6 +1460,7 @@ function renderSettings(){
   document.getElementById('s_ejsservice').value = S.emailjsService||'';
   document.getElementById('s_ejstemplate').value = S.emailjsTemplate||'';
   document.getElementById('s_pwd').value = '';
+  document.getElementById('s_ghtoken').value = localStorage.getItem('gh_token')||'';
   document.getElementById('s_logourl').value = S.logoImg&&!S.logoImg.startsWith('data:') ? S.logoImg : '';
   if(S.logoImg){
     document.getElementById('logoPreview').src=S.logoImg;
@@ -1394,6 +1469,23 @@ function renderSettings(){
     document.getElementById('logoPreviewWrap').style.display='none';
   }
   renderCatTags(S.categories||[]);
+}
+
+async function forceSyncNow(){
+  const btn = event.target;
+  btn.textContent = '⏳ Sincronizando...';
+  btn.disabled = true;
+  document.getElementById('syncStatus').textContent = 'Enviando datos a GitHub...';
+  const ok = await syncToCloud();
+  btn.textContent = '🔄 Sincronizar ahora';
+  btn.disabled = false;
+  if(ok){
+    document.getElementById('syncStatus').textContent = '✓ Sincronizado correctamente — todos los dispositivos verán los cambios en ~1 minuto';
+    showToast('✓ Sincronización exitosa ☁️','ok');
+  } else {
+    document.getElementById('syncStatus').textContent = '⚠ Error — verifica que el token sea correcto y tenga permiso "repo"';
+    showToast('⚠ Error de sincronización — revisa el token');
+  }
 }
 
 function previewLogo(){
