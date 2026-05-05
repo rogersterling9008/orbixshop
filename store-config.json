@@ -1,1 +1,105 @@
-{"storeName": "SyA Store", "storeSlogan": "Los mejores productos al mejor precio", "announcement": "🚚 Despacho a todo Chile · Rapido y seguro", "whatsappNumber": "56991065770", "mpWebhookUrl": "https://scalding-browsing-sly.ngrok-free.dev/webhook/mp-crear-preferencia", "currency": "CLP", "categories": ["Hogar", "Ropa", "Deportes", "Juguetes", "Camisetas de Futbol"], "catIcons": {"Electrónica": "💻", "Hogar": "🏠", "Ropa": "👗", "Deportes": "⚽", "Juguetes": "🎮", "Otros": "📦"}, "catImages": {}, "emailjsKey": "Vk0hp7Mvrvcon7heX", "emailjsService": "service_taslrlb", "emailjsTemplate": "pwglv3c", "bannerInterval": 12, "adminPassword": "12345678", "products": [{"id": "moqgdn2od1nh7", "name": "Camiseta U de Chile 2026", "cat": "Camisetas de Futbol", "desc": "", "price": 19990, "origPrice": 24990, "stock": 10, "img": "https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcRLYBWMduHuj60lKVqg2ivebc-K3IqNCKJhn283HqN7N4C0PuHCI0ppEGuWQkSjETotWA6qjeD9", "images": ["https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcRLYBWMduHuj60lKVqg2ivebc-K3IqNCKJhn283HqN7N4C0PuHCI0ppEGuWQkSjETotWA6qjeD9"], "variants": [{"name": "Jugador", "options": ["Aranguiz", "Vargas"]}, {"name": "Talla", "options": ["8", "10", "12", "14", "16", "S", "M", "L", "XL"]}], "featured": false, "active": true}, {"id": "sp1", "name": "Auriculares Bluetooth Pro", "desc": "Auriculares inalámbricos con cancelación de ruido activa, 30h de batería y sonido premium.", "price": 29990, "origPrice": 49990, "cat": "Electrónica", "img": "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&q=80", "stock": 15, "featured": true, "active": true}, {"id": "sp2", "name": "Lámpara LED Escritorio", "desc": "Lámpara con 3 modos de luz, puerto USB y cuello flexible. Ideal para el home office.", "price": 18990, "origPrice": 28990, "cat": "Hogar", "img": "https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=500&q=80", "stock": 20, "featured": true, "active": true}, {"id": "sp3", "name": "Mochila Urbana Resistente", "desc": "Mochila impermeable con compartimento para laptop de 15\", múltiples bolsillos y diseño ergonómico.", "price": 24990, "origPrice": 39990, "cat": "Ropa", "img": "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=500&q=80", "stock": 10, "featured": true, "active": true}, {"id": "sp4", "name": "Zapatillas Running", "desc": "Zapatillas deportivas con suela amortiguada, transpirables y ligeras. Tallas 38-44.", "price": 34990, "origPrice": 55990, "cat": "Deportes", "img": "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500&q=80", "stock": 8, "featured": false, "active": true}, {"id": "sp5", "name": "Smartwatch Sport", "desc": "Reloj inteligente con monitor cardíaco, GPS integrado, resistente al agua y 7 días de batería.", "price": 49990, "origPrice": 79990, "cat": "Electrónica", "img": "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&q=80", "stock": 12, "featured": true, "active": true}, {"id": "sp6", "name": "Set Utensilios Cocina", "desc": "Set de 5 utensilios en acero inoxidable con mango ergonómico. Espátula, cucharon, pinzas, espumadera y batidor.", "price": 12990, "origPrice": 21990, "cat": "Hogar", "img": "https://images.unsplash.com/photo-1556911220-bff31c812dba?w=500&q=80", "stock": 25, "featured": false, "active": true}], "_v": 1}
+{
+  "storeName": "SyA Store",
+  "storeSlogan": "Los mejores productos al mejor precio",
+  "announcement": "🚚 Despacho a todo Chile · Rapido y seguro",
+  "whatsappNumber": "56991065770",
+  "mpWebhookUrl": "https://scalding-browsing-sly.ngrok-free.dev/webhook/mp-crear-preferencia",
+  "currency": "CLP",
+  "categories": [
+    "Hogar",
+    "Ropa",
+    "Deportes",
+    "Juguetes",
+    "Camisetas de Futbol"
+  ],
+  "catIcons": {
+    "Electrónica": "💻",
+    "Hogar": "🏠",
+    "Ropa": "👗",
+    "Deportes": "⚽",
+    "Juguetes": "🎮",
+    "Camisetas de Futbol": "⚽",
+    "Otros": "📦"
+  },
+  "catImages": {},
+  "emailjsKey": "Vk0hp7Mvrvcon7heX",
+  "emailjsService": "service_taslrlb",
+  "emailjsTemplate": "pwglv3c",
+  "bannerInterval": 10,
+  "adminPassword": "12345678",
+  "products": [
+    {
+      "id": "sp1",
+      "name": "Auriculares Bluetooth Pro",
+      "desc": "Auriculares inalámbricos con cancelación de ruido activa, 30h de batería y sonido premium.",
+      "price": 29990,
+      "origPrice": 49990,
+      "cat": "Electrónica",
+      "img": "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&q=80",
+      "stock": 15,
+      "featured": true,
+      "active": true
+    },
+    {
+      "id": "sp2",
+      "name": "Lámpara LED Escritorio",
+      "desc": "Lámpara con 3 modos de luz, puerto USB y cuello flexible. Ideal para el home office.",
+      "price": 18990,
+      "origPrice": 28990,
+      "cat": "Hogar",
+      "img": "https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=500&q=80",
+      "stock": 20,
+      "featured": true,
+      "active": true
+    },
+    {
+      "id": "sp3",
+      "name": "Mochila Urbana Resistente",
+      "desc": "Mochila impermeable con compartimento para laptop de 15\", múltiples bolsillos y diseño ergonómico.",
+      "price": 24990,
+      "origPrice": 39990,
+      "cat": "Ropa",
+      "img": "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=500&q=80",
+      "stock": 10,
+      "featured": true,
+      "active": true
+    },
+    {
+      "id": "sp4",
+      "name": "Zapatillas Running",
+      "desc": "Zapatillas deportivas con suela amortiguada, transpirables y ligeras. Tallas 38-44.",
+      "price": 34990,
+      "origPrice": 55990,
+      "cat": "Deportes",
+      "img": "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500&q=80",
+      "stock": 8,
+      "featured": false,
+      "active": true
+    },
+    {
+      "id": "sp5",
+      "name": "Smartwatch Sport",
+      "desc": "Reloj inteligente con monitor cardíaco, GPS integrado, resistente al agua y 7 días de batería.",
+      "price": 49990,
+      "origPrice": 79990,
+      "cat": "Electrónica",
+      "img": "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&q=80",
+      "stock": 12,
+      "featured": true,
+      "active": true
+    },
+    {
+      "id": "sp6",
+      "name": "Set Utensilios Cocina",
+      "desc": "Set de 5 utensilios en acero inoxidable con mango ergonómico. Espátula, cucharon, pinzas, espumadera y batidor.",
+      "price": 12990,
+      "origPrice": 21990,
+      "cat": "Hogar",
+      "img": "https://images.unsplash.com/photo-1556911220-bff31c812dba?w=500&q=80",
+      "stock": 25,
+      "featured": false,
+      "active": true
+    }
+  ],
+  "_v": 1777948667177
+}
