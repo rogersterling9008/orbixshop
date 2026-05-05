@@ -154,9 +154,12 @@
     /* ── HERO CAROUSEL ── */
     .hero {
       position: relative;
-      height: 520px;
+      width: 100%;
+      aspect-ratio: 16/6;   /* proporción de pantalla ancha en desktop */
       overflow: hidden;
       background: #111;
+      user-select: none;
+      touch-action: pan-y;
     }
     .hero-slide {
       position: absolute;
@@ -165,12 +168,11 @@
       align-items: center;
       padding: 72px 64px;
       opacity: 0;
-      transition: opacity 0.7s ease;
+      transition: opacity 0.6s ease;
       pointer-events: none;
     }
     .hero-slide.active { opacity: 1; pointer-events: all; }
 
-    /* Imagen de fondo real (reemplaza background-image) */
     .hero-bg-img {
       position: absolute;
       inset: 0;
@@ -738,38 +740,29 @@
       .cart-btn { padding: 8px 14px; font-size: 13px; }
       .cart-badge { width: 18px; height: 18px; font-size: 10px; }
 
-      /* Hero banner — imagen completa en móvil */
-      .hero {
-        height: auto;        /* altura automática según imagen */
-        min-height: 180px;
-        max-height: 320px;
-      }
+      /* Hero banner móvil — proporción vertical para ver más imagen */
+      .hero { aspect-ratio: 4/3; }
       .hero-slide {
-        position: relative; /* sale del absolute para fluir con la imagen */
-        padding: 0;
-        height: auto;
+        padding: 20px 18px;
+        align-items: flex-end;  /* contenido en la parte baja */
       }
       .hero-bg-img {
-        position: relative; /* imagen en flujo normal */
-        object-fit: contain; /* muestra la imagen COMPLETA sin recortar */
-        object-position: center;
-        width: 100%;
-        height: auto;
-        max-height: 320px;
+        object-fit: cover;
+        object-position: center top; /* mostrar la parte superior de la imagen */
       }
-      .hero-overlay { display: none; } /* sin oscurecimiento en móvil */
       .hero-content {
-        position: absolute !important;
-        bottom: 0; left: 0; right: 0;
-        padding: 12px 16px !important;
-        background: linear-gradient(transparent, rgba(0,0,0,0.5));
+        padding: 16px 18px !important;
+        background: linear-gradient(transparent, rgba(0,0,0,0.6)) !important;
+        inset: 0 !important;
+        justify-content: flex-end !important;
         align-items: flex-start !important;
       }
-      .hero-title { font-size: 16px !important; margin-bottom: 4px !important; }
-      .hero-subtitle { display: none; }
-      .hero-tag { font-size: 9px !important; margin-bottom: 4px !important; padding: 2px 8px !important; }
-      .hero-btn { padding: 7px 14px !important; font-size: 12px !important; }
-      .hero-nav { bottom: 8px; }
+      .hero-title { font-size: 20px !important; margin-bottom: 6px !important; }
+      .hero-subtitle { font-size: 12px !important; margin-bottom: 10px !important; max-width: 100% !important; }
+      .hero-tag { font-size: 9px !important; margin-bottom: 6px !important; padding: 3px 8px !important; }
+      .hero-btn { padding: 8px 16px !important; font-size: 12px !important; }
+      .hero-nav { bottom: 12px; gap: 6px; }
+      .hero-dot { width: 6px; height: 6px; }
 
       /* Sections */
       .section, .section-sm { padding: 28px 16px; }
@@ -1145,6 +1138,49 @@ function renderWithData(){
 
 /* Hero */
 let cur=0, timer;
+let _swipeX=0, _swipeY=0, _dragging=false;
+
+function gotoSlide(n){
+  const slides = document.querySelectorAll('.hero-slide');
+  const dots   = document.querySelectorAll('.hero-dot');
+  if(!slides.length) return;
+  cur = (n + slides.length) % slides.length;
+  slides.forEach((s,i)=>s.classList.toggle('active',i===cur));
+  dots.forEach((d,i)=>d.classList.toggle('active',i===cur));
+}
+
+function initSwipe(){
+  const hero = document.getElementById('heroSection');
+  if(!hero) return;
+  // Touch (móvil/tablet)
+  hero.addEventListener('touchstart',e=>{ _swipeX=e.touches[0].clientX; _swipeY=e.touches[0].clientY; _dragging=true; },{passive:true});
+  hero.addEventListener('touchend',e=>{
+    if(!_dragging) return; _dragging=false;
+    const dx=e.changedTouches[0].clientX-_swipeX;
+    const dy=e.changedTouches[0].clientY-_swipeY;
+    if(Math.abs(dx)>Math.abs(dy)&&Math.abs(dx)>35){
+      clearInterval(timer);
+      gotoSlide(dx<0?cur+1:cur-1);
+      const interval=(getSettings().bannerInterval||8)*1000;
+      timer=setInterval(()=>gotoSlide(cur+1),interval);
+    }
+  },{passive:true});
+  // Mouse drag (desktop)
+  hero.addEventListener('mousedown',e=>{ _swipeX=e.clientX; _dragging=true; });
+  hero.addEventListener('mouseup',e=>{
+    if(!_dragging) return; _dragging=false;
+    const dx=e.clientX-_swipeX;
+    if(Math.abs(dx)>35){
+      clearInterval(timer);
+      gotoSlide(dx<0?cur+1:cur-1);
+      const interval=(getSettings().bannerInterval||8)*1000;
+      timer=setInterval(()=>gotoSlide(cur+1),interval);
+    }
+  });
+  hero.addEventListener('mouseleave',()=>{ _dragging=false; });
+  hero.style.cursor='grab';
+}
+
 function renderHero(banners, interval=8){
   if(!banners?.length) return;
   const el = document.getElementById('heroSection');
@@ -1183,13 +1219,8 @@ function renderHero(banners, interval=8){
       </div>`;
     }
   }).join('')+`<div class="hero-nav">${banners.map((_,i)=>`<button class="hero-dot ${i===0?'active':''}" onclick="gotoSlide(${i})"></button>`).join('')}</div>`;
-  if(banners.length>1){ clearInterval(timer); timer=setInterval(()=>gotoSlide((cur+1)%banners.length), interval*1000); }
-}
-
-function gotoSlide(n){
-  document.querySelectorAll('.hero-slide').forEach((s,i)=>s.classList.toggle('active',i===n));
-  document.querySelectorAll('.hero-dot').forEach((d,i)=>d.classList.toggle('active',i===n));
-  cur=n;
+  if(banners.length>1){ clearInterval(timer); timer=setInterval(()=>gotoSlide(cur+1), interval*1000); }
+  setTimeout(initSwipe, 100);
 }
 
 /* Categories */
