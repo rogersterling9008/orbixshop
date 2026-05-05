@@ -22,9 +22,9 @@
     "Otros": "📦"
   },
   "catImages": {},
-  "emailjsKey": "",
-  "emailjsService": "",
-  "emailjsTemplate": "",
+  "emailjsKey": "Vk0hp7Mvrvcon7heX",
+  "emailjsService": "service_taslrlb",
+  "emailjsTemplate": "pwglv3c",
   "bannerInterval": 10,
   "adminPassword": "12345678",
   "products": [
@@ -101,5 +101,5 @@
       "active": true
     }
   ],
-  "_v": 1777946522832
+  "_v": 1777946675263
 }
