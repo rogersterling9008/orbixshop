@@ -7,7 +7,6 @@
   "currency": "CLP",
   "categories": [
     "Deportes",
-    "Juguetes",
     "Camisetas de Futbol"
   ],
   "catIcons": {
@@ -99,5 +98,5 @@
       "active": true
     }
   ],
-  "_v": 1777949461626
+  "_v": 1777949465949
 }
