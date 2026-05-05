@@ -28,18 +28,6 @@
   "adminPassword": "12345678",
   "products": [
     {
-      "id": "sp3",
-      "name": "Mochila Urbana Resistente",
-      "desc": "Mochila impermeable con compartimento para laptop de 15\", múltiples bolsillos y diseño ergonómico.",
-      "price": 24990,
-      "origPrice": 39990,
-      "cat": "Ropa",
-      "img": "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=500&q=80",
-      "stock": 10,
-      "featured": true,
-      "active": true
-    },
-    {
       "id": "sp4",
       "name": "Zapatillas Running",
       "desc": "Zapatillas deportivas con suela amortiguada, transpirables y ligeras. Tallas 38-44.",
@@ -76,5 +64,5 @@
       "active": true
     }
   ],
-  "_v": 1777949952532
+  "_v": 1777949955858
 }
