@@ -25,7 +25,7 @@
   "emailjsKey": "Vk0hp7Mvrvcon7heX",
   "emailjsService": "service_taslrlb",
   "emailjsTemplate": "pwglv3c",
-  "bannerInterval": 10,
+  "bannerInterval": 8,
   "adminPassword": "12345678",
   "products": [
     {
@@ -101,5 +101,5 @@
       "active": true
     }
   ],
-  "_v": 1777948708513
+  "_v": 1777948720048
 }
