@@ -6,7 +6,6 @@
   "mpWebhookUrl": "https://scalding-browsing-sly.ngrok-free.dev/webhook/mp-crear-preferencia",
   "currency": "CLP",
   "categories": [
-    "Ropa",
     "Deportes",
     "Juguetes",
     "Camisetas de Futbol"
@@ -100,5 +99,5 @@
       "active": true
     }
   ],
-  "_v": 1777949457400
+  "_v": 1777949461626
 }
