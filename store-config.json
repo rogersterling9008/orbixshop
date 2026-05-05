@@ -38,19 +38,7 @@
       "stock": 8,
       "featured": false,
       "active": true
-    },
-    {
-      "id": "sp6",
-      "name": "Set Utensilios Cocina",
-      "desc": "Set de 5 utensilios en acero inoxidable con mango ergonómico. Espátula, cucharon, pinzas, espumadera y batidor.",
-      "price": 12990,
-      "origPrice": 21990,
-      "cat": "Hogar",
-      "img": "https://images.unsplash.com/photo-1556911220-bff31c812dba?w=500&q=80",
-      "stock": 25,
-      "featured": false,
-      "active": true
     }
   ],
-  "_v": 1777949960746
+  "_v": 1777949963508
 }
