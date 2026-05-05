@@ -6,7 +6,6 @@
   "mpWebhookUrl": "https://scalding-browsing-sly.ngrok-free.dev/webhook/mp-crear-preferencia",
   "currency": "CLP",
   "categories": [
-    "Deportes",
     "Camisetas de Futbol",
     "Poleras Bandas de Rock"
   ],
@@ -101,5 +100,5 @@
       "active": true
     }
   ],
-  "_v": 1777949810755
+  "_v": 1777949914351
 }
