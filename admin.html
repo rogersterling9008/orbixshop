@@ -1671,6 +1671,53 @@ function showToast(msg, type=''){
   t.className='toast show'+(type?' '+type:'');
   setTimeout(()=>t.className='toast',3000);
 }
+
+// ════════════════════════════════════════════
+//  ADMIN BOOT — carga datos desde GitHub
+// ════════════════════════════════════════════
+
+async function adminBoot(){
+  // Mostrar pantalla de carga
+  const loginScreen = document.getElementById('loginScreen');
+  const loadingMsg = document.createElement('div');
+  loadingMsg.id = 'bootMsg';
+  loadingMsg.style.cssText = 'text-align:center;color:var(--muted);font-size:13px;margin-top:12px;';
+  loadingMsg.textContent = '⏳ Cargando configuración...';
+  loginScreen.appendChild(loadingMsg);
+
+  try {
+    const t = Date.now();
+    const RAW = `https://raw.githubusercontent.com/SYASTORE2020/SYA.CL/main`;
+    const [cfgRes, mediaRes] = await Promise.all([
+      fetch(`${RAW}/store-config.json?t=${t}`),
+      fetch(`${RAW}/store-media.json?t=${t}`)
+    ]);
+    if(cfgRes.ok){
+      const cfg = await cfgRes.json();
+      // Guardar en localStorage para que getSettings() lo use
+      const existing = getSettings();
+      const merged = Object.assign({}, existing, cfg);
+      if(cfg.products){ localStorage.setItem('st_products', JSON.stringify(cfg.products)); }
+      localStorage.setItem('st_settings', JSON.stringify(merged));
+    }
+    if(mediaRes.ok){
+      const media = await mediaRes.json();
+      const S = getSettings();
+      if(media.logoImg) S.logoImg = media.logoImg;
+      if(media.banners) S.banners = media.banners;
+      localStorage.setItem('st_settings', JSON.stringify(S));
+    }
+    loadingMsg.textContent = '✓ Listo — ingresa tu contraseña';
+    loadingMsg.style.color = 'green';
+  } catch(e){
+    loadingMsg.textContent = '⚠ Sin conexión — usando datos locales';
+    loadingMsg.style.color = 'orange';
+  }
+  setTimeout(()=>{ if(loadingMsg.parentNode) loadingMsg.parentNode.removeChild(loadingMsg); }, 2000);
+}
+
+// Iniciar al cargar
+adminBoot();
 </script>
 </body>
 </html>
