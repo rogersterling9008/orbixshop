@@ -40,18 +40,6 @@
       "active": true
     },
     {
-      "id": "sp5",
-      "name": "Smartwatch Sport",
-      "desc": "Reloj inteligente con monitor cardíaco, GPS integrado, resistente al agua y 7 días de batería.",
-      "price": 49990,
-      "origPrice": 79990,
-      "cat": "Electrónica",
-      "img": "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&q=80",
-      "stock": 12,
-      "featured": true,
-      "active": true
-    },
-    {
       "id": "sp6",
       "name": "Set Utensilios Cocina",
       "desc": "Set de 5 utensilios en acero inoxidable con mango ergonómico. Espátula, cucharon, pinzas, espumadera y batidor.",
@@ -64,5 +52,5 @@
       "active": true
     }
   ],
-  "_v": 1777949955858
+  "_v": 1777949960746
 }
