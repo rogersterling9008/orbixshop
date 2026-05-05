@@ -28,18 +28,6 @@
   "adminPassword": "12345678",
   "products": [
     {
-      "id": "sp1",
-      "name": "Auriculares Bluetooth Pro",
-      "desc": "Auriculares inalámbricos con cancelación de ruido activa, 30h de batería y sonido premium.",
-      "price": 29990,
-      "origPrice": 49990,
-      "cat": "Electrónica",
-      "img": "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&q=80",
-      "stock": 15,
-      "featured": true,
-      "active": true
-    },
-    {
       "id": "sp2",
       "name": "Lámpara LED Escritorio",
       "desc": "Lámpara con 3 modos de luz, puerto USB y cuello flexible. Ideal para el home office.",
@@ -100,5 +88,5 @@
       "active": true
     }
   ],
-  "_v": 1777949934828
+  "_v": 1777949945976
 }
