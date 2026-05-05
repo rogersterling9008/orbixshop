@@ -6,7 +6,6 @@
   "mpWebhookUrl": "https://scalding-browsing-sly.ngrok-free.dev/webhook/mp-crear-preferencia",
   "currency": "CLP",
   "categories": [
-    "Hogar",
     "Ropa",
     "Deportes",
     "Juguetes",
@@ -101,5 +100,5 @@
       "active": true
     }
   ],
-  "_v": 1777948842679
+  "_v": 1777949457400
 }
