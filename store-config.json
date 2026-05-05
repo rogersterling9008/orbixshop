@@ -28,18 +28,6 @@
   "adminPassword": "12345678",
   "products": [
     {
-      "id": "sp2",
-      "name": "Lámpara LED Escritorio",
-      "desc": "Lámpara con 3 modos de luz, puerto USB y cuello flexible. Ideal para el home office.",
-      "price": 18990,
-      "origPrice": 28990,
-      "cat": "Hogar",
-      "img": "https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=500&q=80",
-      "stock": 20,
-      "featured": true,
-      "active": true
-    },
-    {
       "id": "sp3",
       "name": "Mochila Urbana Resistente",
       "desc": "Mochila impermeable con compartimento para laptop de 15\", múltiples bolsillos y diseño ergonómico.",
@@ -88,5 +76,5 @@
       "active": true
     }
   ],
-  "_v": 1777949945976
+  "_v": 1777949952532
 }
