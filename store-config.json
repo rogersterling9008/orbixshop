@@ -33,11 +33,52 @@
       "desc": "",
       "price": 9990,
       "origPrice": 0,
-      "stock": 0,
+      "stock": 12,
       "img": "",
       "images": [],
-      "variants": [],
-      "variantMatrix": {},
+      "variants": [
+        {
+          "name": "Jugador ",
+          "options": [
+            {
+              "label": "Messi",
+              "stock": 0,
+              "img": ""
+            }
+          ]
+        },
+        {
+          "name": "Talla",
+          "options": [
+            {
+              "label": "S",
+              "stock": 0,
+              "img": ""
+            },
+            {
+              "label": "M",
+              "stock": 0,
+              "img": ""
+            },
+            {
+              "label": "L",
+              "stock": 0,
+              "img": ""
+            },
+            {
+              "label": "XL",
+              "stock": 0,
+              "img": ""
+            }
+          ]
+        }
+      ],
+      "variantMatrix": {
+        "Messi|S": 3,
+        "Messi|M": 3,
+        "Messi|L": 3,
+        "Messi|XL": 3
+      },
       "featured": false,
       "active": true
     },
@@ -94,5 +135,5 @@
       "active": true
     }
   ],
-  "_v": 1778061822043
+  "_v": 1778062204315
 }
