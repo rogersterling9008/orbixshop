@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Política de Devoluciones — SyA Store</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    :root {
+      --bg: #F7F6F3;
+      --primary: #111111;
+      --accent: #FF4D00;
+      --muted: #6B7280;
+      --border: #E5E2DC;
+      --radius: 12px;
+    }
+    body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--primary); line-height:1.7; }
+
+    /* NAVBAR */
+    nav {
+      background:white; border-bottom:1px solid var(--border);
+      padding:0 40px; height:64px;
+      display:flex; align-items:center; justify-content:space-between;
+      position:sticky; top:0; z-index:100;
+    }
+    .nav-logo {
+      font-family:'Syne',sans-serif; font-weight:800; font-size:20px;
+      text-decoration:none; color:var(--primary);
+    }
+    .nav-logo span { color:var(--accent); }
+    .nav-back {
+      display:inline-flex; align-items:center; gap:6px;
+      font-size:14px; font-weight:600; color:var(--muted);
+      text-decoration:none; transition:color .2s;
+    }
+    .nav-back:hover { color:var(--accent); }
+
+    /* CONTENIDO */
+    .container {
+      max-width:780px; margin:0 auto;
+      padding:48px 24px 80px;
+    }
+    .page-header {
+      margin-bottom:40px;
+      padding-bottom:24px;
+      border-bottom:2px solid var(--accent);
+    }
+    .page-header h1 {
+      font-family:'Syne',sans-serif; font-size:36px; font-weight:800;
+      margin-bottom:8px;
+    }
+    .page-header p { color:var(--muted); font-size:15px; }
+    .last-updated {
+      display:inline-block; background:var(--accent);
+      color:white; font-size:12px; font-weight:600;
+      padding:4px 12px; border-radius:100px; margin-top:10px;
+    }
+
+    /* SECCIONES */
+    .section { margin-bottom:36px; }
+    .section h2 {
+      font-family:'Syne',sans-serif; font-size:20px; font-weight:700;
+      margin-bottom:12px; color:var(--primary);
+      display:flex; align-items:center; gap:10px;
+    }
+    .section h2::before {
+      content:''; display:inline-block;
+      width:4px; height:20px; background:var(--accent);
+      border-radius:2px; flex-shrink:0;
+    }
+    .section p { font-size:15px; color:#333; margin-bottom:10px; }
+    .section ul { padding-left:20px; margin-bottom:10px; }
+    .section ul li { font-size:15px; color:#333; margin-bottom:6px; }
+
+    /* CARD DESTACADA */
+    .highlight-card {
+      background:white; border:1px solid var(--border);
+      border-radius:var(--radius); padding:20px 24px;
+      margin:16px 0; border-left:4px solid var(--accent);
+    }
+    .highlight-card strong { color:var(--accent); font-size:18px; }
+    .highlight-card p { margin-top:6px; font-size:14px; color:var(--muted); }
+
+    /* TABLA */
+    .tabla-wrap { overflow-x:auto; margin:16px 0; }
+    table { width:100%; border-collapse:collapse; font-size:14px; }
+    th { background:var(--primary); color:white; padding:12px 16px; text-align:left; }
+    td { padding:11px 16px; border-bottom:1px solid var(--border); }
+    tr:last-child td { border-bottom:none; }
+    tr:nth-child(even) td { background:rgba(0,0,0,0.02); }
+
+    /* PASOS */
+    .steps { counter-reset:step; }
+    .step {
+      display:flex; gap:16px; margin-bottom:20px;
+      padding:16px 20px; background:white;
+      border-radius:var(--radius); border:1px solid var(--border);
+    }
+    .step-num {
+      counter-increment:step;
+      width:36px; height:36px; border-radius:50%;
+      background:var(--accent); color:white;
+      font-weight:800; font-size:16px;
+      display:flex; align-items:center; justify-content:center;
+      flex-shrink:0;
+    }
+    .step-num::after { content:counter(step); }
+    .step-content h3 { font-size:15px; font-weight:700; margin-bottom:4px; }
+    .step-content p { font-size:14px; color:var(--muted); }
+
+    /* CONTACTO */
+    .contact-box {
+      background:var(--primary); color:white;
+      border-radius:var(--radius); padding:28px 32px;
+      text-align:center; margin-top:40px;
+    }
+    .contact-box h3 { font-family:'Syne',sans-serif; font-size:22px; margin-bottom:8px; }
+    .contact-box p { opacity:.8; margin-bottom:16px; font-size:14px; }
+    .contact-btn {
+      display:inline-flex; align-items:center; gap:8px;
+      background:var(--accent); color:white;
+      padding:12px 24px; border-radius:8px;
+      text-decoration:none; font-weight:700; font-size:15px;
+      transition:opacity .2s;
+    }
+    .contact-btn:hover { opacity:.9; }
+
+    /* FOOTER */
+    footer {
+      text-align:center; padding:24px;
+      font-size:13px; color:var(--muted);
+      border-top:1px solid var(--border);
+    }
+
+    @media(max-width:600px){
+      nav { padding:0 16px; }
+      .container { padding:32px 16px 60px; }
+      .page-header h1 { font-size:26px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav>
+  <a href="index.html" class="nav-logo">SyA<span>Store</span></a>
+  <a href="index.html" class="nav-back">← Volver a la tienda</a>
+</nav>
+
+<!-- CONTENIDO -->
+<div class="container">
+
+  <div class="page-header">
+    <h1>Política de Devoluciones y Cambios</h1>
+    <p>En SyA Store nos importa tu satisfacción. Si no estás conforme con tu compra, estamos aquí para ayudarte.</p>
+    <span class="last-updated">Actualizado: Mayo 2026</span>
+  </div>
+
+  <!-- PLAZO -->
+  <div class="section">
+    <h2>Plazo para solicitar devolución</h2>
+    <div class="highlight-card">
+      <strong>7 días corridos</strong>
+      <p>Tienes 7 días corridos desde que recibes el producto para solicitar una devolución o cambio, sin necesidad de justificar el motivo.</p>
+    </div>
+    <p>El plazo comienza a contar desde el día en que el producto llega a tu domicilio o es retirado.</p>
+  </div>
+
+  <!-- CONDICIONES -->
+  <div class="section">
+    <h2>Condiciones para aceptar la devolución</h2>
+    <p>Para que la devolución sea aceptada, el producto debe cumplir con lo siguiente:</p>
+    <ul>
+      <li>Estar en su estado original, sin uso o con uso mínimo</li>
+      <li>Contar con todos sus accesorios, manuales y embalaje original</li>
+      <li>No presentar daños ocasionados por el cliente</li>
+      <li>Incluir la boleta o comprobante de compra</li>
+    </ul>
+  </div>
+
+  <!-- TIPOS DE DEVOLUCIÓN -->
+  <div class="section">
+    <h2>¿Cuándo aceptamos devoluciones?</h2>
+    <div class="tabla-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Motivo</th>
+            <th>¿Aceptamos?</th>
+            <th>Costo de envío</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Producto defectuoso o dañado</td>
+            <td>✅ Sí</td>
+            <td>A cargo de SyA Store</td>
+          </tr>
+          <tr>
+            <td>Producto incorrecto (no es lo que pediste)</td>
+            <td>✅ Sí</td>
+            <td>A cargo de SyA Store</td>
+          </tr>
+          <tr>
+            <td>Cambio de opinión / no era lo esperado</td>
+            <td>✅ Sí</td>
+            <td>A cargo del cliente</td>
+          </tr>
+          <tr>
+            <td>Talla o color equivocado (error del cliente)</td>
+            <td>✅ Sí</td>
+            <td>A cargo del cliente</td>
+          </tr>
+          <tr>
+            <td>Producto con daños causados por el cliente</td>
+            <td>❌ No</td>
+            <td>—</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- PROCESO -->
+  <div class="section">
+    <h2>¿Cómo solicitar una devolución?</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num"></div>
+        <div class="step-content">
+          <h3>Contáctanos por WhatsApp</h3>
+          <p>Escríbenos al +56 9 9106 5770 con tu número de pedido y el motivo de la devolución.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num"></div>
+        <div class="step-content">
+          <h3>Envía fotografías del producto</h3>
+          <p>Adjunta fotos del producto y el embalaje para validar el estado. Te responderemos en menos de 24 horas hábiles.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num"></div>
+        <div class="step-content">
+          <h3>Coordinamos el retiro o envío</h3>
+          <p>Si la devolución es aprobada, te indicaremos cómo enviarnos el producto o coordinaremos el retiro en Santiago.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num"></div>
+        <div class="step-content">
+          <h3>Reembolso o cambio</h3>
+          <p>Una vez recibido y verificado el producto, procesamos el reembolso o enviamos el producto de cambio dentro de 5 días hábiles.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- REEMBOLSOS -->
+  <div class="section">
+    <h2>Reembolsos</h2>
+    <p>Los reembolsos se realizan por el mismo medio de pago utilizado en la compra:</p>
+    <ul>
+      <li><strong>MercadoPago:</strong> El reembolso se acredita en tu cuenta de MercadoPago dentro de 5 a 10 días hábiles, según tu banco.</li>
+      <li><strong>Pago contra entrega:</strong> El reembolso se realiza mediante transferencia bancaria. Deberás proporcionarnos tus datos bancarios.</li>
+    </ul>
+  </div>
+
+  <!-- EXCEPCIONES -->
+  <div class="section">
+    <h2>Productos sin devolución</h2>
+    <p>Por razones de higiene y seguridad, no aceptamos devoluciones de:</p>
+    <ul>
+      <li>Ropa interior y trajes de baño</li>
+      <li>Productos digitales o con licencia activada</li>
+      <li>Productos personalizados a pedido del cliente</li>
+      <li>Productos que han sido alterados o modificados</li>
+    </ul>
+  </div>
+
+  <!-- CONTACTO -->
+  <div class="contact-box">
+    <h3>¿Tienes dudas sobre tu devolución?</h3>
+    <p>Nuestro equipo está disponible para ayudarte de lunes a sábado.</p>
+    <a href="https://wa.me/56991065770?text=Hola%2C%20necesito%20ayuda%20con%20una%20devoluci%C3%B3n" class="contact-btn" target="_blank">
+      💬 Contactar por WhatsApp
+    </a>
+  </div>
+
+</div>
+
+<footer>
+  <p>© 2026 SyA Store — Todos los derechos reservados · <a href="index.html" style="color:var(--accent);">Volver a la tienda</a></p>
+</footer>
+
+</body>
+</html>
