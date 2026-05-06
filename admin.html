@@ -1420,9 +1420,17 @@ function saveProd(){
 
 function deleteProd(id){
   if(!confirm('¿Eliminar este producto?')) return;
-  saveProducts(getProducts().filter(p=>p.id!==id));
+  const filteredProds = getProducts().filter(p=>p.id!==id);
+  // Guardar directamente en localStorage (no pasar por saveProducts que es async)
+  localStorage.setItem('st_products', JSON.stringify(filteredProds));
   renderProducts();
   showToast('✓ Producto eliminado','ok');
+  // Sincronizar con GitHub en segundo plano
+  if(getGHToken()){
+    syncToCloud().then(ok=>{
+      if(ok) showToast('✓ Cambios sincronizados ☁️','ok');
+    });
+  }
 }
 
 function previewImg(){} // legacy — replaced by gallery
@@ -1988,26 +1996,26 @@ async function adminBoot(){
 
     if(cfgRes.ok){
       const cfg = await cfgRes.json();
-      const localSettings = getSettings();
       const localProds = getProducts();
+      const localSettings = getSettings();
 
-      // Solo actualizar si GitHub tiene datos MÁS NUEVOS que el local
-      // Usamos _v (timestamp) para comparar
+      // REGLA: Solo cargar productos de GitHub si el admin está vacío (primera vez)
+      // Una vez que el admin tiene productos, NUNCA se sobreescriben desde GitHub
+      if(localProds.length === 0 && cfg.products?.length > 0){
+        localStorage.setItem('st_products', JSON.stringify(cfg.products));
+        loadingMsg.textContent = '✓ Productos cargados desde la nube';
+      } else {
+        loadingMsg.textContent = '✓ Datos locales activos';
+      }
+
+      // Settings (sin productos): siempre sincronizar si GitHub es más nuevo
       const githubV = cfg._v || 0;
       const localV = localSettings._v || 0;
-
       if(githubV > localV){
-        // GitHub es más nuevo → actualizar local
         const merged = Object.assign({}, localSettings, cfg);
+        delete merged.products; // NUNCA traer productos de GitHub al settings
         merged._v = githubV;
-        if(cfg.products && cfg.products.length >= 0){
-          localStorage.setItem('st_products', JSON.stringify(cfg.products));
-        }
         localStorage.setItem('st_settings', JSON.stringify(merged));
-        loadingMsg.textContent = '✓ Datos actualizados desde la nube';
-      } else {
-        // Local es más nuevo o igual → NO sobreescribir
-        loadingMsg.textContent = '✓ Usando datos locales (más recientes)';
       }
     }
 
