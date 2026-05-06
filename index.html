@@ -1194,11 +1194,15 @@ async function fetchCloud(){
   try {
     // Usar GitHub API (sin caché CDN) para obtener siempre datos frescos
     const API = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents`;
-    const headers = { 'Accept': 'application/vnd.github.v3.raw' };
+    const headers = {
+      'Accept': 'application/vnd.github.v3.raw',
+      'Cache-Control': 'no-cache, no-store',
+      'Pragma': 'no-cache'
+    };
 
     const [cfgRes, mediaRes] = await Promise.all([
-      fetch(`${API}/store-config.json`, { headers }),
-      fetch(`${API}/store-media.json`, { headers })
+      fetch(`${API}/store-config.json`, { headers, cache: 'no-store' }),
+      fetch(`${API}/store-media.json`,  { headers, cache: 'no-store' })
     ]);
 
     if(cfgRes.ok){
