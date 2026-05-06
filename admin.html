@@ -388,6 +388,7 @@
           <div class="card-head">
             <div class="card-title">Productos (<span id="prodCount">0</span>)</div>
           </div>
+          <div id="prodTokenWarn"></div>
           <div style="overflow-x:auto;">
             <table class="tbl" id="prodTable">
               <thead>
@@ -822,7 +823,15 @@ function saveSettingsObj(s){
 
 function saveProducts(p){
   localStorage.setItem('st_products', JSON.stringify(p));
-  if(getGHToken()) syncToCloud();
+  const token = getGHToken();
+  if(token){
+    syncToCloud().then(ok=>{
+      if(ok) showToast('✓ Producto guardado y sincronizado ☁️','ok');
+      else showToast('⚠ Guardado local OK — error al sincronizar con GitHub. Verifica el token en Configuración.');
+    });
+  } else {
+    showToast('⚠ Guardado local OK — configura el token GitHub en Configuración para sincronizar');
+  }
 }
 
 // ════════════════════════════════════════════
@@ -937,7 +946,30 @@ function renderDashboard(){
 
 function renderProducts(){
   const prods = getProducts();
+  const token = getGHToken();
   document.getElementById('prodCount').textContent = prods.length;
+
+  // Token warning
+  const tokenWarn = !token ? `
+    <div style="background:#FEF3C7;border:1px solid #F59E0B;border-radius:8px;padding:10px 14px;margin-bottom:12px;display:flex;align-items:center;gap:10px;font-size:13px;">
+      ⚠️ <strong>Sin sincronización:</strong> Ve a Configuración y pega tu token GitHub para que los cambios se reflejen en la tienda.
+      <button onclick="switchTab('settings')" style="margin-left:auto;background:#F59E0B;color:white;border:none;border-radius:6px;padding:5px 12px;cursor:pointer;font-size:12px;font-weight:700;">Ir a Configuración →</button>
+    </div>` : '';
+
+  // Token warning
+  const tokenWarnEl = document.getElementById('prodTokenWarn');
+  if(tokenWarnEl){
+    tokenWarnEl.innerHTML = !token ? `
+      <div style="background:#FEF3C7;border:1px solid #F59E0B;border-radius:8px;padding:10px 14px;margin-bottom:12px;display:flex;align-items:center;gap:10px;font-size:13px;flex-wrap:wrap;">
+        ⚠️ <strong>Sin sincronización activa</strong> — Los cambios se guardan localmente pero no se reflejan en la tienda pública. Ve a Configuración y pega tu token GitHub.
+        <button onclick="switchTab('settings')" style="margin-left:auto;background:#F59E0B;color:white;border:none;border-radius:6px;padding:6px 14px;cursor:pointer;font-size:12px;font-weight:700;white-space:nowrap;">⚙️ Configuración →</button>
+      </div>` : `
+      <div style="background:#D1FAE5;border:1px solid #10B981;border-radius:8px;padding:8px 14px;margin-bottom:12px;font-size:13px;display:flex;align-items:center;gap:8px;">
+        ☁️ <strong>Sincronización activa</strong> — Los cambios se publican automáticamente en la tienda.
+        <button onclick="forceSyncProducts()" style="margin-left:auto;background:#10B981;color:white;border:none;border-radius:6px;padding:5px 14px;cursor:pointer;font-size:12px;font-weight:700;">🔄 Forzar sync</button>
+      </div>`;
+  }
+
   document.getElementById('prodTbody').innerHTML = prods.length ? prods.map(p=>`
     <tr>
       <td><img class="prod-thumb" src="${p.img||''}" onerror="this.src='https://via.placeholder.com/44?text=📦'" alt="${p.name}"></td>
@@ -1563,6 +1595,13 @@ function renderSettings(){
     document.getElementById('logoPreviewWrap').style.display='none';
   }
   renderCatTags(S.categories||[]);
+}
+
+async function forceSyncProducts(){
+  showToast('⏳ Sincronizando productos...');
+  const ok = await syncToCloud();
+  if(ok) showToast('✓ Productos sincronizados correctamente ☁️','ok');
+  else showToast('⚠ Error al sincronizar — verifica el token en Configuración');
 }
 
 async function forceSyncNow(){
