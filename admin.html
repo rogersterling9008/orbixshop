@@ -801,15 +801,78 @@ async function getFileSha(path){
 
 async function pushToGitHub(path, content, msg){
   const token = getGHToken(); if(!token) return false;
+  const REPO_API = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}`;
+  const headers = {
+    'Authorization': `token ${token}`,
+    'Content-Type': 'application/json',
+    'Accept': 'application/vnd.github.v3+json'
+  };
   try {
-    const sha = await getFileSha(path);
-    const r = await fetch(`${API_BASE}/${path}`,{
-      method:'PUT',
-      headers:{'Authorization':`token ${token}`,'Content-Type':'application/json','Accept':'application/vnd.github.v3+json'},
-      body: JSON.stringify({ message:msg||`Update ${path}`, content:btoa(unescape(encodeURIComponent(content))), ...(sha?{sha}:{}) })
+    // 1. Encode content as base64 (handles UTF-8 and large files)
+    const encoded = btoa(unescape(encodeURIComponent(content)));
+    const contentSize = encoded.length;
+
+    if(contentSize < 900000){
+      // Small file: use simple Contents API
+      const sha = await getFileSha(path);
+      const r = await fetch(`${REPO_API}/contents/${path}`, {
+        method: 'PUT', headers,
+        body: JSON.stringify({ message: msg||`Update ${path}`, content: encoded, ...(sha?{sha}:{}) })
+      });
+      if(r.ok) return true;
+      const err = await r.json().catch(()=>({}));
+      console.warn('Contents API failed:', r.status, err.message, '— trying Git Data API');
+    }
+
+    // Large file or fallback: use Git Data API (no size limit)
+    // Step 1: Create blob
+    const blobRes = await fetch(`${REPO_API}/git/blobs`, {
+      method:'POST', headers,
+      body: JSON.stringify({ content: encoded, encoding: 'base64' })
     });
-    return r.ok;
-  } catch(e){ return false; }
+    if(!blobRes.ok) throw new Error('Blob creation failed: ' + blobRes.status);
+    const blob = await blobRes.json();
+
+    // Step 2: Get current HEAD commit
+    const refRes = await fetch(`${REPO_API}/git/refs/heads/main`, { headers });
+    if(!refRes.ok) throw new Error('Could not get HEAD ref');
+    const ref = await refRes.json();
+    const currentCommitSha = ref.object.sha;
+
+    // Step 3: Get current tree
+    const commitRes = await fetch(`${REPO_API}/git/commits/${currentCommitSha}`, { headers });
+    const commit = await commitRes.json();
+    const currentTreeSha = commit.tree.sha;
+
+    // Step 4: Create new tree
+    const treeRes = await fetch(`${REPO_API}/git/trees`, {
+      method:'POST', headers,
+      body: JSON.stringify({
+        base_tree: currentTreeSha,
+        tree: [{ path, mode:'100644', type:'blob', sha: blob.sha }]
+      })
+    });
+    if(!treeRes.ok) throw new Error('Tree creation failed');
+    const tree = await treeRes.json();
+
+    // Step 5: Create new commit
+    const newCommitRes = await fetch(`${REPO_API}/git/commits`, {
+      method:'POST', headers,
+      body: JSON.stringify({ message: msg||`Update ${path}`, tree: tree.sha, parents: [currentCommitSha] })
+    });
+    if(!newCommitRes.ok) throw new Error('Commit creation failed');
+    const newCommit = await newCommitRes.json();
+
+    // Step 6: Update HEAD ref
+    const updateRes = await fetch(`${REPO_API}/git/refs/heads/main`, {
+      method:'PATCH', headers,
+      body: JSON.stringify({ sha: newCommit.sha, force: false })
+    });
+    return updateRes.ok;
+  } catch(e){
+    console.error('GitHub push error:', e);
+    return false;
+  }
 }
 
 async function syncToCloud(){
@@ -831,10 +894,9 @@ async function syncToCloud(){
   };
   const media = { logoImg:S.logoImg||'', banners:S.banners||[], _v:now };
 
-  const [cfgOk, mediaOk] = await Promise.all([
-    pushToGitHub('store-config.json', JSON.stringify(config,null,2), '🔄 Admin: update config'),
-    pushToGitHub('store-media.json',  JSON.stringify(media,null,2),  '🔄 Admin: update media')
-  ]);
+  // Subir secuencialmente para evitar conflictos en Git
+  const cfgOk = await pushToGitHub('store-config.json', JSON.stringify(config,null,2), '🔄 Admin: update config');
+  const mediaOk = await pushToGitHub('store-media.json', JSON.stringify(media,null,2), '🔄 Admin: update media');
   return cfgOk;
 }
 
@@ -1774,19 +1836,35 @@ async function forceSyncProducts(){
 }
 
 async function forceSyncNow(){
-  const btn = event.target;
-  btn.textContent = '⏳ Sincronizando...';
-  btn.disabled = true;
-  document.getElementById('syncStatus').textContent = 'Enviando datos a GitHub...';
+  const btn = event?.target;
+  if(btn){ btn.textContent='⏳ Sincronizando...'; btn.disabled=true; }
+  const statusEl = document.getElementById('syncStatus');
+  if(statusEl) statusEl.textContent='Verificando token y subiendo datos...';
+  const token = getGHToken();
+  if(!token){
+    if(statusEl) statusEl.textContent='⚠ No hay token configurado. Pega tu token de GitHub arriba.';
+    if(btn){ btn.textContent='🔄 Sincronizar ahora'; btn.disabled=false; }
+    return;
+  }
+  // Verify token first
+  try {
+    const check = await fetch('https://api.github.com/user',{headers:{'Authorization':`token ${token}`}});
+    if(!check.ok){
+      if(statusEl) statusEl.textContent='⚠ Token inválido o expirado — genera uno nuevo en github.com/settings/tokens';
+      showToast('⚠ Token inválido — genera uno nuevo en GitHub');
+      if(btn){ btn.textContent='🔄 Sincronizar ahora'; btn.disabled=false; }
+      return;
+    }
+  } catch(e){}
+
   const ok = await syncToCloud();
-  btn.textContent = '🔄 Sincronizar ahora';
-  btn.disabled = false;
+  if(btn){ btn.textContent='🔄 Sincronizar ahora'; btn.disabled=false; }
   if(ok){
-    document.getElementById('syncStatus').textContent = '✓ Sincronizado correctamente — todos los dispositivos verán los cambios en ~1 minuto';
+    if(statusEl) statusEl.textContent='✓ Sincronizado correctamente — todos los dispositivos verán los cambios en segundos';
     showToast('✓ Sincronización exitosa ☁️','ok');
   } else {
-    document.getElementById('syncStatus').textContent = '⚠ Error — verifica que el token sea correcto y tenga permiso "repo"';
-    showToast('⚠ Error de sincronización — revisa el token');
+    if(statusEl) statusEl.textContent='⚠ Error al sincronizar — revisa la consola del navegador (F12) para más detalles';
+    showToast('⚠ Error de sincronización');
   }
 }
 
