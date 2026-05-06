@@ -26,19 +26,6 @@
   "emailjsTemplate": "pwglv3c",
   "bannerInterval": 8,
   "adminPassword": "12345678",
-  "products": [
-    {
-      "id": "sp4",
-      "name": "Zapatillas Running",
-      "desc": "Zapatillas deportivas con suela amortiguada, transpirables y ligeras. Tallas 38-44.",
-      "price": 34990,
-      "origPrice": 55990,
-      "cat": "Deportes",
-      "img": "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500&q=80",
-      "stock": 8,
-      "featured": false,
-      "active": true
-    }
-  ],
-  "_v": 1777949963508
+  "products": [],
+  "_v": 1778028400510
 }
