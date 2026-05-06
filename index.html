@@ -672,20 +672,67 @@
     .product-modal {
       background: white;
       border-radius: var(--radius-lg);
-      max-width: 860px; width: 100%;
-      display: grid; grid-template-columns: 1fr 1fr;
-      overflow: hidden; max-height: 92vh;
+      max-width: 920px; width: 100%;
+      display: grid; grid-template-columns: 420px 1fr;
+      overflow: hidden; max-height: 94vh;
       transform: scale(0.92) translateY(16px);
       transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
     }
     .modal-overlay.open .product-modal { transform: scale(1) translateY(0); }
 
-    /* Image carousel */
-    .modal-img-panel { position:relative; background:var(--bg); display:flex; flex-direction:column; }
-    .modal-img-main { width:100%; flex:1; min-height:300px; object-fit:cover; }
-    .modal-img-thumbs { display:flex; gap:6px; padding:8px; overflow-x:auto; background:white; border-top:1px solid var(--border); }
-    .modal-thumb { width:52px; height:52px; border-radius:6px; object-fit:cover; cursor:pointer; border:2px solid transparent; flex-shrink:0; transition:border-color .18s; }
-    .modal-thumb.active { border-color:var(--accent); }
+    /* Image panel — vertical 9:16 format */
+    .modal-img-panel {
+      position: relative;
+      background: #111;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      user-select: none;
+    }
+    .modal-img-main {
+      width: 100%;
+      flex: 1;
+      object-fit: contain;    /* imagen completa, sin recorte */
+      object-position: center;
+      background: #111;
+      cursor: grab;
+      transition: opacity 0.2s;
+      max-height: calc(94vh - 80px);
+    }
+    .modal-img-main:active { cursor: grabbing; }
+    .modal-img-thumbs {
+      display: flex; gap: 6px; padding: 8px 10px;
+      overflow-x: auto; background: rgba(0,0,0,0.85);
+      border-top: 1px solid rgba(255,255,255,0.1);
+      flex-shrink: 0;
+    }
+    .modal-thumb {
+      width: 44px; height: 58px; /* vertical thumbs */
+      border-radius: 5px; object-fit: cover;
+      cursor: pointer; border: 2px solid transparent;
+      flex-shrink: 0; transition: border-color .18s;
+      opacity: 0.7;
+    }
+    .modal-thumb:hover { opacity: 1; }
+    .modal-thumb.active { border-color: var(--accent); opacity: 1; }
+
+    /* Swipe arrow buttons */
+    .modal-img-prev, .modal-img-next {
+      position: absolute; top: 50%; transform: translateY(-50%);
+      background: rgba(0,0,0,0.5); color: white; border: none;
+      width: 36px; height: 36px; border-radius: 50%;
+      cursor: pointer; font-size: 16px; display: flex;
+      align-items: center; justify-content: center;
+      z-index: 10; transition: background .2s;
+    }
+    .modal-img-prev:hover, .modal-img-next:hover { background: rgba(0,0,0,0.8); }
+    .modal-img-prev { left: 10px; }
+    .modal-img-next { right: 10px; }
+    .modal-img-counter {
+      position: absolute; bottom: 68px; left: 50%; transform: translateX(-50%);
+      background: rgba(0,0,0,0.6); color: white;
+      font-size: 11px; padding: 3px 10px; border-radius: 20px;
+    }
 
     .modal-info {
       padding: 28px 28px 20px; overflow-y: auto;
@@ -865,17 +912,17 @@
       .product-price { font-size: 16px; }
       .atc-btn { padding: 9px; font-size: 12px; }
 
-      /* Product Modal */
+      /* Product Modal mobile */
       .modal-overlay { padding: 0; align-items: flex-end; }
       .product-modal {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr !important;
         border-radius: 20px 20px 0 0;
         max-height: 95vh;
         width: 100%;
       }
-      .modal-img-panel { max-height: 220px; }
-      .modal-img-main { height: 220px; object-fit: cover; }
-      .modal-info { padding: 18px 18px 24px; }
+      .modal-img-panel { max-height: 55vw; min-height: 200px; }
+      .modal-img-main { max-height: 55vw; object-fit: cover; }
+      .modal-info { padding: 16px 16px 24px; }
       .modal-title { font-size: 17px; }
       .modal-price { font-size: 22px; }
       .modal-close { top: 10px; right: 10px; width: 30px; height: 30px; font-size: 13px; }
@@ -1043,8 +1090,11 @@
 <!-- ── PRODUCT MODAL ── -->
 <div class="modal-overlay" id="modalOverlay" onclick="onModalClick(event)">
   <div class="product-modal" id="productModal">
-    <div class="modal-img-panel">
+    <div class="modal-img-panel" id="modalImgPanel">
       <img class="modal-img-main" id="modalImgMain" src="" alt="">
+      <button class="modal-img-prev" id="modalImgPrev" onclick="modalGalleryNav(-1)">‹</button>
+      <button class="modal-img-next" id="modalImgNext" onclick="modalGalleryNav(1)">›</button>
+      <div class="modal-img-counter" id="modalImgCounter" style="display:none;">1 / 1</div>
       <div class="modal-img-thumbs" id="modalImgThumbs"></div>
     </div>
     <div class="modal-info" id="modalInfo"></div>
@@ -1536,22 +1586,68 @@ function openModal(id){
   window._currentModalProd = p;
   window._currentModalSel = {};
   const disc = p.origPrice?Math.round((1-p.price/p.origPrice)*100):0;
-  const images = p.images?.length ? p.images : (p.img ? [p.img] : ['https://via.placeholder.com/400x400?text=Sin+imagen']);
 
-  // Image carousel
+  // Image gallery — all product images
+  const images = p.images?.length ? p.images : (p.img ? [p.img] : []);
+  window._modalImages = images;
+  window._modalImgIdx = 0;
+
+  function setModalImg(idx){
+    if(!images.length) return;
+    idx = Math.max(0, Math.min(idx, images.length-1));
+    window._modalImgIdx = idx;
+    const mainImg = document.getElementById('modalImgMain');
+    if(mainImg){ mainImg.style.opacity='0'; setTimeout(()=>{ mainImg.src=images[idx]; mainImg.style.opacity='1'; },120); }
+    document.querySelectorAll('.modal-thumb').forEach((t,i)=>t.classList.toggle('active',i===idx));
+    const counter = document.getElementById('modalImgCounter');
+    if(counter){ counter.textContent=`${idx+1} / ${images.length}`; counter.style.display=images.length>1?'block':'none'; }
+    const prev = document.getElementById('modalImgPrev');
+    const next = document.getElementById('modalImgNext');
+    if(prev) prev.style.display = images.length>1 ? 'flex':'none';
+    if(next) next.style.display = images.length>1 ? 'flex':'none';
+  }
+
+  window.modalGalleryNav = function(dir){
+    setModalImg(window._modalImgIdx + dir);
+  };
+
+  // Set main image
   const mainImg = document.getElementById('modalImgMain');
-  mainImg.src = images[0];
-  mainImg.alt = p.name;
+  if(mainImg){ mainImg.src = images[0]||''; mainImg.alt = p.name; }
+
+  // Thumbs
   const thumbsEl = document.getElementById('modalImgThumbs');
   if(images.length > 1){
     thumbsEl.style.display='flex';
     thumbsEl.innerHTML = images.map((src,i)=>
-      `<img class="modal-thumb ${i===0?'active':''}" src="${src}" alt="" onclick="switchModalImg(this,'${src}')">`
+      `<img class="modal-thumb ${i===0?'active':''}" src="${src}" alt="${i+1}" onclick="setModalImg(${i})" style="height:58px;width:44px;">`
     ).join('');
   } else {
     thumbsEl.style.display='none';
     thumbsEl.innerHTML='';
   }
+
+  // Counter and arrows
+  setModalImg(0);
+
+  // Touch/swipe on image panel
+  const panel = document.getElementById('modalImgPanel');
+  if(panel){
+    let tx=0;
+    panel.addEventListener('touchstart',e=>{ tx=e.touches[0].clientX; },{passive:true});
+    panel.addEventListener('touchend',e=>{
+      const dx=e.changedTouches[0].clientX-tx;
+      if(Math.abs(dx)>40) setModalImg(window._modalImgIdx+(dx<0?1:-1));
+    },{passive:true});
+    panel.addEventListener('mousedown',e=>{ tx=e.clientX; });
+    panel.addEventListener('mouseup',e=>{
+      const dx=e.clientX-tx;
+      if(Math.abs(dx)>40) setModalImg(window._modalImgIdx+(dx<0?1:-1));
+    });
+  }
+
+  // Make setModalImg accessible for selectVariant
+  window._setModalImg = setModalImg;
 
   // Ratings
   const ratings = getRatings();
@@ -1713,8 +1809,13 @@ function selectVariant(pid, varName, opt, btn, varImg){
 
   // Cambiar imagen si la variante tiene una asignada
   if(varImg && varImg!=='undefined' && varImg!==''){
-    const mainImg = document.getElementById('modalImgMain');
-    if(mainImg) mainImg.src = varImg;
+    const imgs = window._modalImages||[];
+    const idx = imgs.indexOf(varImg);
+    if(idx>=0 && window._setModalImg) window._setModalImg(idx);
+    else {
+      const mainImg = document.getElementById('modalImgMain');
+      if(mainImg) mainImg.src = varImg;
+    }
   }
 
   // Re-renderizar TODAS las píldoras de variantes con la nueva selección
