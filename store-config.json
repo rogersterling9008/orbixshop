@@ -7,8 +7,7 @@
   "currency": "CLP",
   "categories": [
     "Camisetas de Futbol",
-    "Poleras Bandas de Rock",
-    "Deportes"
+    "Poleras Bandas de Rock"
   ],
   "catIcons": {
     "Electrónica": "💻",
@@ -97,5 +96,5 @@
       "active": true
     }
   ],
-  "_v": 1778106459229
+  "_v": 1778106551042
 }
