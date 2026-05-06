@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://syastore2020.github.io/SYA.CL/sitemap.xml
+
+# No indexar el panel admin
+Disallow: /SYA.CL/admin.html
