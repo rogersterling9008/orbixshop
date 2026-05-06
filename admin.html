@@ -1030,8 +1030,11 @@ function openProdModal(prod){
   document.getElementById('pm_imgurl_add').value='';
   document.getElementById('pm_imgfile').value='';
 
-  // Init gallery state
-  window._pmImages = prod?.images ? [...prod.images] : (prod?.img ? [prod.img] : []);
+  // Init gallery — recuperar imágenes desde images[] o desde img (compatibilidad)
+  let existingImgs = [];
+  if(prod?.images?.length) existingImgs = [...prod.images];
+  else if(prod?.img) existingImgs = [prod.img];
+  window._pmImages = existingImgs;
   renderPmGallery();
 
   // Init variants
@@ -1272,10 +1275,12 @@ function renderStockMatrix(){
   const wrap = document.getElementById('stockMatrixWrap');
   const tableWrap = document.getElementById('stockMatrixTable');
 
+  if(!wrap || !tableWrap) return; // elementos no disponibles aún
+
   if(variants.length < 1){
     wrap.style.display='none';
-    // Show simple stock field
-    document.getElementById('pm_stock_wrap').style.display='';
+    const sw = document.getElementById('pm_stock_wrap');
+    if(sw) sw.style.display='';
     return;
   }
 
@@ -1371,11 +1376,16 @@ function saveProd(){
   const price = parseFloat(document.getElementById('pm_price').value);
   if(!name){ showToast('El nombre es requerido'); return; }
   if(!price || price<=0){ showToast('Precio inválido'); return; }
-  const images = window._pmImages||[];
-  if(!images.length){ showToast('Agrega al menos una imagen'); return; }
 
-  // Calculate total stock from matrix or variants
+  const images = window._pmImages||[];
+  // Imagen no es bloqueante — solo advertencia
+  if(!images.length){
+    showToast('⚠ Guardando sin imagen — puedes agregar una después');
+  }
+
   const id = document.getElementById('pm_id').value || uid();
+
+  // Stock: desde matriz o campo manual
   let totalStock = parseInt(document.getElementById('pm_stock').value)||0;
   const hasMatrix = Object.keys(window._pmMatrix||{}).length > 0;
   if(hasMatrix) totalStock = updateMatrixTotal();
@@ -1387,7 +1397,7 @@ function saveProd(){
     price,
     origPrice: parseFloat(document.getElementById('pm_orig').value)||0,
     stock: totalStock,
-    img: images[0],
+    img: images[0]||'',
     images,
     variants: (window._pmVariants||[])
       .filter(v=>v.name&&v.options?.length>0)
@@ -1403,7 +1413,7 @@ function saveProd(){
   saveProducts(prods);
   closeProdModal();
   renderProducts();
-  showToast('✓ Producto guardado','ok');
+  if(images.length) showToast('✓ Producto guardado','ok');
 }
 
 function deleteProd(id){
