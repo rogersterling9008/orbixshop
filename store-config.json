@@ -27,6 +27,21 @@
   "adminPassword": "12345678",
   "products": [
     {
+      "id": "motvqcgrsyz1b",
+      "name": "camiseta",
+      "cat": "Camisetas de Futbol",
+      "desc": "",
+      "price": 9990,
+      "origPrice": 0,
+      "stock": 0,
+      "img": "",
+      "images": [],
+      "variants": [],
+      "variantMatrix": {},
+      "featured": false,
+      "active": true
+    },
+    {
       "id": "motj2btp9vzzq",
       "name": "Camiseta Universidad de Chile- Local 2026",
       "cat": "Camisetas de Futbol",
@@ -79,5 +94,5 @@
       "active": true
     }
   ],
-  "_v": 1778060223267
+  "_v": 1778061202595
 }
