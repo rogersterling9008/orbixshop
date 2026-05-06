@@ -1649,31 +1649,55 @@ function switchModalImg(thumb, src){
 
 function selectVariant(pid, varName, opt, btn, varImg){
   mSelectedVariants[varName] = opt;
-  // Update UI — highlight selected pill within this variant group
   btn.closest('.variant-pills').querySelectorAll('.variant-pill').forEach(b=>b.classList.remove('selected'));
   btn.classList.add('selected');
   const sel = document.getElementById(`vsel_${pid}_${varName}`);
   if(sel) sel.textContent = opt;
-  // Switch main image if variant has one assigned
+
+  // Switch image if variant has one assigned
   if(varImg && varImg!=='undefined' && varImg!==''){
     const mainImg = document.getElementById('modalImgMain');
-    if(mainImg){ mainImg.src = varImg; }
-    // Also highlight matching thumb
-    document.querySelectorAll('.modal-thumb').forEach(t=>{
-      t.classList.toggle('active', t.src===varImg || t.getAttribute('src')===varImg);
-    });
+    if(mainImg) mainImg.src = varImg;
+  }
+
+  // Update stock display based on matrix
+  const p = getProducts().find(pr=>pr.id===pid);
+  if(p?.variantMatrix && Object.keys(p.variantMatrix).length>0){
+    const allVariants = p.variants||[];
+    const allSelected = allVariants.every(v=>mSelectedVariants[v.name]);
+    if(allSelected){
+      const key = allVariants.map(v=>mSelectedVariants[v.name]).join('|');
+      const comboStock = p.variantMatrix[key]||0;
+      const stockEl = document.querySelector('.modal-stock');
+      if(stockEl){
+        if(comboStock > 0){
+          stockEl.innerHTML = `✓ <strong>${comboStock}</strong> disponibles para esta combinación`;
+          stockEl.style.color = comboStock <= 3 ? '#F59E0B' : 'var(--muted)';
+        } else {
+          stockEl.innerHTML = `✗ Sin stock para esta combinación`;
+          stockEl.style.color = '#EF4444';
+        }
+      }
+    }
   }
 }
 
 function addToCartFromModal(id){
   const p = getProducts().find(pr=>pr.id===id);
   if(!p) return;
-  // Check all variants selected
   const required = (p.variants||[]).filter(v=>v.options?.length>0);
   for(const v of required){
     if(!mSelectedVariants[v.name]){
       showToast(`Por favor elige: ${v.name}`); return;
     }
+  }
+  // Check matrix stock if available
+  if(p.variantMatrix && Object.keys(p.variantMatrix).length>0 && required.length>0){
+    const key = required.map(v=>mSelectedVariants[v.name]).join('|');
+    const comboStock = p.variantMatrix[key]||0;
+    if(comboStock <= 0){ showToast(`Sin stock para esta combinación`); return; }
+  } else if(p.stock <= 0){
+    showToast('Sin stock disponible'); return;
   }
   addToCart(id, mQty, {...mSelectedVariants});
   closeModal();

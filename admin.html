@@ -565,7 +565,7 @@
       <div class="form-group"><label class="form-label">Precio de venta *</label><input class="form-control" type="number" id="pm_price" placeholder="Ej: 29990"></div>
       <div class="form-group"><label class="form-label">Precio original (tachado)</label><input class="form-control" type="number" id="pm_orig" placeholder="Ej: 49990"></div>
     </div>
-    <div class="form-group"><label class="form-label">Stock disponible</label><input class="form-control" type="number" id="pm_stock" placeholder="Ej: 10"></div>
+    <div class="form-group" id="pm_stock_wrap"><label class="form-label">Stock disponible <span style="color:var(--muted);font-size:11px;">(se calcula automáticamente si hay variantes)</span></label><input class="form-control" type="number" id="pm_stock" placeholder="Ej: 10"></div>
 
     <div class="form-group">
       <label class="form-label">Imágenes del producto <span style="color:var(--muted);font-weight:400;">(máx. 6 · recomendado 800×800px cuadrada)</span></label>
@@ -586,6 +586,20 @@
       <label class="form-label" style="margin-bottom:10px;">Variantes del producto <span style="color:var(--muted);font-weight:400;">(tallas, colores, tipos, etc.)</span></label>
       <div id="variantGroups"></div>
       <button class="btn" style="margin-top:8px;background:white;font-size:13px;" onclick="addVariantGroup()">+ Agregar tipo de variante</button>
+    </div>
+
+    <!-- MATRIZ DE STOCK POR COMBINACIÓN -->
+    <div id="stockMatrixWrap" style="display:none;background:var(--bg);border-radius:var(--radius);padding:14px;margin-bottom:4px;">
+      <label class="form-label" style="margin-bottom:4px;">📦 Stock por combinación</label>
+      <small style="color:var(--muted);font-size:12px;display:block;margin-bottom:12px;">
+        Ingresa el stock para cada combinación de variantes. El stock total del producto se calcula automáticamente.
+      </small>
+      <div id="stockMatrixTable" style="overflow-x:auto;"></div>
+      <div style="margin-top:10px;padding:10px 14px;background:white;border-radius:8px;border:1px solid var(--border);display:flex;align-items:center;gap:10px;">
+        <span style="font-size:13px;font-weight:600;">Stock total:</span>
+        <span id="stockMatrixTotal" style="font-size:18px;font-weight:800;color:var(--accent);">0</span>
+        <span style="font-size:12px;color:var(--muted);">unidades (suma de todas las combinaciones)</span>
+      </div>
     </div>
 
     <div style="display:flex;gap:20px;margin-bottom:4px;">
@@ -1010,7 +1024,10 @@ function openProdModal(prod){
 
   // Init variants
   window._pmVariants = prod?.variants ? JSON.parse(JSON.stringify(prod.variants)) : [];
+  // Init stock matrix
+  window._pmMatrix = prod?.variantMatrix ? {...prod.variantMatrix} : {};
   renderVariantGroups();
+  renderStockMatrix();
 
   document.getElementById('prodModal').classList.add('open');
 }
@@ -1182,6 +1199,7 @@ function addVariantGroup(){
   if(!window._pmVariants) window._pmVariants=[];
   window._pmVariants.push({name:'', options:[]});
   renderVariantGroups();
+  renderStockMatrix();
   setTimeout(()=>{
     const inputs = document.querySelectorAll('.variant-group-name');
     if(inputs.length) inputs[inputs.length-1].focus();
@@ -1191,6 +1209,7 @@ function addVariantGroup(){
 function removeVariantGroup(vi){
   window._pmVariants.splice(vi,1);
   renderVariantGroups();
+  renderStockMatrix();
 }
 
 function updateVariantName(vi, val){ window._pmVariants[vi].name = val; }
@@ -1211,15 +1230,127 @@ function addVariantOption(vi){
   window._pmVariants[vi].options.push({label:val, stock:0, img:''});
   inp.value='';
   renderVariantGroups();
+  renderStockMatrix();
   setTimeout(()=>{ const i=document.getElementById(`vadd_${vi}`); if(i) i.focus(); },50);
 }
 
 function removeVariantOption(vi, oi){
   window._pmVariants[vi].options.splice(oi,1);
   renderVariantGroups();
+  renderStockMatrix();
 }
 
-function editProd(id){ openProdModal(getProducts().find(p=>p.id===id)); }
+// ── STOCK MATRIX ──
+function getMatrixKey(labels){ return labels.join('|'); }
+
+function buildCombinations(variants){
+  // Build all possible combinations from variant groups
+  const groups = variants.filter(v=>v.name && v.options?.length>0)
+    .map(v=>v.options.map(o=>normalizeOption(o).label));
+  if(!groups.length) return [];
+  let combos = [[]];
+  for(const group of groups){
+    combos = combos.flatMap(c => group.map(g=>[...c, g]));
+  }
+  return combos;
+}
+
+function renderStockMatrix(){
+  const variants = (window._pmVariants||[]).filter(v=>v.name&&v.options?.length>0);
+  const wrap = document.getElementById('stockMatrixWrap');
+  const tableWrap = document.getElementById('stockMatrixTable');
+
+  if(variants.length < 1){
+    wrap.style.display='none';
+    // Show simple stock field
+    document.getElementById('pm_stock_wrap').style.display='';
+    return;
+  }
+
+  wrap.style.display='';
+
+  if(variants.length === 1){
+    // Single variant → simple per-option stock (already in variant UI)
+    document.getElementById('pm_stock_wrap').style.display='none';
+    tableWrap.innerHTML='<div style="font-size:12px;color:var(--muted);">El stock por opción se configura directamente en cada variante arriba. ☝️</div>';
+    updateMatrixTotal();
+    return;
+  }
+
+  // Multiple variants → show matrix table
+  document.getElementById('pm_stock_wrap').style.display='none';
+  const combos = buildCombinations(variants);
+  if(!combos.length){ tableWrap.innerHTML=''; return; }
+
+  // Row variant = first group, column = second group (if 2 groups)
+  const rowGroup = variants[0];
+  const colGroup = variants[1];
+  const rowOpts = rowGroup.options.map(o=>normalizeOption(o).label);
+  const colOpts = colGroup.options.map(o=>normalizeOption(o).label);
+
+  if(!window._pmMatrix) window._pmMatrix = {};
+
+  let html = `<table style="width:100%;border-collapse:collapse;font-size:13px;">
+    <thead>
+      <tr>
+        <th style="padding:8px 12px;background:#111;color:white;border-radius:6px 0 0 0;text-align:left;min-width:100px;">${rowGroup.name} \\ ${colGroup.name}</th>
+        ${colOpts.map(c=>`<th style="padding:8px 12px;background:#111;color:white;text-align:center;min-width:70px;">${c}</th>`).join('')}
+        <th style="padding:8px 12px;background:#333;color:white;text-align:center;border-radius:0 6px 0 0;">Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${rowOpts.map((r,ri)=>{
+        const rowTotal = colOpts.reduce((s,c)=>s+(parseInt(window._pmMatrix[getMatrixKey([r,c])])||0),0);
+        return `<tr style="background:${ri%2===0?'white':'#f9f8f6'};">
+          <td style="padding:8px 12px;font-weight:700;border-right:2px solid #eee;">${r}</td>
+          ${colOpts.map(c=>{
+            const key = getMatrixKey([r,c]);
+            const val = window._pmMatrix[key]||0;
+            return `<td style="padding:6px 8px;text-align:center;">
+              <input type="number" min="0" value="${val}"
+                style="width:60px;padding:6px;border:1.5px solid #ddd;border-radius:6px;text-align:center;font-size:13px;font-family:inherit;"
+                onchange="setMatrixStock('${r}','${c}',parseInt(this.value)||0)"
+                oninput="setMatrixStock('${r}','${c}',parseInt(this.value)||0)">
+            </td>`;
+          }).join('')}
+          <td style="padding:8px 12px;text-align:center;font-weight:700;color:${rowTotal>0?'#10B981':'#9CA3AF'};">${rowTotal}</td>
+        </tr>`;
+      }).join('')}
+    </tbody>
+    <tfoot>
+      <tr style="background:#f0f9ff;">
+        <td style="padding:8px 12px;font-weight:700;font-size:12px;color:var(--muted);">TOTAL por talla</td>
+        ${colOpts.map(c=>{
+          const colTotal = rowOpts.reduce((s,r)=>s+(parseInt(window._pmMatrix[getMatrixKey([r,c])])||0),0);
+          return `<td style="padding:8px;text-align:center;font-weight:700;color:${colTotal>0?'#1e40af':'#9CA3AF'};">${colTotal}</td>`;
+        }).join('')}
+        <td></td>
+      </tr>
+    </tfoot>
+  </table>`;
+
+  tableWrap.innerHTML = html;
+  updateMatrixTotal();
+}
+
+function setMatrixStock(row, col, val){
+  if(!window._pmMatrix) window._pmMatrix={};
+  window._pmMatrix[getMatrixKey([row,col])] = val;
+  updateMatrixTotal();
+  // Refresh totals in table without full re-render
+  renderStockMatrix();
+}
+
+function updateMatrixTotal(){
+  const matrix = window._pmMatrix||{};
+  const total = Object.values(matrix).reduce((s,v)=>s+(parseInt(v)||0),0);
+  const el = document.getElementById('stockMatrixTotal');
+  if(el) el.textContent = total;
+  // Also update pm_stock field
+  const stockField = document.getElementById('pm_stock');
+  if(stockField) stockField.value = total;
+  return total;
+}
 
 function closeProdModal(){ document.getElementById('prodModal').classList.remove('open'); }
 
@@ -1231,19 +1362,24 @@ function saveProd(){
   const images = window._pmImages||[];
   if(!images.length){ showToast('Agrega al menos una imagen'); return; }
 
-  const id = document.getElementById('pm_id').value || uid();
+  // Calculate total stock from matrix or variants
+  let totalStock = parseInt(document.getElementById('pm_stock').value)||0;
+  const hasMatrix = Object.keys(window._pmMatrix||{}).length > 0;
+  if(hasMatrix) totalStock = updateMatrixTotal();
+
   const prod = {
     id, name,
     cat: document.getElementById('pm_cat').value,
     desc: document.getElementById('pm_desc').value.trim(),
     price,
     origPrice: parseFloat(document.getElementById('pm_orig').value)||0,
-    stock: parseInt(document.getElementById('pm_stock').value)||0,
-    img: images[0],        // primera imagen = principal (compatibilidad)
-    images,                // todas las imágenes
+    stock: totalStock,
+    img: images[0],
+    images,
     variants: (window._pmVariants||[])
       .filter(v=>v.name&&v.options?.length>0)
       .map(v=>({...v, options: v.options.map(normalizeOption)})),
+    variantMatrix: window._pmMatrix||{},
     featured: document.getElementById('pm_featured').checked,
     active: document.getElementById('pm_active').checked
   };
