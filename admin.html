@@ -1363,6 +1363,7 @@ function saveProd(){
   if(!images.length){ showToast('Agrega al menos una imagen'); return; }
 
   // Calculate total stock from matrix or variants
+  const id = document.getElementById('pm_id').value || uid();
   let totalStock = parseInt(document.getElementById('pm_stock').value)||0;
   const hasMatrix = Object.keys(window._pmMatrix||{}).length > 0;
   if(hasMatrix) totalStock = updateMatrixTotal();
