@@ -979,7 +979,7 @@ function renderProducts(){
   const tokenWarn = !token ? `
     <div style="background:#FEF3C7;border:1px solid #F59E0B;border-radius:8px;padding:10px 14px;margin-bottom:12px;display:flex;align-items:center;gap:10px;font-size:13px;">
       ⚠️ <strong>Sin sincronización:</strong> Ve a Configuración y pega tu token GitHub para que los cambios se reflejen en la tienda.
-      <button onclick="switchTab('settings')" style="margin-left:auto;background:#F59E0B;color:white;border:none;border-radius:6px;padding:5px 12px;cursor:pointer;font-size:12px;font-weight:700;">Ir a Configuración →</button>
+      <button onclick="showTab('settings')" style="margin-left:auto;background:#F59E0B;color:white;border:none;border-radius:6px;padding:5px 12px;cursor:pointer;font-size:12px;font-weight:700;">Ir a Configuración →</button>
     </div>` : '';
 
   // Token warning
@@ -988,7 +988,7 @@ function renderProducts(){
     tokenWarnEl.innerHTML = !token ? `
       <div style="background:#FEF3C7;border:1px solid #F59E0B;border-radius:8px;padding:10px 14px;margin-bottom:12px;display:flex;align-items:center;gap:10px;font-size:13px;flex-wrap:wrap;">
         ⚠️ <strong>Sin sincronización activa</strong> — Los cambios se guardan localmente pero no se reflejan en la tienda pública. Ve a Configuración y pega tu token GitHub.
-        <button onclick="switchTab('settings')" style="margin-left:auto;background:#F59E0B;color:white;border:none;border-radius:6px;padding:6px 14px;cursor:pointer;font-size:12px;font-weight:700;white-space:nowrap;">⚙️ Configuración →</button>
+        <button onclick="showTab('settings')" style="margin-left:auto;background:#F59E0B;color:white;border:none;border-radius:6px;padding:6px 14px;cursor:pointer;font-size:12px;font-weight:700;white-space:nowrap;">⚙️ Configuración →</button>
       </div>` : `
       <div style="background:#D1FAE5;border:1px solid #10B981;border-radius:8px;padding:8px 14px;margin-bottom:12px;font-size:13px;display:flex;align-items:center;gap:8px;">
         ☁️ <strong>Sincronización activa</strong> — Los cambios se publican automáticamente en la tienda.
@@ -1987,11 +1987,11 @@ async function adminBoot(){
   loginScreen.appendChild(loadingMsg);
 
   try {
-    const t = Date.now();
-    const RAW = `https://raw.githubusercontent.com/SYASTORE2020/SYA.CL/main`;
+    const API = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents`;
+    const ghHeaders = { 'Accept': 'application/vnd.github.v3.raw' };
     const [cfgRes, mediaRes] = await Promise.all([
-      fetch(`${RAW}/store-config.json?t=${t}`),
-      fetch(`${RAW}/store-media.json?t=${t}`)
+      fetch(`${API}/store-config.json`, { headers: ghHeaders }),
+      fetch(`${API}/store-media.json`,  { headers: ghHeaders })
     ]);
 
     if(cfgRes.ok){
@@ -2054,7 +2054,7 @@ setTimeout(()=>{
     warn.innerHTML = `<div style="font-weight:700;margin-bottom:6px;">☁️ Configura la sincronización</div>
       <div style="opacity:.85;margin-bottom:10px;">Para que los cambios se vean desde cualquier navegador, necesitas configurar el token GitHub en <strong>Configuración</strong>.</div>
       <div style="display:flex;gap:8px;">
-        <button onclick="document.getElementById('crossBrowserWarn').remove();switchTab('settings');" style="background:#FF4D00;color:white;border:none;border-radius:6px;padding:7px 14px;cursor:pointer;font-weight:700;flex:1;">Configurar ahora</button>
+        <button onclick="document.getElementById('crossBrowserWarn').remove();showTab('settings');" style="background:#FF4D00;color:white;border:none;border-radius:6px;padding:7px 14px;cursor:pointer;font-weight:700;flex:1;">Configurar ahora</button>
         <button onclick="document.getElementById('crossBrowserWarn').remove();" style="background:rgba(255,255,255,0.15);color:white;border:none;border-radius:6px;padding:7px 10px;cursor:pointer;">✕</button>
       </div>`;
     document.body.appendChild(warn);

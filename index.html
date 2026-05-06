@@ -1192,23 +1192,43 @@ let _cloudMedia  = null;
 
 async function fetchCloud(){
   try {
-    const t = Date.now(); // cache buster
+    // Usar GitHub API (sin caché CDN) para obtener siempre datos frescos
+    const API = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents`;
+    const headers = { 'Accept': 'application/vnd.github.v3.raw' };
+
     const [cfgRes, mediaRes] = await Promise.all([
-      fetch(`${RAW_BASE}/store-config.json?t=${t}`),
-      fetch(`${RAW_BASE}/store-media.json?t=${t}`)
+      fetch(`${API}/store-config.json`, { headers }),
+      fetch(`${API}/store-media.json`, { headers })
     ]);
-    if(cfgRes.ok)   _cloudConfig = await cfgRes.json();
-    if(mediaRes.ok) _cloudMedia  = await mediaRes.json();
-    // Merge and save to localStorage as cache
-    if(_cloudConfig){
-      const merged = Object.assign({}, _cloudConfig, _cloudMedia||{});
-      localStorage.setItem('st_settings', JSON.stringify(merged));
+
+    if(cfgRes.ok){
+      const cfg = await cfgRes.json();
+      if(cfg.products) localStorage.setItem('st_products', JSON.stringify(cfg.products));
+      const merged = Object.assign({}, cfg);
+      delete merged.products;
+      delete merged.banners;
+      delete merged.logoImg;
+      localStorage.setItem('st_settings', JSON.stringify(Object.assign(getSettings(), merged)));
     }
-    if(_cloudConfig?.products){
-      localStorage.setItem('st_products', JSON.stringify(_cloudConfig.products));
+    if(mediaRes.ok){
+      const media = await mediaRes.json();
+      const S = getSettings();
+      if(media.logoImg !== undefined) S.logoImg = media.logoImg;
+      if(media.banners !== undefined) S.banners = media.banners;
+      localStorage.setItem('st_settings', JSON.stringify(S));
     }
   } catch(e){
-    console.warn('Cloud fetch failed, using localStorage cache:', e);
+    // Fallback: raw URL con cache buster
+    try {
+      const t = Date.now();
+      const RAW = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main`;
+      const [cfgRes, mediaRes] = await Promise.all([
+        fetch(`${RAW}/store-config.json?nocache=${t}`),
+        fetch(`${RAW}/store-media.json?nocache=${t}`)
+      ]);
+      if(cfgRes.ok){ const cfg=await cfgRes.json(); if(cfg.products) localStorage.setItem('st_products',JSON.stringify(cfg.products)); }
+      if(mediaRes.ok){ const media=await mediaRes.json(); const S=getSettings(); if(media.logoImg!==undefined) S.logoImg=media.logoImg; if(media.banners!==undefined) S.banners=media.banners; localStorage.setItem('st_settings',JSON.stringify(S)); }
+    } catch(e2){ console.warn('Cloud fetch failed:', e2); }
   }
 }
 
