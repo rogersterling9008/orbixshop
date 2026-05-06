@@ -3,7 +3,67 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title id="pageTitle">MiTienda</title>
+
+  <!-- ══════════════════════════════════════
+       SEO BÁSICO
+  ══════════════════════════════════════ -->
+  <title id="pageTitle">SyA Store — Todo lo que necesitas, en un solo lugar</title>
+  <meta name="description" content="SyA Store: tienda online con los mejores productos. Despacho a todo Chile con MercadoPago y pago contra entrega en Santiago. Electrónica, ropa, deportes y más.">
+  <meta name="keywords" content="tienda online chile, comprar online, despacho chile, mercadopago, ropa, electrónica, deportes, camisetas futbol">
+  <meta name="author" content="SyA Store">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://syastore2020.github.io/SYA.CL/">
+
+  <!-- ══════════════════════════════════════
+       OPEN GRAPH (WhatsApp, Facebook, etc.)
+  ══════════════════════════════════════ -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="SyA Store">
+  <meta property="og:title" content="SyA Store — Todo lo que necesitas, en un solo lugar">
+  <meta property="og:description" content="Compra online con despacho a todo Chile. Paga con MercadoPago o contra entrega en Santiago.">
+  <meta property="og:url" content="https://syastore2020.github.io/SYA.CL/">
+  <meta property="og:image" content="https://syastore2020.github.io/SYA.CL/og-image.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:locale" content="es_CL">
+
+  <!-- ══════════════════════════════════════
+       TWITTER CARD
+  ══════════════════════════════════════ -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="SyA Store — Todo lo que necesitas, en un solo lugar">
+  <meta name="twitter:description" content="Tienda online con despacho a todo Chile.">
+  <meta name="twitter:image" content="https://syastore2020.github.io/SYA.CL/og-image.jpg">
+
+  <!-- ══════════════════════════════════════
+       SCHEMA.ORG — ORGANIZACIÓN / TIENDA
+  ══════════════════════════════════════ -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "OnlineStore",
+    "name": "SyA Store",
+    "description": "Tienda online con despacho a todo Chile. Variedad de productos, compra segura y envíos rápidos.",
+    "url": "https://syastore2020.github.io/SYA.CL/",
+    "logo": "https://syastore2020.github.io/SYA.CL/og-image.jpg",
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "telephone": "+56991065770",
+      "contactType": "customer service",
+      "availableLanguage": "Spanish"
+    },
+    "areaServed": {
+      "@type": "Country",
+      "name": "Chile"
+    },
+    "currenciesAccepted": "CLP",
+    "paymentAccepted": "Credit Card, Cash on Delivery, MercadoPago",
+    "priceRange": "$$"
+  }
+  </script>
+
+  <!-- Schema.org productos — generado dinámicamente por JS -->
+  <script id="productSchema" type="application/ld+json">[]</script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
@@ -650,6 +710,8 @@
     }
     .variant-pill:hover { border-color:var(--accent); color:var(--accent); }
     .variant-pill.selected { border-color:var(--accent); background:var(--accent); color:white; }
+    .variant-pill-disabled { opacity:.45; cursor:not-allowed !important; text-decoration:line-through; }
+    .variant-pill-disabled:hover { border-color:var(--border) !important; color:var(--primary) !important; }
 
     .modal-qty-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
     .modal-qty-row label { font-size: 14px; font-weight: 600; }
@@ -947,16 +1009,18 @@
     <div>
       <div class="footer-title">Ayuda</div>
       <ul class="footer-links">
-        <li><a href="#" onclick="document.querySelector('.question-wrap').scrollIntoView({behavior:'smooth'});return false;">Hacer consulta</a></li>
-        <li><a href="#" onclick="showToast('Contáctanos por WhatsApp para soporte')">Soporte</a></li>
+        <li><a href="#" onclick="document.querySelector('.question-wrap').scrollIntoView({behavior:'smooth'});return false;">Hacer una consulta</a></li>
+        <li><a href="https://wa.me/56991065770" target="_blank">💬 WhatsApp soporte</a></li>
+        <li><a href="devoluciones.html">📋 Política de devoluciones</a></li>
       </ul>
     </div>
     <div>
-      <div class="footer-title">Pagos</div>
+      <div class="footer-title">Pagos y envíos</div>
       <ul class="footer-links">
-        <li><a href="#">MercadoPago</a></li>
-        <li><a href="checkout.html#comunas-santiago" onclick="sessionStorage.setItem('scrollToComunas','1')">Pago contra entrega</a></li>
-        <li><a href="#">Despacho Chile</a></li>
+        <li><a href="#">💳 MercadoPago</a></li>
+        <li><a href="checkout.html#comunas-santiago" onclick="sessionStorage.setItem('scrollToComunas','1')">🏠 Pago contra entrega</a></li>
+        <li><a href="#">📦 Despacho a todo Chile</a></li>
+        <li><a href="devoluciones.html">↩️ Cambios y devoluciones</a></li>
       </ul>
     </div>
   </div>
@@ -1021,6 +1085,50 @@ const SAMPLE_PRODUCTS = [
   { id:'sp5', name:'Smartwatch Sport', desc:'Reloj inteligente con monitor cardíaco, GPS integrado, resistente al agua y 7 días de batería.', price:49990, origPrice:79990, cat:'Electrónica', img:'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&q=80', stock:12, featured:true, active:true },
   { id:'sp6', name:'Set Utensilios Cocina', desc:'Set de 5 utensilios en acero inoxidable con mango ergonómico. Espátula, cucharon, pinzas, espumadera y batidor.', price:12990, origPrice:21990, cat:'Hogar', img:'https://images.unsplash.com/photo-1556911220-bff31c812dba?w=500&q=80', stock:25, featured:false, active:true }
 ];
+
+// ════════════════════════════════════════════
+//  SCHEMA.ORG — Datos estructurados de productos
+// ════════════════════════════════════════════
+function injectProductSchema(prods, S){
+  const BASE = 'https://syastore2020.github.io/SYA.CL/';
+  const schema = prods.filter(p=>p.active && p.stock > 0).map(p=>({
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": p.name,
+    "description": p.desc || p.name,
+    "image": p.images?.length ? p.images[0] : (p.img || ''),
+    "sku": p.id,
+    "brand": {
+      "@type": "Brand",
+      "name": S.storeName || 'SyA Store'
+    },
+    "category": p.cat,
+    "offers": {
+      "@type": "Offer",
+      "url": BASE + `?producto=${p.id}`,
+      "priceCurrency": "CLP",
+      "price": p.price,
+      "availability": p.stock > 0
+        ? "https://schema.org/InStock"
+        : "https://schema.org/OutOfStock",
+      "itemCondition": "https://schema.org/NewCondition",
+      "seller": {
+        "@type": "Organization",
+        "name": S.storeName || 'SyA Store'
+      }
+    },
+    ...(p.origPrice && p.origPrice > p.price ? {
+      "offers": {
+        "@type": "AggregateOffer",
+        "lowPrice": p.price,
+        "highPrice": p.origPrice,
+        "priceCurrency": "CLP"
+      }
+    } : {})
+  }));
+  const el = document.getElementById('productSchema');
+  if(el) el.textContent = JSON.stringify(schema);
+}
 
 // ════════════════════════════════════════════
 //  CLOUD SYNC — GitHub como base de datos
@@ -1131,7 +1239,18 @@ function renderWithData(){
   const S = getSettings();
   const prods = getProducts().filter(p=>p.active);
 
-  document.title = S.storeName;
+  // ── SEO dinámico ──
+  document.getElementById('pageTitle').textContent = S.storeName + ' — ' + (S.storeSlogan || 'Todo lo que necesitas');
+  document.querySelector('meta[name="description"]')?.setAttribute('content',
+    `${S.storeName}: ${S.storeSlogan || 'Tienda online'}. Despacho a todo Chile con MercadoPago y pago contra entrega en Santiago.`
+  );
+  // OG tags dinámicos
+  document.querySelector('meta[property="og:title"]')?.setAttribute('content', S.storeName + ' — ' + (S.storeSlogan || 'Tienda online'));
+  document.querySelector('meta[property="og:site_name"]')?.setAttribute('content', S.storeName);
+  document.querySelector('meta[property="twitter:title"]')?.setAttribute('content', S.storeName);
+
+  // Schema.org productos
+  injectProductSchema(prods, S);
   const logoEl = document.getElementById('navLogo');
   if(S.logoImg){
     logoEl.innerHTML = `<img class="nav-logo-img" src="${S.logoImg}" alt="${S.storeName}"><span style="color:var(--primary);">${S.storeName}</span>`;
@@ -1455,14 +1574,22 @@ function openModal(id){
         </div>
        </div>`;
 
-  // Variants HTML
+  // Variants HTML — with stock per option and image switching
   const variantsHTML = (p.variants||[]).map(v=>`
     <div class="variant-section">
       <div class="variant-label">${v.name}: <span class="variant-selected" id="vsel_${p.id}_${v.name}">—</span></div>
       <div class="variant-pills">
-        ${(v.options||[]).map(opt=>`
-          <button class="variant-pill" onclick="selectVariant('${p.id}','${v.name}','${opt}',this)">${opt}</button>
-        `).join('')}
+        ${(v.options||[]).map(o=>{
+          const opt = typeof o==='string' ? {label:o, stock:0, img:''} : o;
+          const outOfStock = opt.stock !== undefined && opt.stock <= 0;
+          return `<button class="variant-pill${outOfStock?' variant-pill-disabled':''}"
+            onclick="selectVariant('${p.id}','${v.name}','${opt.label}',this,'${opt.img||''}')"
+            ${outOfStock?'title="Sin stock para esta variante"':''}>
+            ${opt.label}
+            ${opt.stock>0&&opt.stock<=5?`<span style="font-size:10px;opacity:.7;margin-left:3px;">(${opt.stock})</span>`:''}
+            ${outOfStock?'<span style="font-size:10px;opacity:.6;margin-left:3px;">✗</span>':''}
+          </button>`;
+        }).join('')}
       </div>
     </div>
   `).join('');
@@ -1470,15 +1597,7 @@ function openModal(id){
   // Reviews HTML
   const reviews = getReviews(p.id);
   const reviewsList = reviews.length
-    ? reviews.map(rv=>`
-        <div class="review-item">
-          <div class="review-meta">
-            <span class="review-author">👤 ${rv.name||'Cliente'}</span>
-            <span>${starsHTML(rv.stars,12)}</span>
-            <span class="review-date">${new Date(rv.date).toLocaleDateString('es-CL')}</span>
-          </div>
-          <div class="review-comment">${rv.comment}</div>
-        </div>`).join('')
+    ? reviews.map(reviewItemHTML).join('')
     : '<div style="font-size:13px;color:var(--muted);padding:8px 0;">Aún no hay comentarios. ¡Sé el primero!</div>';
 
   document.getElementById('modalInfo').innerHTML=`
@@ -1508,6 +1627,12 @@ function openModal(id){
       <div class="review-form" id="reviewForm_${p.id}">
         <input class="review-name-input" id="rname_${p.id}" placeholder="Tu nombre (opcional)">
         <textarea class="review-textarea" id="rtext_${p.id}" placeholder="Comparte tu experiencia con este producto..."></textarea>
+        <!-- Imágenes de la reseña -->
+        <div style="margin:8px 0;">
+          <label style="font-size:12px;font-weight:600;color:var(--muted);display:block;margin-bottom:6px;">📷 Agrega fotos (máx. 3)</label>
+          <input type="file" accept="image/*" multiple id="rimgs_${p.id}" onchange="previewReviewImgs('${p.id}',this)" style="font-size:12px;font-family:inherit;">
+          <div id="rimgs_preview_${p.id}" style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;"></div>
+        </div>
         <button class="review-submit" onclick="submitReview('${p.id}')">Publicar reseña →</button>
       </div>
     </div>
@@ -1522,13 +1647,22 @@ function switchModalImg(thumb, src){
   thumb.classList.add('active');
 }
 
-function selectVariant(pid, varName, opt, btn){
+function selectVariant(pid, varName, opt, btn, varImg){
   mSelectedVariants[varName] = opt;
   // Update UI — highlight selected pill within this variant group
   btn.closest('.variant-pills').querySelectorAll('.variant-pill').forEach(b=>b.classList.remove('selected'));
   btn.classList.add('selected');
   const sel = document.getElementById(`vsel_${pid}_${varName}`);
   if(sel) sel.textContent = opt;
+  // Switch main image if variant has one assigned
+  if(varImg && varImg!=='undefined' && varImg!==''){
+    const mainImg = document.getElementById('modalImgMain');
+    if(mainImg){ mainImg.src = varImg; }
+    // Also highlight matching thumb
+    document.querySelectorAll('.modal-thumb').forEach(t=>{
+      t.classList.toggle('active', t.src===varImg || t.getAttribute('src')===varImg);
+    });
+  }
 }
 
 function addToCartFromModal(id){
@@ -1549,28 +1683,62 @@ function addToCartFromModal(id){
 function getReviews(pid){ try{ return JSON.parse(localStorage.getItem(`st_reviews_${pid}`)||'[]'); }catch(e){ return []; } }
 function saveReviews(pid, rv){ localStorage.setItem(`st_reviews_${pid}`, JSON.stringify(rv)); }
 
+window._reviewImgs = {};
+
+function previewReviewImgs(pid, input){
+  const files = Array.from(input.files).slice(0,3);
+  if(!window._reviewImgs) window._reviewImgs={};
+  window._reviewImgs[pid] = [];
+  const preview = document.getElementById(`rimgs_preview_${pid}`);
+  preview.innerHTML='';
+  files.forEach(file=>{
+    const reader=new FileReader();
+    reader.onload=e=>{
+      window._reviewImgs[pid].push(e.target.result);
+      const img=document.createElement('img');
+      img.src=e.target.result;
+      img.style.cssText='width:60px;height:60px;object-fit:cover;border-radius:8px;border:1px solid var(--border);';
+      preview.appendChild(img);
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function reviewItemHTML(rv){
+  const imgs = rv.images||[];
+  return `<div class="review-item">
+    <div class="review-meta">
+      <span class="review-author">👤 ${rv.name||'Cliente'}</span>
+      <span>${starsHTML(rv.stars,12)}</span>
+      <span class="review-date">${new Date(rv.date).toLocaleDateString('es-CL')}</span>
+    </div>
+    <div class="review-comment">${rv.comment}</div>
+    ${imgs.length?`<div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;">
+      ${imgs.map(src=>`<img src="${src}" style="width:64px;height:64px;object-fit:cover;border-radius:8px;cursor:pointer;border:1px solid var(--border);" onclick="this.style.cssText='width:100%;height:auto;border-radius:8px;margin:4px 0;cursor:zoom-out;border:1px solid var(--border);';this.onclick=()=>location.reload();">`).join('')}
+    </div>`:''}
+  </div>`;
+}
+
 function submitReview(pid){
   const text = document.getElementById(`rtext_${pid}`).value.trim();
   const name = document.getElementById(`rname_${pid}`).value.trim()||'Cliente anónimo';
   if(!text){ showToast('Escribe un comentario antes de publicar'); return; }
   const mine = getMyRatings();
   const stars = mine[pid]||0;
+  const images = (window._reviewImgs&&window._reviewImgs[pid])||[];
   const reviews = getReviews(pid);
-  reviews.unshift({ name, comment:text, stars, date:Date.now() });
+  reviews.unshift({ name, comment:text, stars, images, date:Date.now() });
   saveReviews(pid, reviews);
   // Update UI
   const listEl = document.getElementById(`reviewsList_${pid}`);
-  if(listEl) listEl.innerHTML = reviews.map(rv=>`
-    <div class="review-item">
-      <div class="review-meta">
-        <span class="review-author">👤 ${rv.name}</span>
-        <span>${starsHTML(rv.stars,12)}</span>
-        <span class="review-date">${new Date(rv.date).toLocaleDateString('es-CL')}</span>
-      </div>
-      <div class="review-comment">${rv.comment}</div>
-    </div>`).join('');
+  if(listEl) listEl.innerHTML = reviews.map(reviewItemHTML).join('');
   document.getElementById(`rtext_${pid}`).value='';
   document.getElementById(`rname_${pid}`).value='';
+  const rimgsInput = document.getElementById(`rimgs_${pid}`);
+  if(rimgsInput) rimgsInput.value='';
+  const rimgsPreview = document.getElementById(`rimgs_preview_${pid}`);
+  if(rimgsPreview) rimgsPreview.innerHTML='';
+  if(window._reviewImgs) window._reviewImgs[pid]=[];
   showToast('✓ Reseña publicada, ¡gracias!','success');
 }
 
