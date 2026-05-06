@@ -815,14 +815,22 @@ async function pushToGitHub(path, content, msg){
 async function syncToCloud(){
   const S = getSettings();
   const prods = getProducts();
+  const now = Date.now();
+
+  // Actualizar _v local antes de subir
+  S._v = now;
+  localStorage.setItem('st_settings', JSON.stringify(S));
+
   const config = {
     storeName:S.storeName, storeSlogan:S.storeSlogan, announcement:S.announcement,
     whatsappNumber:S.whatsappNumber, mpWebhookUrl:S.mpWebhookUrl, currency:S.currency||'CLP',
     categories:S.categories||[], catIcons:S.catIcons||{}, catImages:S.catImages||{},
     emailjsKey:S.emailjsKey||'', emailjsService:S.emailjsService||'', emailjsTemplate:S.emailjsTemplate||'',
-    bannerInterval:S.bannerInterval||8, adminPassword:S.adminPassword, products:prods, _v:Date.now()
+    bannerInterval:S.bannerInterval||8, adminPassword:S.adminPassword, products:prods,
+    _v: now
   };
-  const media = { logoImg:S.logoImg||'', banners:S.banners||[], _v:Date.now() };
+  const media = { logoImg:S.logoImg||'', banners:S.banners||[], _v:now };
+
   const [cfgOk, mediaOk] = await Promise.all([
     pushToGitHub('store-config.json', JSON.stringify(config,null,2), '🔄 Admin: update config'),
     pushToGitHub('store-media.json',  JSON.stringify(media,null,2),  '🔄 Admin: update media')
@@ -831,8 +839,12 @@ async function syncToCloud(){
 }
 
 function saveSettingsObj(s){
+  s._v = Date.now(); // timestamp para comparación con GitHub
   localStorage.setItem('st_settings', JSON.stringify(s));
-  if(getGHToken()) syncToCloud().then(ok=>{ if(ok) showToast('✓ Sincronizado a la nube ☁️','ok'); else showToast('⚠ Error al sincronizar con GitHub'); });
+  if(getGHToken()) syncToCloud().then(ok=>{
+    if(ok) showToast('✓ Sincronizado a la nube ☁️','ok');
+    else showToast('⚠ Error al sincronizar con GitHub. Verifica el token en Configuración.');
+  });
 }
 
 function saveProducts(p){
@@ -1943,11 +1955,10 @@ function showToast(msg, type=''){
 }
 
 // ════════════════════════════════════════════
-//  ADMIN BOOT — carga datos desde GitHub
+//  ADMIN BOOT — carga datos desde GitHub solo si son más nuevos
 // ════════════════════════════════════════════
 
 async function adminBoot(){
-  // Mostrar pantalla de carga
   const loginScreen = document.getElementById('loginScreen');
   const loadingMsg = document.createElement('div');
   loadingMsg.id = 'bootMsg';
@@ -1962,22 +1973,45 @@ async function adminBoot(){
       fetch(`${RAW}/store-config.json?t=${t}`),
       fetch(`${RAW}/store-media.json?t=${t}`)
     ]);
+
     if(cfgRes.ok){
       const cfg = await cfgRes.json();
-      // Guardar en localStorage para que getSettings() lo use
-      const existing = getSettings();
-      const merged = Object.assign({}, existing, cfg);
-      if(cfg.products){ localStorage.setItem('st_products', JSON.stringify(cfg.products)); }
-      localStorage.setItem('st_settings', JSON.stringify(merged));
+      const localSettings = getSettings();
+      const localProds = getProducts();
+
+      // Solo actualizar si GitHub tiene datos MÁS NUEVOS que el local
+      // Usamos _v (timestamp) para comparar
+      const githubV = cfg._v || 0;
+      const localV = localSettings._v || 0;
+
+      if(githubV > localV){
+        // GitHub es más nuevo → actualizar local
+        const merged = Object.assign({}, localSettings, cfg);
+        merged._v = githubV;
+        if(cfg.products && cfg.products.length >= 0){
+          localStorage.setItem('st_products', JSON.stringify(cfg.products));
+        }
+        localStorage.setItem('st_settings', JSON.stringify(merged));
+        loadingMsg.textContent = '✓ Datos actualizados desde la nube';
+      } else {
+        // Local es más nuevo o igual → NO sobreescribir
+        loadingMsg.textContent = '✓ Usando datos locales (más recientes)';
+      }
     }
+
     if(mediaRes.ok){
       const media = await mediaRes.json();
       const S = getSettings();
-      if(media.logoImg) S.logoImg = media.logoImg;
-      if(media.banners) S.banners = media.banners;
-      localStorage.setItem('st_settings', JSON.stringify(S));
+      const githubMediaV = media._v || 0;
+      const localMediaV = S._mediaV || 0;
+      if(githubMediaV > localMediaV){
+        if(media.logoImg) S.logoImg = media.logoImg;
+        if(media.banners) S.banners = media.banners;
+        S._mediaV = githubMediaV;
+        localStorage.setItem('st_settings', JSON.stringify(S));
+      }
     }
-    loadingMsg.textContent = '✓ Listo — ingresa tu contraseña';
+
     loadingMsg.style.color = 'green';
   } catch(e){
     loadingMsg.textContent = '⚠ Sin conexión — usando datos locales';
