@@ -8,8 +8,7 @@
   "categories": [
     "Camisetas de Futbol",
     "Poleras Bandas de Rock",
-    "Deportes",
-    "hogar"
+    "Deportes"
   ],
   "catIcons": {
     "Electrónica": "💻",
@@ -82,5 +81,5 @@
       "active": true
     }
   ],
-  "_v": 1778041760382
+  "_v": 1778042412884
 }
