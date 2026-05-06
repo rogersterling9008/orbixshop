@@ -1533,6 +1533,8 @@ function openModal(id){
   const p = getProducts().find(pr=>pr.id===id);
   if(!p) return;
   mQty=1; mCurrentProd=p; mSelectedVariants={};
+  window._currentModalProd = p;
+  window._currentModalSel = {};
   const disc = p.origPrice?Math.round((1-p.price/p.origPrice)*100):0;
   const images = p.images?.length ? p.images : (p.img ? [p.img] : ['https://via.placeholder.com/400x400?text=Sin+imagen']);
 
@@ -1574,25 +1576,76 @@ function openModal(id){
         </div>
        </div>`;
 
-  // Variants HTML — with stock per option and image switching
-  const variantsHTML = (p.variants||[]).map(v=>`
+  // ── Función para normalizar opción (string o objeto) ──
+  const normOpt = o => typeof o==='string' ? {label:o, stock:0, img:''} : o;
+
+  // ── Verifica si una opción tiene stock disponible dadas las selecciones actuales ──
+  function optionHasStock(prod, varIdx, optLabel, currentSel){
+    const matrix = prod.variantMatrix||{};
+    const variants = prod.variants||[];
+    if(!Object.keys(matrix).length) return true; // sin matriz → usar stock individual
+
+    // Construir selección parcial con esta opción
+    const testSel = {...currentSel, [variants[varIdx].name]: optLabel};
+
+    // Buscar si alguna combinación completa con esta opción tiene stock
+    function checkCombos(idx, sel){
+      if(idx >= variants.length){
+        const key = variants.map(v=>sel[v.name]).join('|');
+        return (matrix[key]||0) > 0;
+      }
+      const v = variants[idx];
+      if(sel[v.name] !== undefined) return checkCombos(idx+1, sel);
+      return (v.options||[]).some(o=>{
+        const lbl = normOpt(o).label;
+        return checkCombos(idx+1, {...sel, [v.name]: lbl});
+      });
+    }
+    return checkCombos(0, testSel);
+  }
+
+  // ── Renderiza las píldoras de variantes con disponibilidad correcta ──
+  function renderVariantPills(prod, currentSel){
+    (prod.variants||[]).forEach((v, vi)=>{
+      const wrap = document.getElementById(`vpills_${prod.id}_${vi}`);
+      if(!wrap) return;
+      wrap.innerHTML = (v.options||[]).map(o=>{
+        const opt = normOpt(o);
+        const hasStock = optionHasStock(prod, vi, opt.label, currentSel);
+        const isSel = currentSel[v.name] === opt.label;
+        return `<button class="variant-pill${!hasStock?' variant-pill-disabled':''}${isSel?' selected':''}"
+          onclick="selectVariant('${prod.id}','${v.name}','${opt.label}',this,'${opt.img||''}')"
+          ${!hasStock?'title="Sin stock para esta combinación"':''}>
+          ${opt.label}${!hasStock?' <span style="font-size:10px;opacity:.6;">✗</span>':''}
+        </button>`;
+      }).join('');
+    });
+  }
+
+  // ── HTML de variantes ──
+  const variantsHTML = (p.variants||[]).map((v, vi)=>`
     <div class="variant-section">
       <div class="variant-label">${v.name}: <span class="variant-selected" id="vsel_${p.id}_${v.name}">—</span></div>
-      <div class="variant-pills">
+      <div class="variant-pills" id="vpills_${p.id}_${vi}">
         ${(v.options||[]).map(o=>{
-          const opt = typeof o==='string' ? {label:o, stock:0, img:''} : o;
-          const outOfStock = opt.stock !== undefined && opt.stock <= 0;
-          return `<button class="variant-pill${outOfStock?' variant-pill-disabled':''}"
+          const opt = normOpt(o);
+          const hasStock = optionHasStock(p, vi, opt.label, {});
+          return `<button class="variant-pill${!hasStock?' variant-pill-disabled':''}"
             onclick="selectVariant('${p.id}','${v.name}','${opt.label}',this,'${opt.img||''}')"
-            ${outOfStock?'title="Sin stock para esta variante"':''}>
-            ${opt.label}
-            ${opt.stock>0&&opt.stock<=5?`<span style="font-size:10px;opacity:.7;margin-left:3px;">(${opt.stock})</span>`:''}
-            ${outOfStock?'<span style="font-size:10px;opacity:.6;margin-left:3px;">✗</span>':''}
+            ${!hasStock?'title="Sin stock para esta combinación"':''}>
+            ${opt.label}${!hasStock?' <span style="font-size:10px;opacity:.6;">✗</span>':''}
           </button>`;
         }).join('')}
       </div>
     </div>
   `).join('');
+
+  // Guardar funciones en contexto del modal para uso en selectVariant
+  window._currentModalProd = p;
+  window._currentModalSel = {};
+  window._optionHasStock = optionHasStock;
+  window._renderVariantPills = renderVariantPills;
+  window._normOpt = normOpt;
 
   // Reviews HTML
   const reviews = getReviews(p.id);
@@ -1648,20 +1701,39 @@ function switchModalImg(thumb, src){
 }
 
 function selectVariant(pid, varName, opt, btn, varImg){
+  // Ignorar si está deshabilitado
+  if(btn.classList.contains('variant-pill-disabled')) return;
+
   mSelectedVariants[varName] = opt;
-  btn.closest('.variant-pills').querySelectorAll('.variant-pill').forEach(b=>b.classList.remove('selected'));
-  btn.classList.add('selected');
+  window._currentModalSel = {...mSelectedVariants};
+
+  // Actualizar label de selección
   const sel = document.getElementById(`vsel_${pid}_${varName}`);
   if(sel) sel.textContent = opt;
 
-  // Switch image if variant has one assigned
+  // Cambiar imagen si la variante tiene una asignada
   if(varImg && varImg!=='undefined' && varImg!==''){
     const mainImg = document.getElementById('modalImgMain');
     if(mainImg) mainImg.src = varImg;
   }
 
-  // Update stock display based on matrix
-  const p = getProducts().find(pr=>pr.id===pid);
+  // Re-renderizar TODAS las píldoras de variantes con la nueva selección
+  // Esto actualiza la disponibilidad según la matriz
+  const p = window._currentModalProd;
+  if(p && window._renderVariantPills){
+    window._renderVariantPills(p, window._currentModalSel);
+    // Mantener selección visual del botón actual
+    const allPills = document.querySelectorAll('.variant-pills');
+    allPills.forEach(wrap=>{
+      wrap.querySelectorAll('.variant-pill').forEach(b=>{
+        if(b.textContent.trim().startsWith(opt) && wrap.id === `vpills_${pid}_${[...(p.variants||[])].findIndex(v=>v.name===varName)}`){
+          b.classList.add('selected');
+        }
+      });
+    });
+  }
+
+  // Actualizar stock display según matriz
   if(p?.variantMatrix && Object.keys(p.variantMatrix).length>0){
     const allVariants = p.variants||[];
     const allSelected = allVariants.every(v=>mSelectedVariants[v.name]);
