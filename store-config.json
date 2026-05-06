@@ -27,64 +27,6 @@
   "adminPassword": "12345678",
   "products": [
     {
-      "id": "motvqcgrsyz1b",
-      "name": "camiseta",
-      "cat": "Camisetas de Futbol",
-      "desc": "",
-      "price": 9990,
-      "origPrice": 0,
-      "stock": 11,
-      "img": "https://assets.adidas.com/images/w_600,f_auto,q_auto/a6e79f62e96947e09be20f47bc0d3230_faec/Camiseta_Visitante_Messi_Inter_Miami_CF_25-26_Negro_JI6821_db02_laydown.jpg",
-      "images": [
-        "https://assets.adidas.com/images/w_600,f_auto,q_auto/a6e79f62e96947e09be20f47bc0d3230_faec/Camiseta_Visitante_Messi_Inter_Miami_CF_25-26_Negro_JI6821_db02_laydown.jpg"
-      ],
-      "variants": [
-        {
-          "name": "Jugador ",
-          "options": [
-            {
-              "label": "Messi",
-              "stock": 0,
-              "img": "https://assets.adidas.com/images/w_600,f_auto,q_auto/a6e79f62e96947e09be20f47bc0d3230_faec/Camiseta_Visitante_Messi_Inter_Miami_CF_25-26_Negro_JI6821_db02_laydown.jpg"
-            }
-          ]
-        },
-        {
-          "name": "Talla",
-          "options": [
-            {
-              "label": "S",
-              "stock": 0,
-              "img": ""
-            },
-            {
-              "label": "M",
-              "stock": 0,
-              "img": ""
-            },
-            {
-              "label": "L",
-              "stock": 0,
-              "img": ""
-            },
-            {
-              "label": "XL",
-              "stock": 0,
-              "img": ""
-            }
-          ]
-        }
-      ],
-      "variantMatrix": {
-        "Messi|S": 3,
-        "Messi|M": 1,
-        "Messi|L": 4,
-        "Messi|XL": 3
-      },
-      "featured": false,
-      "active": true
-    },
-    {
       "id": "motj2btp9vzzq",
       "name": "Camiseta Universidad de Chile- Local 2026",
       "cat": "Camisetas de Futbol",
@@ -137,5 +79,5 @@
       "active": true
     }
   ],
-  "_v": 1778063577328
+  "_v": 1778063593516
 }
