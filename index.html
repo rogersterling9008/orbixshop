@@ -735,8 +735,9 @@
     }
 
     .modal-info {
-      padding: 28px 28px 20px; overflow-y: auto;
+      padding: 28px 28px 28px; overflow-y: auto;
       display: flex; flex-direction: column; gap:0;
+      max-height: calc(94vh);
     }
     .modal-cat { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; margin-bottom: 8px; }
     .modal-title { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 700; margin-bottom: 10px; line-height: 1.3; }
@@ -920,12 +921,46 @@
         max-height: 95vh;
         width: 100%;
       }
-      .modal-img-panel { max-height: 55vw; min-height: 200px; }
-      .modal-img-main { max-height: 55vw; object-fit: cover; }
-      .modal-info { padding: 16px 16px 24px; }
+      /* Product Modal mobile — imagen completa + reseñas visibles */
+      .modal-overlay { padding: 0; align-items: flex-end; }
+      .product-modal {
+        grid-template-columns: 1fr !important;
+        border-radius: 20px 20px 0 0;
+        max-height: 95vh;
+        width: 100%;
+        overflow-y: auto !important;
+        overflow-x: hidden;
+        display: flex !important;
+        flex-direction: column !important;
+      }
+      .modal-img-panel {
+        max-height: none !important;
+        min-height: 0 !important;
+        flex-shrink: 0;
+      }
+      .modal-img-main {
+        max-height: none !important;
+        height: auto !important;
+        width: 100% !important;
+        object-fit: contain !important;
+        display: block;
+      }
+      .modal-info {
+        padding: 16px 16px 32px !important;
+        overflow-y: visible !important;
+        flex: 1;
+      }
       .modal-title { font-size: 17px; }
       .modal-price { font-size: 22px; }
-      .modal-close { top: 10px; right: 10px; width: 30px; height: 30px; font-size: 13px; }
+      .modal-close {
+        position: fixed !important;
+        top: 12px; right: 12px; z-index: 9999;
+        width: 32px; height: 32px; font-size: 14px;
+        background: rgba(0,0,0,0.6) !important;
+        color: white !important; border-radius: 50%;
+      }
+      .modal-img-thumbs { padding: 6px 8px !important; }
+      .modal-thumb { width: 40px !important; height: 52px !important; }
 
       /* Cart sidebar */
       .cart-sidebar { width: 100%; right: -100%; border-radius: 0; }
