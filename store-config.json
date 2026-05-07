@@ -30,7 +30,7 @@
       "id": "mousy2918s6cy",
       "name": "Camiseta U de Chile-Entrenamiento 2026",
       "cat": "Camisetas de Futbol",
-      "desc": "•  Base: Morado/ Violeta Oscuro, color usado por el club en su ropa de entrenamiento.\n •  Detalles: \n •  Dorsal y nombre:",
+      "desc": "•  Base: Morado/ Violeta Oscuro, color usado por el club en su ropa de entrenamiento.\n •  Detalles: Cuello redondo o en V, en el mismo tono morado.\n •  Dorsal y nombre: Las camisetas de entrenamiento no traen numero de jugador.",
       "price": 19990,
       "origPrice": 24990,
       "stock": 28,
@@ -215,5 +215,5 @@
       "active": true
     }
   ],
-  "_v": 1778117928568
+  "_v": 1778118108631
 }
