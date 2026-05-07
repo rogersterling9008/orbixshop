@@ -875,6 +875,68 @@ async function pushToGitHub(path, content, msg){
   }
 }
 
+async function pushBothToGitHub(files, message){
+  const token = getGHToken(); if(!token) return false;
+  const REPO_API = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}`;
+  const H = {
+    'Authorization': `token ${token}`,
+    'Content-Type': 'application/json',
+    'Accept': 'application/vnd.github.v3+json'
+  };
+  try {
+    // 1. Crear blobs para todos los archivos en paralelo
+    const blobShas = await Promise.all(files.map(async f => {
+      const encoded = btoa(unescape(encodeURIComponent(f.content)));
+      const r = await fetch(`${REPO_API}/git/blobs`, {
+        method:'POST', headers:H,
+        body: JSON.stringify({ content: encoded, encoding: 'base64' })
+      });
+      if(!r.ok) throw new Error(`Blob failed for ${f.path}: ${r.status}`);
+      return (await r.json()).sha;
+    }));
+
+    // 2. Obtener HEAD actual
+    const refRes = await fetch(`${REPO_API}/git/refs/heads/main`, { headers:H });
+    if(!refRes.ok) throw new Error('Cannot get HEAD: ' + refRes.status);
+    const headSha = (await refRes.json()).object.sha;
+
+    // 3. Obtener árbol base
+    const commitRes = await fetch(`${REPO_API}/git/commits/${headSha}`, { headers:H });
+    if(!commitRes.ok) throw new Error('Cannot get commit');
+    const baseTreeSha = (await commitRes.json()).tree.sha;
+
+    // 4. Crear UN árbol con TODOS los archivos (commit atómico — sin race conditions)
+    const treeEntries = files.map((f,i) => ({
+      path: f.path, mode:'100644', type:'blob', sha: blobShas[i]
+    }));
+    const treeRes = await fetch(`${REPO_API}/git/trees`, {
+      method:'POST', headers:H,
+      body: JSON.stringify({ base_tree: baseTreeSha, tree: treeEntries })
+    });
+    if(!treeRes.ok) throw new Error('Tree failed: ' + treeRes.status);
+    const treeSha = (await treeRes.json()).sha;
+
+    // 5. Crear UN solo commit con ambos archivos
+    const newCommitRes = await fetch(`${REPO_API}/git/commits`, {
+      method:'POST', headers:H,
+      body: JSON.stringify({ message, tree: treeSha, parents: [headSha] })
+    });
+    if(!newCommitRes.ok) throw new Error('Commit failed: ' + newCommitRes.status);
+    const newCommitSha = (await newCommitRes.json()).sha;
+
+    // 6. Actualizar HEAD
+    const updateRes = await fetch(`${REPO_API}/git/refs/heads/main`, {
+      method:'PATCH', headers:H,
+      body: JSON.stringify({ sha: newCommitSha })
+    });
+    if(!updateRes.ok) throw new Error('Update HEAD failed: ' + updateRes.status);
+    return true;
+  } catch(e){
+    console.error('GitHub push error:', e.message);
+    return false;
+  }
+}
+
 async function syncToCloud(){
   const S = getSettings();
   const prods = getProducts();
@@ -894,10 +956,14 @@ async function syncToCloud(){
   };
   const media = { logoImg:S.logoImg||'', banners:S.banners||[], _v:now };
 
-  // Subir secuencialmente para evitar conflictos en Git
-  const cfgOk = await pushToGitHub('store-config.json', JSON.stringify(config,null,2), '🔄 Admin: update config');
-  const mediaOk = await pushToGitHub('store-media.json', JSON.stringify(media,null,2), '🔄 Admin: update media');
-  return cfgOk;
+  // Un solo commit atómico con ambos archivos (config + media juntos)
+  return await pushBothToGitHub(
+    [
+      { path: 'store-config.json', content: JSON.stringify(config,null,2) },
+      { path: 'store-media.json',  content: JSON.stringify(media,null,2)  }
+    ],
+    '🔄 Admin: sync store data'
+  );
 }
 
 function saveSettingsObj(s){
@@ -2066,7 +2132,11 @@ async function adminBoot(){
 
   try {
     const API = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents`;
-    const ghHeaders = { 'Accept': 'application/vnd.github.v3.raw' };
+    const ghTok = localStorage.getItem('gh_token') || '';
+    const ghHeaders = {
+      'Accept': 'application/vnd.github.v3.raw',
+      ...(ghTok ? { 'Authorization': `token ${ghTok}` } : {})
+    };
     const [cfgRes, mediaRes] = await Promise.all([
       fetch(`${API}/store-config.json`, { headers: ghHeaders }),
       fetch(`${API}/store-media.json`,  { headers: ghHeaders })
