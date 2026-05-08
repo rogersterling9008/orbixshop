@@ -1227,16 +1227,12 @@ let _cloudConfig = null;
 let _cloudMedia  = null;
 
 async function fetchCloud(){
-  const prevV = getSettings()._v || 0;
   const token = localStorage.getItem('gh_token') || '';
   const t     = Date.now();
-
-  // URLs de fetch — en orden de confiabilidad para móviles
-  const PAGES = `https://${REPO_OWNER.toLowerCase()}.github.io/${REPO_NAME}`;
   const RAW   = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main`;
   const API   = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents`;
 
-  // Helper: fetch seguro que nunca lanza excepción
+  // Helper: fetch seguro, nunca lanza excepción
   async function tryFetch(url, opts){
     try {
       const r = await fetch(url, opts || {});
@@ -1248,29 +1244,25 @@ async function fetchCloud(){
   let cfgData = null, mediaData = null;
 
   if(token){
-    // ── Dispositivo admin (tiene token): API autenticada, siempre fresca ──
+    // Admin (tiene token): API autenticada, siempre fresca e instantánea
     const H = { headers:{ 'Accept':'application/vnd.github.v3.raw', 'Authorization':`token ${token}` } };
     [cfgData, mediaData] = await Promise.all([
       tryFetch(`${API}/store-config.json`, H),
       tryFetch(`${API}/store-media.json`,  H)
     ]);
+  } else {
+    // Móviles/clientes: raw URL en paralelo (~1.5s, sin auth, sin CORS)
+    // Diagnóstico confirmó: raw = 1588ms vs GitHub Pages?_= = 11030ms
+    [cfgData, mediaData] = await Promise.all([
+      tryFetch(`${RAW}/store-config.json?_=${t}`),
+      tryFetch(`${RAW}/store-media.json?_=${t}`)
+    ]);
+    // Fallback: GitHub API sin auth (~6s, solo si raw falla)
+    if(!cfgData)   cfgData   = await tryFetch(`${API}/store-config.json`, { headers:{'Accept':'application/vnd.github.v3.raw'} });
+    if(!mediaData) mediaData = await tryFetch(`${API}/store-media.json`,  { headers:{'Accept':'application/vnd.github.v3.raw'} });
   }
 
-  // ── Móviles / clientes (sin token) ────────────────────────────────────────
-  // Intento 1: GitHub Pages (mismo dominio de la tienda, sin CORS, sin límites)
-  //            Es la fuente más confiable en cualquier red móvil.
-  if(!cfgData)   cfgData   = await tryFetch(`${PAGES}/store-config.json?_=${t}`);
-  if(!mediaData) mediaData = await tryFetch(`${PAGES}/store-media.json?_=${t}`);
-
-  // Intento 2: raw.githubusercontent.com (CDN de GitHub, ampliamente accesible)
-  if(!cfgData)   cfgData   = await tryFetch(`${RAW}/store-config.json?_=${t}`);
-  if(!mediaData) mediaData = await tryFetch(`${RAW}/store-media.json?_=${t}`);
-
-  // Intento 3: GitHub Contents API sin auth (último recurso, 60 req/hr)
-  if(!cfgData)   cfgData   = await tryFetch(`${API}/store-config.json`, { headers:{ 'Accept':'application/vnd.github.v3.raw' } });
-  if(!mediaData) mediaData = await tryFetch(`${API}/store-media.json`,  { headers:{ 'Accept':'application/vnd.github.v3.raw' } });
-
-  // ── Aplicar datos ─────────────────────────────────────────────────────────
+  // Aplicar datos a localStorage
   if(cfgData){
     if(cfgData.products) localStorage.setItem('st_products', JSON.stringify(cfgData.products));
     const merged = Object.assign({}, cfgData);
@@ -1283,18 +1275,8 @@ async function fetchCloud(){
     if(mediaData.banners !== undefined) S.banners = mediaData.banners;
     localStorage.setItem('st_settings', JSON.stringify(S));
   }
-
-  // ── Fix caché permanente ──────────────────────────────────────────────────
-  // Si la nube tiene versión más nueva → hard-reload con ?_v=X para que el
-  // navegador descargue HTML fresco ignorando cualquier caché local.
-  if(cfgData && cfgData._v && cfgData._v > prevV){
-    const urlV = new URLSearchParams(location.search).get('_v');
-    if(String(cfgData._v) !== urlV){
-      location.replace(location.pathname + '?_v=' + cfgData._v);
-      return;
-    }
-    if(urlV) history.replaceState(null, '', location.pathname);
-  }
+  // Nota: el HTML fresco está garantizado por los meta Cache-Control del <head>
+  // No se necesita redirect — eso causaba 22+ segundos de carga en móvil.
 }
 
 function getSettings(){
