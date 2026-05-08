@@ -42,7 +42,18 @@
         "https://i.postimg.cc/GtSTTxtm/Malla-de-Plastico-5.png",
         "https://i.postimg.cc/NFP22kFK/Malla-de-Plastico.jpg"
       ],
-      "variants": [],
+      "variants": [
+        {
+          "name": "Color",
+          "options": [
+            {
+              "label": "Transparente",
+              "stock": 0,
+              "img": "https://i.postimg.cc/GtSTTxtm/Malla-de-Plastico-5.png"
+            }
+          ]
+        }
+      ],
       "variantMatrix": {},
       "featured": false,
       "active": true
@@ -402,5 +413,5 @@
       "active": true
     }
   ],
-  "_v": 1778267557889
+  "_v": 1778267642655
 }
