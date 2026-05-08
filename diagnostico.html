@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Diagnóstico SyA Store</title>
+  <style>
+    body { font-family: monospace; padding: 16px; background: #0f0f0f; color: #e0e0e0; font-size: 14px; }
+    h2   { color: #FF4D00; margin-bottom: 4px; }
+    .card { background: #1a1a1a; border-radius: 8px; padding: 12px; margin-bottom: 12px; border-left: 4px solid #333; }
+    .ok   { border-left-color: #22c55e; }
+    .fail { border-left-color: #ef4444; }
+    .wait { border-left-color: #f59e0b; }
+    .label { font-weight: bold; margin-bottom: 4px; }
+    .status { font-size: 18px; }
+    .detail { font-size: 11px; color: #888; margin-top: 4px; word-break: break-all; }
+    .value  { color: #7dd3fc; font-size: 12px; margin-top: 4px; }
+    button  { background: #FF4D00; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-size: 15px; cursor: pointer; width: 100%; margin-bottom: 12px; font-family: monospace; }
+    #log { background:#111; padding:10px; border-radius:6px; font-size:11px; color:#aaa; white-space:pre-wrap; max-height:200px; overflow-y:auto; }
+  </style>
+</head>
+<body>
+
+<h2>🔍 Diagnóstico SyA Store</h2>
+<p style="font-size:12px;color:#888;">Abre esta página en el celular con datos móviles (sin WiFi) para ver qué falla.</p>
+
+<button onclick="runDiag()">▶ INICIAR DIAGNÓSTICO</button>
+
+<div id="results"></div>
+<div id="log"></div>
+
+<script>
+const OWNER = 'SYASTORE2020';
+const REPO  = 'SYA.CL';
+const PAGES = `https://${OWNER.toLowerCase()}.github.io/${REPO}`;
+const RAW   = `https://raw.githubusercontent.com/${OWNER}/${REPO}/main`;
+const API   = `https://api.github.com/repos/${OWNER}/${REPO}/contents`;
+const FILE  = 'store-config.json';
+
+const log = [];
+function addLog(msg){ log.push(msg); document.getElementById('log').textContent = log.join('\n'); }
+
+function card(id, label, url){
+  document.getElementById('results').insertAdjacentHTML('beforeend',
+    `<div class="card wait" id="${id}">
+      <div class="label">${label}</div>
+      <div class="status" id="${id}_s">⏳ probando...</div>
+      <div class="detail">${url}</div>
+      <div class="value" id="${id}_v"></div>
+    </div>`
+  );
+}
+
+async function probe(id, url, opts){
+  const t0 = Date.now();
+  try {
+    addLog(`→ GET ${url}`);
+    const r = await fetch(url, opts || {});
+    const ms = Date.now() - t0;
+    if(r.ok){
+      const data = await r.json();
+      const prods = data.products ? data.products.length : '?';
+      document.getElementById(id).className = 'card ok';
+      document.getElementById(id+'_s').textContent = `✅ OK (${ms}ms)`;
+      document.getElementById(id+'_v').textContent = `HTTP ${r.status} · ${prods} productos · _v=${data._v||'n/a'}`;
+      addLog(`  ✅ ${r.status} OK en ${ms}ms — ${prods} productos`);
+      return true;
+    } else {
+      document.getElementById(id).className = 'card fail';
+      document.getElementById(id+'_s').textContent = `❌ HTTP ${r.status} (${ms}ms)`;
+      addLog(`  ❌ HTTP ${r.status}`);
+      return false;
+    }
+  } catch(e){
+    const ms = Date.now() - t0;
+    document.getElementById(id).className = 'card fail';
+    document.getElementById(id+'_s').textContent = `❌ ERROR (${ms}ms)`;
+    document.getElementById(id+'_v').textContent = e.message;
+    addLog(`  ❌ EXCEPCIÓN: ${e.message}`);
+    return false;
+  }
+}
+
+async function runDiag(){
+  document.getElementById('results').innerHTML = '';
+  document.getElementById('log').textContent = '';
+  log.length = 0;
+
+  const t = Date.now();
+
+  // ── Info del dispositivo ──
+  addLog(`Device: ${navigator.userAgent}`);
+  addLog(`Online: ${navigator.onLine}`);
+  addLog(`Token localStorage: ${localStorage.getItem('gh_token') ? 'SÍ' : 'NO'}`);
+  addLog(`st_products en localStorage: ${localStorage.getItem('st_products') ? 'SÍ ('+JSON.parse(localStorage.getItem('st_products')||'[]').length+' prods)' : 'NO'}`);
+  addLog(`---`);
+
+  // ── Test 1: GitHub Pages (mismo dominio) ──
+  card('t1', '1️⃣ GitHub Pages (mismo dominio de la tienda)', `${PAGES}/${FILE}?_=${t}`);
+  await probe('t1', `${PAGES}/${FILE}?_=${t}`);
+
+  // ── Test 2: raw.githubusercontent.com ──
+  card('t2', '2️⃣ raw.githubusercontent.com', `${RAW}/${FILE}?_=${t}`);
+  await probe('t2', `${RAW}/${FILE}?_=${t}`);
+
+  // ── Test 3: GitHub API sin auth ──
+  card('t3', '3️⃣ GitHub API (sin token)', `${API}/${FILE}`);
+  await probe('t3', `${API}/${FILE}`, { headers:{'Accept':'application/vnd.github.v3.raw'} });
+
+  // ── Test 4: GitHub Pages SIN cache-buster ──
+  card('t4', '4️⃣ GitHub Pages (sin parámetro ?_=)', `${PAGES}/${FILE}`);
+  await probe('t4', `${PAGES}/${FILE}`);
+
+  // ── Test 5: store-media.json via GitHub Pages ──
+  card('t5', '5️⃣ store-media.json (GitHub Pages)', `${PAGES}/store-media.json?_=${t}`);
+  await probe('t5', `${PAGES}/store-media.json?_=${t}`);
+
+  // ── Resumen ──
+  document.getElementById('results').insertAdjacentHTML('beforeend',
+    `<div class="card" style="border-left-color:#7dd3fc;">
+      <div class="label">📋 Resumen del dispositivo</div>
+      <div class="value">
+        UserAgent: ${navigator.userAgent.substring(0,80)}...<br>
+        Online: ${navigator.onLine}<br>
+        Hora: ${new Date().toLocaleString('es-CL')}
+      </div>
+    </div>`
+  );
+
+  addLog(`\nFINALIZADO`);
+}
+</script>
+</body>
+</html>
