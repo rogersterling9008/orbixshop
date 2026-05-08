@@ -1504,6 +1504,7 @@ function editProd(id){ openProdModal(getProducts().find(p=>p.id===id)); }
 function closeProdModal(){ document.getElementById('prodModal').classList.remove('open'); }
 
 function saveProd(){
+  try {
   const name = document.getElementById('pm_name').value.trim();
   const price = parseFloat(document.getElementById('pm_price').value);
   if(!name){ showToast('El nombre es requerido'); return; }
@@ -1546,6 +1547,10 @@ function saveProd(){
   closeProdModal();
   renderProducts();
   if(images.length) showToast('✓ Producto guardado','ok');
+  } catch(err) {
+    showToast('❌ Error al guardar: ' + err.message, 'error');
+    console.error('saveProd error:', err);
+  }
 }
 
 function deleteProd(id){
