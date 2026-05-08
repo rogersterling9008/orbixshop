@@ -5,6 +5,7 @@
   "whatsappNumber": "56991065770",
   "mpWebhookUrl": "https://scalding-browsing-sly.ngrok-free.dev/webhook/mp-crear-preferencia",
   "currency": "CLP",
+  "firebaseUrl": "",
   "categories": [
     "Camisetas de Futbol",
     "Poleras Bandas de Rock",
@@ -381,5 +382,5 @@
       "active": true
     }
   ],
-  "_v": 1778205048386
+  "_v": 1778205442472
 }
