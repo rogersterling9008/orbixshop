@@ -28,21 +28,6 @@
   "adminPassword": "12345678",
   "products": [
     {
-      "id": "mowx0p5sk9qt7",
-      "name": "camiseta",
-      "cat": "Camisetas de Futbol",
-      "desc": "",
-      "price": 123445,
-      "origPrice": 0,
-      "stock": 0,
-      "img": "",
-      "images": [],
-      "variants": [],
-      "variantMatrix": {},
-      "featured": false,
-      "active": true
-    },
-    {
       "id": "movwqijmz41t6",
       "name": "Camiseta Colo Colo-Pre Partido 2026",
       "cat": "Camisetas de Futbol",
@@ -397,5 +382,5 @@
       "active": true
     }
   ],
-  "_v": 1778244763775
+  "_v": 1778244775945
 }
