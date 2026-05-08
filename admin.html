@@ -483,6 +483,16 @@
             <small style="color:var(--muted);font-size:12px;margin-top:4px;display:block;">Este webhook recibe el pedido y crea la preferencia de pago en MP. Déjalo vacío si no tienes aún.</small>
           </div>
         </div>
+        <!-- Firebase Realtime Database -->
+        <div class="settings-section">
+          <div class="settings-section-title">🔥 Firebase — Reseñas sincronizadas entre dispositivos</div>
+          <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">Para que las reseñas y calificaciones sean visibles desde todos los dispositivos, crea un proyecto gratis en <a href="https://console.firebase.google.com" target="_blank">console.firebase.google.com</a> → Realtime Database, y pega aquí la URL.</p>
+          <div class="form-group">
+            <label class="form-label">URL de Firebase Realtime Database</label>
+            <input class="form-control" id="s_firebase" placeholder="https://tu-proyecto-default-rtdb.firebaseio.com">
+            <small style="color:var(--muted);font-size:12px;margin-top:4px;display:block;">Termina en <strong>.firebaseio.com</strong>. Reglas recomendadas: read=true, write="!data.exists()" para /reviews y /ratings.</small>
+          </div>
+        </div>
         <!-- EmailJS (optional email notifications) -->
         <div class="settings-section">
           <div class="settings-section-title">📧 Notificaciones por Email (EmailJS — opcional)</div>
@@ -763,7 +773,7 @@ const DEFAULT_SETTINGS = {
   storeName:'MiTienda', storeSlogan:'Los mejores productos al mejor precio',
   announcement:'🚚 Despacho a todo Chile · Pago al recibir o con MercadoPago',
   whatsappNumber:'56991065770', adminPassword:'admin2024',
-  mpWebhookUrl:'', currency:'CLP',
+  mpWebhookUrl:'', currency:'CLP', firebaseUrl:'',
   categories:['Electrónica','Hogar','Ropa','Deportes','Juguetes','Otros'],
   catIcons:{'Electrónica':'💻','Hogar':'🏠','Ropa':'👗','Deportes':'⚽','Juguetes':'🎮','Otros':'📦'},
   banners:[
@@ -884,7 +894,7 @@ async function pushBothToGitHub(files, message){
     'Accept': 'application/vnd.github.v3+json'
   };
   try {
-    // 1. Crear blobs para todos los archivos en paralelo
+    // 1. Crear blobs en paralelo
     const blobShas = await Promise.all(files.map(async f => {
       const encoded = btoa(unescape(encodeURIComponent(f.content)));
       const r = await fetch(`${REPO_API}/git/blobs`, {
@@ -894,36 +904,28 @@ async function pushBothToGitHub(files, message){
       if(!r.ok) throw new Error(`Blob failed for ${f.path}: ${r.status}`);
       return (await r.json()).sha;
     }));
-
-    // 2. Obtener HEAD actual
+    // 2. HEAD actual
     const refRes = await fetch(`${REPO_API}/git/refs/heads/main`, { headers:H });
     if(!refRes.ok) throw new Error('Cannot get HEAD: ' + refRes.status);
     const headSha = (await refRes.json()).object.sha;
-
-    // 3. Obtener árbol base
+    // 3. Árbol base
     const commitRes = await fetch(`${REPO_API}/git/commits/${headSha}`, { headers:H });
     if(!commitRes.ok) throw new Error('Cannot get commit');
     const baseTreeSha = (await commitRes.json()).tree.sha;
-
-    // 4. Crear UN árbol con TODOS los archivos (commit atómico — sin race conditions)
-    const treeEntries = files.map((f,i) => ({
-      path: f.path, mode:'100644', type:'blob', sha: blobShas[i]
-    }));
+    // 4. UN árbol con TODOS los archivos
     const treeRes = await fetch(`${REPO_API}/git/trees`, {
       method:'POST', headers:H,
-      body: JSON.stringify({ base_tree: baseTreeSha, tree: treeEntries })
+      body: JSON.stringify({ base_tree: baseTreeSha, tree: files.map((f,i)=>({ path:f.path, mode:'100644', type:'blob', sha:blobShas[i] })) })
     });
     if(!treeRes.ok) throw new Error('Tree failed: ' + treeRes.status);
     const treeSha = (await treeRes.json()).sha;
-
-    // 5. Crear UN solo commit con ambos archivos
+    // 5. UN commit
     const newCommitRes = await fetch(`${REPO_API}/git/commits`, {
       method:'POST', headers:H,
       body: JSON.stringify({ message, tree: treeSha, parents: [headSha] })
     });
     if(!newCommitRes.ok) throw new Error('Commit failed: ' + newCommitRes.status);
     const newCommitSha = (await newCommitRes.json()).sha;
-
     // 6. Actualizar HEAD
     const updateRes = await fetch(`${REPO_API}/git/refs/heads/main`, {
       method:'PATCH', headers:H,
@@ -942,13 +944,13 @@ async function syncToCloud(){
   const prods = getProducts();
   const now = Date.now();
 
-  // Actualizar _v local antes de subir
   S._v = now;
   localStorage.setItem('st_settings', JSON.stringify(S));
 
   const config = {
     storeName:S.storeName, storeSlogan:S.storeSlogan, announcement:S.announcement,
     whatsappNumber:S.whatsappNumber, mpWebhookUrl:S.mpWebhookUrl, currency:S.currency||'CLP',
+    firebaseUrl:S.firebaseUrl||'',
     categories:S.categories||[], catIcons:S.catIcons||{}, catImages:S.catImages||{},
     emailjsKey:S.emailjsKey||'', emailjsService:S.emailjsService||'', emailjsTemplate:S.emailjsTemplate||'',
     bannerInterval:S.bannerInterval||8, adminPassword:S.adminPassword, products:prods,
@@ -956,7 +958,7 @@ async function syncToCloud(){
   };
   const media = { logoImg:S.logoImg||'', banners:S.banners||[], _v:now };
 
-  // Un solo commit atómico con ambos archivos (config + media juntos)
+  // Un solo commit atómico con ambos archivos
   return await pushBothToGitHub(
     [
       { path: 'store-config.json', content: JSON.stringify(config,null,2) },
@@ -1879,6 +1881,7 @@ function renderSettings(){
   document.getElementById('s_ann').value = S.announcement||'';
   document.getElementById('s_wp').value = S.whatsappNumber||'';
   document.getElementById('s_mp').value = S.mpWebhookUrl||'';
+  document.getElementById('s_firebase').value = S.firebaseUrl||'';
   document.getElementById('s_ejskey').value = S.emailjsKey||'';
   document.getElementById('s_ejsservice').value = S.emailjsService||'';
   document.getElementById('s_ejstemplate').value = S.emailjsTemplate||'';
@@ -2094,6 +2097,7 @@ function saveSettings(){
   S.announcement = document.getElementById('s_ann').value.trim();
   S.whatsappNumber = document.getElementById('s_wp').value.trim();
   S.mpWebhookUrl = document.getElementById('s_mp').value.trim();
+  S.firebaseUrl  = document.getElementById('s_firebase').value.trim().replace(/\/$/,'');
   S.emailjsKey = document.getElementById('s_ejskey').value.trim();
   S.emailjsService = document.getElementById('s_ejsservice').value.trim();
   S.emailjsTemplate = document.getElementById('s_ejstemplate').value.trim();

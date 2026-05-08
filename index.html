@@ -1153,6 +1153,7 @@ const DEFAULT_SETTINGS = {
   adminPassword: 'admin2024',
   mpWebhookUrl: '',
   currency: 'CLP',
+  firebaseUrl: '',
   categories: ['Electrónica','Hogar','Ropa','Deportes','Juguetes','Otros'],
   catIcons:   {'Electrónica':'💻','Hogar':'🏠','Ropa':'👗','Deportes':'⚽','Juguetes':'🎮','Otros':'📦'},
   banners: [
@@ -1226,9 +1227,10 @@ let _cloudConfig = null;
 let _cloudMedia  = null;
 
 async function fetchCloud(){
-  const token = localStorage.getItem('gh_token') || '';
-  const API   = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents`;
-  const RAW   = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main`;
+  const prevV  = getSettings()._v || 0;            // versión local ANTES de actualizar
+  const token  = localStorage.getItem('gh_token') || '';
+  const API    = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents`;
+  const RAW    = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main`;
 
   const apiHeaders = {
     'Accept': 'application/vnd.github.v3.raw',
@@ -1237,7 +1239,7 @@ async function fetchCloud(){
 
   let cfgData = null, mediaData = null;
 
-  // Intento 1: GitHub Contents API (autenticada si hay token, 5000 req/hr)
+  // Intento 1: GitHub Contents API (autenticada si hay token → 5000 req/hr)
   try {
     const [cfgRes, mediaRes] = await Promise.all([
       fetch(`${API}/store-config.json`, { headers: apiHeaders, cache: 'no-store' }),
@@ -1247,7 +1249,7 @@ async function fetchCloud(){
     if(mediaRes.ok) mediaData = await mediaRes.json();
   } catch(e){ /* red caída, continuar al fallback */ }
 
-  // Intento 2: raw URL si alguno falló (403 rate-limit, sin conexión a API, etc.)
+  // Intento 2: raw URL si la API falló (403 rate-limit, sin auth, etc.)
   if(!cfgData || !mediaData){
     try {
       const t = Date.now();
@@ -1272,6 +1274,22 @@ async function fetchCloud(){
     if(mediaData.logoImg !== undefined) S.logoImg = mediaData.logoImg;
     if(mediaData.banners !== undefined) S.banners = mediaData.banners;
     localStorage.setItem('st_settings', JSON.stringify(S));
+  }
+
+  // ── FIX CACHÉ PERMANENTE ──────────────────────────────────────────────────
+  // Si la nube tiene una versión más nueva que lo que tenía este dispositivo,
+  // forzamos un hard-reload con ?_v=TIMESTAMP para que el navegador descargue
+  // el HTML fresco (sin importar qué tenga cacheado). Esto garantiza que
+  // cualquier cliente recurrente siempre vea la tienda actualizada.
+  if(cfgData && cfgData._v && cfgData._v > prevV){
+    const urlV = new URLSearchParams(location.search).get('_v');
+    if(String(cfgData._v) !== urlV){
+      // Hard-reload → nuevo URL = sin caché HTML
+      location.replace(location.pathname + '?_v=' + cfgData._v);
+      return;
+    }
+    // Limpiar el parámetro de la barra de URL (cosmético)
+    if(urlV) history.replaceState(null, '', location.pathname);
   }
 }
 
@@ -1343,9 +1361,11 @@ function syncCartUI(){
 async function boot(){
   // Mostrar tienda con datos en caché mientras carga la nube
   renderWithData();
-  // Luego cargar datos frescos de la nube y re-renderizar
+  // Cargar datos frescos de GitHub (y hace hard-reload si hay versión nueva)
   await fetchCloud();
   renderWithData();
+  // Sincronizar ratings de Firebase en background (para tarjetas de producto)
+  syncFirebaseRatings().then(()=>{ renderWithData(); });
 }
 
 function renderWithData(){
@@ -1520,21 +1540,79 @@ function filterBy(cat, btn){
 }
 
 /* ── RATINGS ── */
+// ════════════════════════════════════════════
+//  FIREBASE — Reseñas y calificaciones
+// ════════════════════════════════════════════
+
+function getFbUrl(){ return (getSettings().firebaseUrl||'').replace(/\/$/,''); }
+
+async function fbPost(path, data){
+  const url = getFbUrl(); if(!url) return null;
+  try {
+    const r = await fetch(`${url}${path}.json`, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(data)
+    });
+    return r.ok ? await r.json() : null;
+  } catch(e){ return null; }
+}
+
+async function fbGet(path){
+  const url = getFbUrl(); if(!url) return null;
+  try {
+    const r = await fetch(`${url}${path}.json`, { cache:'no-store' });
+    return r.ok ? await r.json() : null;
+  } catch(e){ return null; }
+}
+
+// Ratings locales (caché para tarjetas de producto)
 function getRatings(){ try{ return JSON.parse(localStorage.getItem('st_ratings')||'{}'); }catch(e){ return {}; } }
 function saveRatings(r){ localStorage.setItem('st_ratings', JSON.stringify(r)); }
 function getMyRatings(){ try{ return JSON.parse(localStorage.getItem('st_my_ratings')||'{}'); }catch(e){ return {}; } }
 
-function rateProduct(productId, stars){
-  const ratings = getRatings();
+// Reseñas locales (caché fallback sin Firebase)
+function getReviews(pid){ try{ return JSON.parse(localStorage.getItem(`st_reviews_${pid}`)||'[]'); }catch(e){ return []; } }
+function saveReviews(pid, rv){ localStorage.setItem(`st_reviews_${pid}`, JSON.stringify(rv)); }
+
+// Sincronizar ratings de Firebase → localStorage (para tarjetas de producto)
+async function syncFirebaseRatings(){
+  const data = await fbGet('/ratings');
+  if(!data) return;
+  const cache = {};
+  for(const [pid, entries] of Object.entries(data)){
+    const vals = Object.values(entries||{});
+    if(!vals.length) continue;
+    cache[pid] = { count: vals.length, total: vals.reduce((s,e)=>s+(e.stars||0),0) };
+  }
+  saveRatings(cache);
+}
+
+// Cargar reseñas de Firebase para un producto específico
+async function fetchFirebaseReviews(pid){
+  const data = await fbGet(`/reviews/${pid}`);
+  if(!data) return getReviews(pid);
+  const list = Object.values(data).sort((a,b)=>b.date-a.date);
+  saveReviews(pid, list);
+  return list;
+}
+
+async function rateProduct(productId, stars){
   const mine = getMyRatings();
   if(mine[productId]){ showToast('Ya calificaste este producto'); return; }
+
+  // Actualizar caché local inmediatamente (UX instantánea)
+  const ratings = getRatings();
   if(!ratings[productId]) ratings[productId]={count:0,total:0};
   ratings[productId].count++;
   ratings[productId].total += stars;
   saveRatings(ratings);
-  mine[productId]=stars;
+  mine[productId] = stars;
   localStorage.setItem('st_my_ratings', JSON.stringify(mine));
-  // Re-render modal rating section
+
+  // Enviar a Firebase en background
+  fbPost(`/ratings/${productId}`, { stars, date: Date.now() });
+
+  // Actualizar UI del modal
   const avg = ratings[productId].total / ratings[productId].count;
   const el = document.getElementById('ratingSection_'+productId);
   if(el) el.innerHTML = `<div class="rating-thanks">✓ ¡Gracias! Calificaste con ${stars} ⭐</div><div class="stars-display">${starsHTML(avg)} <span class="rating-count">(${ratings[productId].count} reseña${ratings[productId].count!==1?'s':''})</span></div>`;
@@ -1806,11 +1884,11 @@ function openModal(id){
   window._renderVariantPills = renderVariantPills;
   window._normOpt = normOpt;
 
-  // Reviews HTML
+  // Reviews HTML — caché local primero, Firebase en background
   const reviews = getReviews(p.id);
   const reviewsList = reviews.length
     ? reviews.map(reviewItemHTML).join('')
-    : '<div style="font-size:13px;color:var(--muted);padding:8px 0;">Aún no hay comentarios. ¡Sé el primero!</div>';
+    : '<div style="font-size:13px;color:var(--muted);padding:8px 0;" id="reviewsPlaceholder_'+p.id+'">⏳ Cargando reseñas...</div>';
 
   document.getElementById('modalInfo').innerHTML=`
     <div class="modal-cat">${p.cat}</div>
@@ -1834,7 +1912,7 @@ function openModal(id){
     }
 
     <div class="reviews-section">
-      <div class="reviews-title">💬 Reseñas (${reviews.length})</div>
+      <div class="reviews-title" id="reviewsTitle_${p.id}">💬 Reseñas (${reviews.length})</div>
       <div id="reviewsList_${p.id}">${reviewsList}</div>
       <div class="review-form" id="reviewForm_${p.id}">
         <input class="review-name-input" id="rname_${p.id}" placeholder="Tu nombre (opcional)">
@@ -1851,6 +1929,18 @@ function openModal(id){
   `;
   document.getElementById('modalOverlay').classList.add('open');
   document.body.style.overflow='hidden';
+
+  // Cargar reseñas frescas desde Firebase en background
+  if(getFbUrl()){
+    fetchFirebaseReviews(p.id).then(fbReviews => {
+      const listEl  = document.getElementById(`reviewsList_${p.id}`);
+      const titleEl = document.getElementById(`reviewsTitle_${p.id}`);
+      if(listEl) listEl.innerHTML = fbReviews.length
+        ? fbReviews.map(reviewItemHTML).join('')
+        : '<div style="font-size:13px;color:var(--muted);padding:8px 0;">Aún no hay comentarios. ¡Sé el primero!</div>';
+      if(titleEl) titleEl.textContent = `💬 Reseñas (${fbReviews.length})`;
+    });
+  }
 }
 
 function switchModalImg(thumb, src){
@@ -1940,8 +2030,6 @@ function addToCartFromModal(id){
 }
 
 // ── REVIEWS ──
-function getReviews(pid){ try{ return JSON.parse(localStorage.getItem(`st_reviews_${pid}`)||'[]'); }catch(e){ return []; } }
-function saveReviews(pid, rv){ localStorage.setItem(`st_reviews_${pid}`, JSON.stringify(rv)); }
 
 window._reviewImgs = {};
 
@@ -1979,15 +2067,20 @@ function reviewItemHTML(rv){
   </div>`;
 }
 
-function submitReview(pid){
+async function submitReview(pid){
   const text = document.getElementById(`rtext_${pid}`).value.trim();
   const name = document.getElementById(`rname_${pid}`).value.trim()||'Cliente anónimo';
   if(!text){ showToast('Escribe un comentario antes de publicar'); return; }
+  const btn = document.querySelector(`#reviewForm_${pid} .review-submit`);
+  if(btn){ btn.disabled=true; btn.textContent='Publicando...'; }
   const mine = getMyRatings();
   const stars = mine[pid]||0;
   const images = (window._reviewImgs&&window._reviewImgs[pid])||[];
+  const review = { name, comment:text, stars, images, date:Date.now() };
+  // Guardar en Firebase + caché local
+  const fbOk = await fbPost(`/reviews/${pid}`, review);
   const reviews = getReviews(pid);
-  reviews.unshift({ name, comment:text, stars, images, date:Date.now() });
+  reviews.unshift(review);
   saveReviews(pid, reviews);
   // Update UI
   const listEl = document.getElementById(`reviewsList_${pid}`);
@@ -1999,7 +2092,8 @@ function submitReview(pid){
   const rimgsPreview = document.getElementById(`rimgs_preview_${pid}`);
   if(rimgsPreview) rimgsPreview.innerHTML='';
   if(window._reviewImgs) window._reviewImgs[pid]=[];
-  showToast('✓ Reseña publicada, ¡gracias!','success');
+  if(btn){ btn.disabled=false; btn.textContent='Publicar reseña →'; }
+  showToast(fbOk ? '✓ Reseña publicada y sincronizada ☁️' : '✓ Reseña guardada localmente', 'success');
 }
 
 function setMQty(n){ mQty=Math.max(1,n); document.getElementById('mQtyDisplay').textContent=mQty; }
