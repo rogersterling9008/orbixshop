@@ -1001,6 +1001,8 @@ function doLogin(){
     document.getElementById('loginScreen').style.display='none';
     document.getElementById('adminPanel').style.display='flex';
     renderDashboard();
+    // Comprimir imágenes grandes existentes (una sola vez, en background)
+    setTimeout(()=> migrateImages(), 500);
   } else {
     document.getElementById('loginErr').style.display='block';
     document.getElementById('loginPwd').value='';
@@ -1224,8 +1226,8 @@ function addImgUrl(){
   renderPmGallery();
 }
 
-// Comprime una imagen (dataURL) a máx. 900px y calidad JPEG 75%
-// Una foto de 5MB queda en ~80KB — resuelve el límite de localStorage
+// Comprime una imagen (dataURL) a máx. 600px y calidad JPEG 60%
+// Una foto de 5MB queda en ~40-70KB — resuelve el límite de localStorage
 function compressImg(dataUrl, maxPx, quality){
   return new Promise(resolve=>{
     const img = new Image();
@@ -1238,11 +1240,36 @@ function compressImg(dataUrl, maxPx, quality){
       const canvas = document.createElement('canvas');
       canvas.width = w; canvas.height = h;
       canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-      resolve(canvas.toDataURL('image/jpeg', quality||0.75));
+      resolve(canvas.toDataURL('image/jpeg', quality||0.60));
     };
-    img.onerror = ()=> resolve(dataUrl); // si falla, usar original
+    img.onerror = ()=> resolve(dataUrl);
     img.src = dataUrl;
   });
+}
+
+// Migra imágenes grandes existentes en localStorage — se ejecuta una sola vez al arrancar
+async function migrateImages(){
+  const prods = getProducts();
+  let changed = false;
+  for(const p of prods){
+    const imgs = p.images||[];
+    for(let i=0; i<imgs.length; i++){
+      if(imgs[i] && imgs[i].startsWith('data:') && imgs[i].length > 40000){
+        imgs[i] = await compressImg(imgs[i], 600, 0.60);
+        changed = true;
+      }
+    }
+    if(p.img && p.img.startsWith('data:') && p.img.length > 40000){
+      p.img = p.images?.[0] || await compressImg(p.img, 600, 0.60);
+      changed = true;
+    }
+  }
+  if(changed){
+    try {
+      localStorage.setItem('st_products', JSON.stringify(prods));
+      showToast('✓ Imágenes optimizadas — ahora puedes agregar nuevos productos','ok');
+    } catch(e){ console.warn('migrateImages: no se pudo guardar', e); }
+  }
 }
 
 function uploadImgs(input){
@@ -1256,7 +1283,7 @@ function uploadImgs(input){
   toProcess.forEach(file=>{
     const reader = new FileReader();
     reader.onload = e=>{
-      compressImg(e.target.result, 900, 0.75).then(compressed=>{
+      compressImg(e.target.result, 600, 0.60).then(compressed=>{
         window._pmImages.push(compressed);
         processed++;
         renderPmGallery();
