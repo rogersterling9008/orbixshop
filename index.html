@@ -3,6 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Fuerza a todos los navegadores (incluyendo móviles) a verificar -->
+  <!-- si hay una versión nueva del HTML antes de usar su copia en caché -->
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
 
   <!-- ══════════════════════════════════════
        SEO BÁSICO
@@ -1227,42 +1232,57 @@ let _cloudConfig = null;
 let _cloudMedia  = null;
 
 async function fetchCloud(){
-  const prevV  = getSettings()._v || 0;            // versión local ANTES de actualizar
-  const token  = localStorage.getItem('gh_token') || '';
-  const API    = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents`;
-  const RAW    = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main`;
-
-  const apiHeaders = {
-    'Accept': 'application/vnd.github.v3.raw',
-    ...(token ? { 'Authorization': `token ${token}` } : {})
-  };
+  const prevV = getSettings()._v || 0;   // versión local ANTES de actualizar
+  const token = localStorage.getItem('gh_token') || '';
+  const t     = Date.now();
+  const API   = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents`;
+  const RAW   = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main`;
 
   let cfgData = null, mediaData = null;
 
-  // Intento 1: GitHub Contents API (autenticada si hay token → 5000 req/hr)
-  try {
-    const [cfgRes, mediaRes] = await Promise.all([
-      fetch(`${API}/store-config.json`, { headers: apiHeaders, cache: 'no-store' }),
-      fetch(`${API}/store-media.json`,  { headers: apiHeaders, cache: 'no-store' })
-    ]);
-    if(cfgRes.ok)   cfgData   = await cfgRes.json();
-    if(mediaRes.ok) mediaData = await mediaRes.json();
-  } catch(e){ /* red caída, continuar al fallback */ }
+  // ── Estrategia de fetch según disponibilidad de token ─────────────────────
+  // Con token   → GitHub Contents API (5000 req/hr, siempre fresca)
+  // Sin token   → raw URL con cache-buster (sin límite de auth, CDN ~5 min)
+  //               + GitHub API como verificación paralela
+  // ─────────────────────────────────────────────────────────────────────────
 
-  // Intento 2: raw URL si la API falló (403 rate-limit, sin auth, etc.)
-  if(!cfgData || !mediaData){
+  if(token){
+    // Dispositivo del admin: usa API autenticada (fresca al instante)
     try {
-      const t = Date.now();
+      const H = { 'Accept':'application/vnd.github.v3.raw', 'Authorization':`token ${token}` };
       const [cfgRes, mediaRes] = await Promise.all([
-        !cfgData   ? fetch(`${RAW}/store-config.json?v=${t}`, { cache: 'no-store' }) : Promise.resolve(null),
-        !mediaData ? fetch(`${RAW}/store-media.json?v=${t}`,  { cache: 'no-store' }) : Promise.resolve(null)
+        fetch(`${API}/store-config.json`, { headers:H, cache:'no-store' }),
+        fetch(`${API}/store-media.json`,  { headers:H, cache:'no-store' })
       ]);
-      if(cfgRes   && cfgRes.ok)   cfgData   = await cfgRes.json();
-      if(mediaRes && mediaRes.ok) mediaData = await mediaRes.json();
-    } catch(e2){ console.warn('Cloud fetch fallback failed:', e2); }
+      if(cfgRes.ok)   cfgData   = await cfgRes.json();
+      if(mediaRes.ok) mediaData = await mediaRes.json();
+    } catch(e){ /* continuar al raw fallback */ }
   }
 
-  // Aplicar datos obtenidos
+  // Sin token (móviles/clientes) o si la API falló:
+  // Pedir raw URL + API sin auth en paralelo, usar el que responda primero con ok
+  if(!cfgData || !mediaData){
+    try {
+      const rawT = t + Math.floor(Math.random()*9999); // extra entropía para bypass CDN
+      const [r1cfg, r1med, r2cfg, r2med] = await Promise.all([
+        fetch(`${RAW}/store-config.json?t=${rawT}`,  { cache:'no-store' }),
+        fetch(`${RAW}/store-media.json?t=${rawT}`,   { cache:'no-store' }),
+        fetch(`${API}/store-config.json`, { headers:{'Accept':'application/vnd.github.v3.raw'}, cache:'no-store' }),
+        fetch(`${API}/store-media.json`,  { headers:{'Accept':'application/vnd.github.v3.raw'}, cache:'no-store' })
+      ]);
+      // Usar el primero que responda con ok (raw generalmente más rápido)
+      if(!cfgData){
+        if(r1cfg.ok)      cfgData   = await r1cfg.json();
+        else if(r2cfg.ok) cfgData   = await r2cfg.json();
+      }
+      if(!mediaData){
+        if(r1med.ok)      mediaData = await r1med.json();
+        else if(r2med.ok) mediaData = await r2med.json();
+      }
+    } catch(e2){ console.warn('fetchCloud fallback failed:', e2); }
+  }
+
+  // ── Aplicar datos ─────────────────────────────────────────────────────────
   if(cfgData){
     if(cfgData.products) localStorage.setItem('st_products', JSON.stringify(cfgData.products));
     const merged = Object.assign({}, cfgData);
@@ -1276,19 +1296,15 @@ async function fetchCloud(){
     localStorage.setItem('st_settings', JSON.stringify(S));
   }
 
-  // ── FIX CACHÉ PERMANENTE ──────────────────────────────────────────────────
-  // Si la nube tiene una versión más nueva que lo que tenía este dispositivo,
-  // forzamos un hard-reload con ?_v=TIMESTAMP para que el navegador descargue
-  // el HTML fresco (sin importar qué tenga cacheado). Esto garantiza que
-  // cualquier cliente recurrente siempre vea la tienda actualizada.
+  // ── Fix caché permanente ──────────────────────────────────────────────────
+  // Si la nube tiene versión más nueva → hard-reload con ?_v=X para que el
+  // navegador descargue HTML fresco ignorando cualquier caché local.
   if(cfgData && cfgData._v && cfgData._v > prevV){
     const urlV = new URLSearchParams(location.search).get('_v');
     if(String(cfgData._v) !== urlV){
-      // Hard-reload → nuevo URL = sin caché HTML
       location.replace(location.pathname + '?_v=' + cfgData._v);
       return;
     }
-    // Limpiar el parámetro de la barra de URL (cosmético)
     if(urlV) history.replaceState(null, '', location.pathname);
   }
 }
