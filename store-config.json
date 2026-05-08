@@ -34,15 +34,25 @@
       "desc": "",
       "price": 7000,
       "origPrice": 12990,
-      "stock": 0,
-      "img": "https://i.postimg.cc/QMs7GJtb/Whats-App-Image-2026-05-07-at-15-30-04-(3).jpg",
+      "stock": 10,
+      "img": "https://i.postimg.cc/ht3gFZw7/Malla-de-Plastico-1-jpeg1.jpg",
       "images": [
-        "https://i.postimg.cc/QMs7GJtb/Whats-App-Image-2026-05-07-at-15-30-04-(3).jpg",
+        "https://i.postimg.cc/ht3gFZw7/Malla-de-Plastico-1-jpeg1.jpg",
         "https://i.postimg.cc/6q144fq7/Malla-de-Plastico-3.jpg",
         "https://i.postimg.cc/GtSTTxtm/Malla-de-Plastico-5.png",
         "https://i.postimg.cc/NFP22kFK/Malla-de-Plastico.jpg"
       ],
       "variants": [
+        {
+          "name": "Pack",
+          "options": [
+            {
+              "label": "TRES",
+              "stock": 0,
+              "img": "https://i.postimg.cc/NFP22kFK/Malla-de-Plastico.jpg"
+            }
+          ]
+        },
         {
           "name": "Color",
           "options": [
@@ -54,7 +64,9 @@
           ]
         }
       ],
-      "variantMatrix": {},
+      "variantMatrix": {
+        "TRES|Transparente": 10
+      },
       "featured": false,
       "active": true
     },
@@ -413,5 +425,5 @@
       "active": true
     }
   ],
-  "_v": 1778267837783
+  "_v": 1778267985707
 }
