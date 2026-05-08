@@ -29,11 +29,11 @@
   "products": [
     {
       "id": "mowxt37k6i3h3",
-      "name": "Malla Plastica",
+      "name": "Malla Plastica Transparente Pack de 3 Unidades",
       "cat": "Arte y Manualidades",
       "desc": "",
       "price": 7000,
-      "origPrice": 0,
+      "origPrice": 12990,
       "stock": 0,
       "img": "https://i.postimg.cc/QMs7GJtb/Whats-App-Image-2026-05-07-at-15-30-04-(3).jpg",
       "images": [
@@ -402,5 +402,5 @@
       "active": true
     }
   ],
-  "_v": 1778267461637
+  "_v": 1778267482454
 }
