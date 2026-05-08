@@ -1224,16 +1224,47 @@ function addImgUrl(){
   renderPmGallery();
 }
 
+// Comprime una imagen (dataURL) a máx. 900px y calidad JPEG 75%
+// Una foto de 5MB queda en ~80KB — resuelve el límite de localStorage
+function compressImg(dataUrl, maxPx, quality){
+  return new Promise(resolve=>{
+    const img = new Image();
+    img.onload = ()=>{
+      let w = img.width, h = img.height;
+      if(w > maxPx || h > maxPx){
+        if(w >= h){ h = Math.round(h * maxPx / w); w = maxPx; }
+        else       { w = Math.round(w * maxPx / h); h = maxPx; }
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      resolve(canvas.toDataURL('image/jpeg', quality||0.75));
+    };
+    img.onerror = ()=> resolve(dataUrl); // si falla, usar original
+    img.src = dataUrl;
+  });
+}
+
 function uploadImgs(input){
   const files = Array.from(input.files);
   if(!window._pmImages) window._pmImages=[];
   const remaining = 6 - window._pmImages.length;
   if(remaining<=0){ showToast('Máximo 6 imágenes'); return; }
-  files.slice(0,remaining).forEach(file=>{
+  const toProcess = files.slice(0, remaining);
+  let processed = 0;
+  showToast('⏳ Procesando imágenes...');
+  toProcess.forEach(file=>{
     const reader = new FileReader();
     reader.onload = e=>{
-      window._pmImages.push(e.target.result);
-      renderPmGallery();
+      compressImg(e.target.result, 900, 0.75).then(compressed=>{
+        window._pmImages.push(compressed);
+        processed++;
+        renderPmGallery();
+        if(processed === toProcess.length){
+          const kb = Math.round(compressed.length * 0.75 / 1024);
+          showToast(`✓ ${toProcess.length} imagen${toProcess.length>1?'es':''} lista${toProcess.length>1?'s':''} (~${kb}KB c/u)`,'ok');
+        }
+      });
     };
     reader.readAsDataURL(file);
   });
