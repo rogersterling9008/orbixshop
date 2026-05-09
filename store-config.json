@@ -53,10 +53,10 @@
           ]
         },
         {
-          "name": "Cantidad",
+          "name": "Unidades",
           "options": [
             {
-              "label": "100g",
+              "label": "60",
               "stock": 0,
               "img": ""
             }
@@ -590,5 +590,5 @@
       "active": true
     }
   ],
-  "_v": 1778296609499
+  "_v": 1778296910810
 }
