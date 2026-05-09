@@ -115,8 +115,8 @@
       "name": "Camiseta Sandia Palestino- Conmemorativa 2025",
       "cat": "Camisetas de Futbol",
       "desc": "",
-      "price": 7990,
-      "origPrice": 12990,
+      "price": 20990,
+      "origPrice": 24990,
       "stock": 1,
       "img": "https://i.postimg.cc/B6bnVqFR/Whats-App-Image-2026-02-25-at-13-10-05.jpg",
       "images": [
@@ -608,5 +608,5 @@
       "active": true
     }
   ],
-  "_v": 1778295965671
+  "_v": 1778296107733
 }
