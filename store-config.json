@@ -29,6 +29,47 @@
   "adminPassword": "12345678",
   "products": [
     {
+      "id": "moxrcigu9syqu",
+      "name": "Camiseta Sandia Palestino- Conmemorativa 2025",
+      "cat": "Camisetas de Futbol",
+      "desc": "",
+      "price": 7990,
+      "origPrice": 12990,
+      "stock": 1,
+      "img": "https://i.postimg.cc/B6bnVqFR/Whats-App-Image-2026-02-25-at-13-10-05.jpg",
+      "images": [
+        "https://i.postimg.cc/B6bnVqFR/Whats-App-Image-2026-02-25-at-13-10-05.jpg",
+        "https://i.postimg.cc/pTrL62jg/Whats-App-Image-2026-02-25-at-13-10-04.jpg"
+      ],
+      "variants": [
+        {
+          "name": "Jugador",
+          "options": [
+            {
+              "label": "SIN JUGADOR",
+              "stock": 0,
+              "img": ""
+            }
+          ]
+        },
+        {
+          "name": "Talla",
+          "options": [
+            {
+              "label": "XL",
+              "stock": 0,
+              "img": ""
+            }
+          ]
+        }
+      ],
+      "variantMatrix": {
+        "SIN JUGADOR|XL": 1
+      },
+      "featured": false,
+      "active": true
+    },
+    {
       "id": "moxqr36zs4jh2",
       "name": "Camiseta manchester 2026",
       "cat": "Camisetas de Futbol",
@@ -485,5 +526,5 @@
       "active": true
     }
   ],
-  "_v": 1778294930328
+  "_v": 1778295703426
 }
