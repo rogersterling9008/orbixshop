@@ -33,8 +33,8 @@
       "name": "Camiseta Universidad de Chile- Visitante 2026",
       "cat": "Camisetas de Futbol",
       "desc": "",
-      "price": 7990,
-      "origPrice": 12990,
+      "price": 20990,
+      "origPrice": 24990,
       "stock": 40,
       "img": "https://i.postimg.cc/qvtfSzDz/Camiseta-de-la-U-Blanca.jpg",
       "images": [
@@ -608,5 +608,5 @@
       "active": true
     }
   ],
-  "_v": 1778296127108
+  "_v": 1778296146818
 }
