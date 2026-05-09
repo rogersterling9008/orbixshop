@@ -35,7 +35,7 @@
       "desc": "",
       "price": 12990,
       "origPrice": 15990,
-      "stock": 20,
+      "stock": 40,
       "img": "https://i.postimg.cc/vZPrgmQy/IMG-20240327-WA0036-Photoroom.png",
       "images": [
         "https://i.postimg.cc/vZPrgmQy/IMG-20240327-WA0036-Photoroom.png",
@@ -64,7 +64,8 @@
         }
       ],
       "variantMatrix": {
-        "Capsula|100g": 20
+        "Capsula|100g": 20,
+        "Capsula|60": 20
       },
       "featured": false,
       "active": true
@@ -590,5 +591,5 @@
       "active": true
     }
   ],
-  "_v": 1778296910810
+  "_v": 1778296939049
 }
