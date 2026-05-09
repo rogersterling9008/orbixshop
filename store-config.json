@@ -152,65 +152,6 @@
       "active": true
     },
     {
-      "id": "moxqr36zs4jh2",
-      "name": "Camiseta manchester 2026",
-      "cat": "Camisetas de Futbol",
-      "desc": "",
-      "price": 500,
-      "origPrice": 1000,
-      "stock": 4,
-      "img": "https://i.postimg.cc/GpNWbrNX/CR7-MANCHESTER-UNITED-MNG-CORTA-DLNTE-Photoroom-Photoroom.png",
-      "images": [
-        "https://i.postimg.cc/GpNWbrNX/CR7-MANCHESTER-UNITED-MNG-CORTA-DLNTE-Photoroom-Photoroom.png",
-        "https://i.postimg.cc/k5Z079Zf/CR7-MANCHESTER-UNITED-MNG-CORTA-TRASERA-Photoroom-Photoroom.png"
-      ],
-      "variants": [
-        {
-          "name": "Jugador ",
-          "options": [
-            {
-              "label": "RONALDO",
-              "stock": 0,
-              "img": ""
-            }
-          ]
-        },
-        {
-          "name": "Talla",
-          "options": [
-            {
-              "label": "S",
-              "stock": 0,
-              "img": ""
-            },
-            {
-              "label": "M",
-              "stock": 0,
-              "img": ""
-            },
-            {
-              "label": "L",
-              "stock": 0,
-              "img": ""
-            },
-            {
-              "label": "XL",
-              "stock": 0,
-              "img": ""
-            }
-          ]
-        }
-      ],
-      "variantMatrix": {
-        "RONALDO|S": 1,
-        "RONALDO|M": 1,
-        "RONALDO|L": 1,
-        "RONALDO|XL": 1
-      },
-      "featured": false,
-      "active": true
-    },
-    {
       "id": "mowxt37k6i3h3",
       "name": "Malla Plastica Transparente Pack de 3 Unidades",
       "cat": "Arte y Manualidades",
@@ -608,5 +549,5 @@
       "active": true
     }
   ],
-  "_v": 1778296146818
+  "_v": 1778296152933
 }
