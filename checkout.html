@@ -720,7 +720,11 @@ async function handleEntrega(order,S){
 // Falla silenciosamente — nunca bloquea el flujo principal
 function notifyAdminTelegram(order){
   const NOTIFY = 'https://verdant-tapioca-41d95c.netlify.app/.netlify/functions/telegram-notify';
-  const items  = (order.items||[]).map(i=>({ title:i.name||i.id, quantity:i.qty, unit_price:i.price||0 }));
+  const prods  = getProducts();
+  const items  = (order.items||[]).map(i=>{
+    const p = prods.find(pr=>pr.id===i.id);
+    return { title: p?.name||i.id, quantity:i.qty, unit_price:i.price||0 };
+  });
   fetch(NOTIFY, {
     method : 'POST',
     headers: { 'Content-Type':'application/json' },
@@ -778,8 +782,8 @@ function printLabel(){
   const S = getSettings();
   const { jsPDF } = window.jspdf;
 
-  const doc = new jsPDF({ unit:'mm', format:[100,170], orientation:'portrait' });
-  const W=100, H=170, P=7;
+  const doc = new jsPDF({ unit:'mm', format:[100,200], orientation:'portrait' });
+  const W=100, H=200, P=7;
 
   // BG white
   doc.setFillColor(255,255,255); doc.rect(0,0,W,H,'F');
