@@ -710,9 +710,28 @@ async function handleMP(order,S){
 async function handleEntrega(order,S){
   saveOrders([...getOrders(),order]); lastOrder=order;
   decrementStock(order.items);       // ← descontar stock
-  sendWA(order,S);                   // notify admin
+  sendWA(order,S);                   // notify admin (WhatsApp del cliente)
   notifyCustomer(order,'confirmed'); // notify customer
+  notifyAdminTelegram(order);        // ← alerta instantánea al admin
   showSuccess(order.id,'contra_entrega');
+}
+
+// Alerta Telegram al admin para pedidos contra entrega
+// Falla silenciosamente — nunca bloquea el flujo principal
+function notifyAdminTelegram(order){
+  const NOTIFY = 'https://verdant-tapioca-41d95c.netlify.app/.netlify/functions/telegram-notify';
+  const items  = (order.items||[]).map(i=>({ title:i.name||i.id, quantity:i.qty, unit_price:i.price||0 }));
+  fetch(NOTIFY, {
+    method : 'POST',
+    headers: { 'Content-Type':'application/json' },
+    body   : JSON.stringify({
+      order_id      : order.id,
+      items,
+      customer      : order.customer,
+      total         : order.total,
+      payment_method: 'contra_entrega'
+    })
+  }).catch(()=>{});
 }
 
 // ══════════════════════════════════════
