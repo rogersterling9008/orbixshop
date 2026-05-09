@@ -3,7 +3,7 @@
   "storeSlogan": "Los mejores productos al mejor precio",
   "announcement": "🚚 Despacho a todo Chile · Rapido y seguro",
   "whatsappNumber": "56991065770",
-  "mpWebhookUrl": "https://scalding-browsing-sly.ngrok-free.dev/webhook/mp-crear-preferencia",
+  "mpWebhookUrl": "https://verdant-tapioca-41d95c.netlify.app/.netlify/functions/mp-crear-preferencia",
   "currency": "CLP",
   "firebaseUrl": "",
   "categories": [
@@ -591,5 +591,5 @@
       "active": true
     }
   ],
-  "_v": 1778296939049
+  "_v": 1778301732539
 }
