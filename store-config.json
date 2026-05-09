@@ -31,7 +31,7 @@
     {
       "id": "moxrve30linee",
       "name": "Bioprost",
-      "cat": "Camisetas de Futbol",
+      "cat": "Productos Naturales",
       "desc": "",
       "price": 12990,
       "origPrice": 15990,
@@ -590,5 +590,5 @@
       "active": true
     }
   ],
-  "_v": 1778296597498
+  "_v": 1778296609499
 }
