@@ -29,6 +29,88 @@
   "adminPassword": "12345678",
   "products": [
     {
+      "id": "moxri4tc218ws",
+      "name": "Camiseta Universidad de Chile- Visitante 2026",
+      "cat": "Camisetas de Futbol",
+      "desc": "",
+      "price": 7990,
+      "origPrice": 12990,
+      "stock": 40,
+      "img": "https://i.postimg.cc/qvtfSzDz/Camiseta-de-la-U-Blanca.jpg",
+      "images": [
+        "https://i.postimg.cc/qvtfSzDz/Camiseta-de-la-U-Blanca.jpg"
+      ],
+      "variants": [
+        {
+          "name": "Jugador",
+          "options": [
+            {
+              "label": "Aranguiz",
+              "stock": 0,
+              "img": ""
+            }
+          ]
+        },
+        {
+          "name": "Talla",
+          "options": [
+            {
+              "label": "10",
+              "stock": 0,
+              "img": ""
+            },
+            {
+              "label": "12",
+              "stock": 0,
+              "img": ""
+            },
+            {
+              "label": "14",
+              "stock": 0,
+              "img": ""
+            },
+            {
+              "label": "16",
+              "stock": 0,
+              "img": ""
+            },
+            {
+              "label": "S",
+              "stock": 0,
+              "img": ""
+            },
+            {
+              "label": "M",
+              "stock": 0,
+              "img": ""
+            },
+            {
+              "label": "L",
+              "stock": 0,
+              "img": ""
+            },
+            {
+              "label": "XL",
+              "stock": 0,
+              "img": ""
+            }
+          ]
+        }
+      ],
+      "variantMatrix": {
+        "Aranguiz|10": 5,
+        "Aranguiz|12": 5,
+        "Aranguiz|14": 5,
+        "Aranguiz|16": 5,
+        "Aranguiz|S": 5,
+        "Aranguiz|M": 5,
+        "Aranguiz|L": 5,
+        "Aranguiz|XL": 5
+      },
+      "featured": false,
+      "active": true
+    },
+    {
       "id": "moxrcigu9syqu",
       "name": "Camiseta Sandia Palestino- Conmemorativa 2025",
       "cat": "Camisetas de Futbol",
@@ -526,5 +608,5 @@
       "active": true
     }
   ],
-  "_v": 1778295703426
+  "_v": 1778295965671
 }
