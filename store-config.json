@@ -29,6 +29,47 @@
   "adminPassword": "12345678",
   "products": [
     {
+      "id": "moxrve30linee",
+      "name": "Bioprost",
+      "cat": "Camisetas de Futbol",
+      "desc": "",
+      "price": 12990,
+      "origPrice": 15990,
+      "stock": 5,
+      "img": "https://i.postimg.cc/vZPrgmQy/IMG-20240327-WA0036-Photoroom.png",
+      "images": [
+        "https://i.postimg.cc/vZPrgmQy/IMG-20240327-WA0036-Photoroom.png",
+        "https://i.postimg.cc/sgnYQ2Vr/IMG-20240327-WA0035-Photoroom.png"
+      ],
+      "variants": [
+        {
+          "name": "Tipo",
+          "options": [
+            {
+              "label": "Capsula",
+              "stock": 0,
+              "img": ""
+            }
+          ]
+        },
+        {
+          "name": "Cantidad",
+          "options": [
+            {
+              "label": "100g",
+              "stock": 0,
+              "img": ""
+            }
+          ]
+        }
+      ],
+      "variantMatrix": {
+        "Capsula|100g": 5
+      },
+      "featured": false,
+      "active": true
+    },
+    {
       "id": "moxri4tc218ws",
       "name": "Camiseta Universidad de Chile- Visitante 2026",
       "cat": "Camisetas de Futbol",
@@ -549,5 +590,5 @@
       "active": true
     }
   ],
-  "_v": 1778296152933
+  "_v": 1778296584211
 }
