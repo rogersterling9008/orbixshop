@@ -418,10 +418,24 @@ function decrementStock(orderItems){
   let changed = false;
   orderItems.forEach(item=>{
     const p = prods.find(pr=>pr.id===item.id);
-    if(p){
+    if(!p) return;
+
+    const requiredVars = (p.variants||[]).filter(v=>(v.options||[]).length>0);
+    const hasMatrix    = p.variantMatrix && Object.keys(p.variantMatrix).length>0;
+
+    if(hasMatrix && requiredVars.length>0 && item.variants && Object.keys(item.variants||{}).length>0){
+      // ── Con variantes: restar de la combinación exacta en la matriz ──
+      const key = requiredVars.map(v=>item.variants[v.name]).filter(Boolean).join('|');
+      if(key && p.variantMatrix[key] !== undefined){
+        p.variantMatrix[key] = Math.max(0, (p.variantMatrix[key]||0) - item.qty);
+      }
+      // Recalcular stock total como suma de todas las variantes restantes
+      p.stock = Object.values(p.variantMatrix).reduce((s,v)=>s+(Number(v)||0), 0);
+    } else {
+      // ── Sin variantes: restar del stock general ──
       p.stock = Math.max(0, (p.stock||0) - item.qty);
-      changed = true;
     }
+    changed = true;
   });
   if(changed) localStorage.setItem('st_products', JSON.stringify(prods));
 }
