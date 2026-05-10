@@ -407,7 +407,7 @@
       "name": "Camiseta Universidad de Chile- Entrenamiento 2026",
       "cat": "Camisetas de Futbol",
       "desc": "•  Base: Morado/ Violeta Oscuro, color usado por el club en su ropa de entrenamiento.\n\n •  Detalles: Cuello redondo o en V, en el mismo tono morado.\n\n •  Dorsal y nombre: Las camisetas de entrenamiento no traen numero de jugador.",
-      "price": 19990,
+      "price": 20490,
       "origPrice": 24990,
       "stock": 28,
       "img": "https://i.postimg.cc/nhpQWrm4/Polera-Universidad-de-Chile-2026-Entrenamiento.jpg",
@@ -591,5 +591,5 @@
       "active": true
     }
   ],
-  "_v": 1778377231310
+  "_v": 1778377306478
 }
