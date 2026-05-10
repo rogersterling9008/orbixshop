@@ -387,6 +387,10 @@
         <div class="card">
           <div class="card-head">
             <div class="card-title">Productos (<span id="prodCount">0</span>)</div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <button onclick="pauseAllProducts()" style="background:#F59E0B;color:white;border:none;border-radius:6px;padding:6px 14px;cursor:pointer;font-size:12px;font-weight:700;">⏸ Pausar todos</button>
+              <button onclick="resumeAllProducts()" style="background:#10B981;color:white;border:none;border-radius:6px;padding:6px 14px;cursor:pointer;font-size:12px;font-weight:700;">▶ Reactivar todos</button>
+            </div>
           </div>
           <div id="prodTokenWarn"></div>
           <div style="overflow-x:auto;">
@@ -1135,7 +1139,7 @@ function renderProducts(){
       <td><span class="badge badge-gray">${p.cat}</span></td>
       <td><strong>${fmtPrice(p.price)}</strong>${p.origPrice?`<br><small style="color:var(--muted);text-decoration:line-through;">${fmtPrice(p.origPrice)}</small>`:''}</td>
       <td style="font-weight:600;color:${p.stock<=0?'#EF4444':p.stock<=5?'#F59E0B':'#10B981'};">${p.stock<=0?'⚠ Agotado':p.stock}</td>
-      <td>${p.active?'<span class="badge badge-green">Activo</span>':'<span class="badge badge-red">Inactivo</span>'}</td>
+      <td><button onclick="toggleProdActive('${p.id}')" style="background:${p.active?'#D1FAE5':'#FEE2E2'};color:${p.active?'#065F46':'#991B1B'};border:1.5px solid ${p.active?'#10B981':'#EF4444'};border-radius:20px;padding:3px 10px;cursor:pointer;font-size:12px;font-weight:700;" title="${p.active?'Clic para pausar':'Clic para activar'}">${p.active?'▶ Activo':'⏸ Pausado'}</button></td>
       <td>${p.featured?'<span class="badge badge-yellow">⭐ Sí</span>':'<span style="color:var(--muted);font-size:12px;">No</span>'}</td>
       <td style="white-space:nowrap;">
         <button class="action-btn" onclick="editProd('${p.id}')">✏️ Editar</button>
@@ -1143,6 +1147,30 @@ function renderProducts(){
       </td>
     </tr>
   `).join('') : '<tr><td colspan="8" style="text-align:center;padding:40px;color:var(--muted);">No hay productos. Agrega uno con el botón +</td></tr>';
+}
+
+function toggleProdActive(id){
+  const prods = getProducts();
+  const p = prods.find(pr=>pr.id===id);
+  if(!p) return;
+  p.active = !p.active;
+  saveProducts(prods);
+  renderProducts();
+}
+
+function pauseAllProducts(){
+  if(!confirm('¿Pausar todos los productos? Dejarán de verse en la tienda hasta que los reactives.')) return;
+  const prods = getProducts().map(p=>({...p, active:false}));
+  saveProducts(prods);
+  renderProducts();
+  showToast('⏸ Todos los productos pausados','ok');
+}
+
+function resumeAllProducts(){
+  const prods = getProducts().map(p=>({...p, active:true}));
+  saveProducts(prods);
+  renderProducts();
+  showToast('▶ Todos los productos reactivados','ok');
 }
 
 function openProdModal(prod){
