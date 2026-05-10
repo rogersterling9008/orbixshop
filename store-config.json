@@ -29,6 +29,46 @@
   "adminPassword": "12345678",
   "products": [
     {
+      "id": "mozabsxe7l2fi",
+      "name": "Lana 100gr Antialergica Pack de 5Unidades",
+      "cat": "Camisetas de Futbol",
+      "desc": "",
+      "price": 5990,
+      "origPrice": 9990,
+      "stock": 20,
+      "img": "https://i.postimg.cc/QNf6c9Rq/Whats-App-Image-2026-05-10-at-12-34-00-AM.jpg",
+      "images": [
+        "https://i.postimg.cc/QNf6c9Rq/Whats-App-Image-2026-05-10-at-12-34-00-AM.jpg"
+      ],
+      "variants": [
+        {
+          "name": "Peso de la Unidad",
+          "options": [
+            {
+              "label": "100Gr",
+              "stock": 0,
+              "img": ""
+            }
+          ]
+        },
+        {
+          "name": "Unidad por Pack",
+          "options": [
+            {
+              "label": "5",
+              "stock": 0,
+              "img": ""
+            }
+          ]
+        }
+      ],
+      "variantMatrix": {
+        "100Gr|5": 20
+      },
+      "featured": false,
+      "active": true
+    },
+    {
       "id": "moza0bitpydt0",
       "name": "Citrato de Magnesio 90 Caps.",
       "cat": "Camisetas de Futbol",
@@ -635,5 +675,5 @@
       "active": true
     }
   ],
-  "_v": 1778387540434
+  "_v": 1778388049210
 }
