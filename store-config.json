@@ -3,9 +3,9 @@
   "storeSlogan": "Los mejores productos al mejor precio",
   "announcement": "🚚 Despacho a todo Chile · Rapido y seguro",
   "whatsappNumber": "56991065770",
-  "mpWebhookUrl": "https://verdant-tapioca-41d95c.netlify.app/.netlify/functions/mp-crear-preferencia",
+  "mpWebhookUrl": "https://scalding-browsing-sly.ngrok-free.dev/webhook/mp-crear-preferencia",
   "currency": "CLP",
-  "firebaseUrl": "https://sya-store-39770-default-rtdb.firebaseio.com",
+  "firebaseUrl": "",
   "categories": [
     "Camisetas de Futbol",
     "Poleras Bandas de Rock",
@@ -30,11 +30,11 @@
   "products": [
     {
       "id": "moxrve30linee",
-      "name": "Bioprost Forte 60 Comprimidos",
+      "name": "Bioprost",
       "cat": "Productos Naturales",
       "desc": "",
       "price": 12990,
-      "origPrice": 14990,
+      "origPrice": 15990,
       "stock": 40,
       "img": "https://i.postimg.cc/vZPrgmQy/IMG-20240327-WA0036-Photoroom.png",
       "images": [
@@ -200,7 +200,7 @@
       "desc": "",
       "price": 7000,
       "origPrice": 12990,
-      "stock": 9,
+      "stock": 10,
       "img": "https://i.postimg.cc/ht3gFZw7/Malla-de-Plastico-1-jpeg1.jpg",
       "images": [
         "https://i.postimg.cc/ht3gFZw7/Malla-de-Plastico-1-jpeg1.jpg",
@@ -407,7 +407,7 @@
       "name": "Camiseta Universidad de Chile- Entrenamiento 2026",
       "cat": "Camisetas de Futbol",
       "desc": "•  Base: Morado/ Violeta Oscuro, color usado por el club en su ropa de entrenamiento.\n\n •  Detalles: Cuello redondo o en V, en el mismo tono morado.\n\n •  Dorsal y nombre: Las camisetas de entrenamiento no traen numero de jugador.",
-      "price": 20490,
+      "price": 19990,
       "origPrice": 24990,
       "stock": 28,
       "img": "https://i.postimg.cc/nhpQWrm4/Polera-Universidad-de-Chile-2026-Entrenamiento.jpg",
@@ -591,5 +591,5 @@
       "active": true
     }
   ],
-  "_v": 1778383419368
+  "_v": 1778385013350
 }
