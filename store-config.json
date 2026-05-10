@@ -127,48 +127,6 @@
       "active": true
     },
     {
-      "id": "moxrve30linee",
-      "name": "Bioprost Forte 60 Caps.",
-      "cat": "Productos Naturales",
-      "desc": "BIOPROST FORTE XL viene con 60 capsulas y formula natural mejorada. Ideal para quienes buscan constancia en su bienester. \nRecuerda: los suplementos son un apoyo, siempre asesorate con un profesional de Salud.",
-      "price": 12990,
-      "origPrice": 15990,
-      "stock": 40,
-      "img": "https://i.postimg.cc/vZPrgmQy/IMG-20240327-WA0036-Photoroom.png",
-      "images": [
-        "https://i.postimg.cc/vZPrgmQy/IMG-20240327-WA0036-Photoroom.png",
-        "https://i.postimg.cc/sgnYQ2Vr/IMG-20240327-WA0035-Photoroom.png"
-      ],
-      "variants": [
-        {
-          "name": "Tipo",
-          "options": [
-            {
-              "label": "Capsula",
-              "stock": 0,
-              "img": ""
-            }
-          ]
-        },
-        {
-          "name": "Unidades",
-          "options": [
-            {
-              "label": "60",
-              "stock": 0,
-              "img": ""
-            }
-          ]
-        }
-      ],
-      "variantMatrix": {
-        "Capsula|100g": 20,
-        "Capsula|60": 20
-      },
-      "featured": false,
-      "active": true
-    },
-    {
       "id": "moxri4tc218ws",
       "name": "Camiseta Universidad de Chile- Visitante 2026",
       "cat": "Camisetas de Futbol",
@@ -691,5 +649,5 @@
       "active": true
     }
   ],
-  "_v": 1778437851362
+  "_v": 1778438062386
 }
