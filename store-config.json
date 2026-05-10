@@ -29,6 +29,48 @@
   "adminPassword": "12345678",
   "products": [
     {
+      "id": "moza0bitpydt0",
+      "name": "Citrato de Magnesio 90 Caps.",
+      "cat": "Camisetas de Futbol",
+      "desc": "",
+      "price": 12990,
+      "origPrice": 14990,
+      "stock": 20,
+      "img": "https://i.postimg.cc/7YKGXQjH/IMG-20240323-WA0055-Photoroom.jpg",
+      "images": [
+        "https://i.postimg.cc/7YKGXQjH/IMG-20240323-WA0055-Photoroom.jpg",
+        "https://i.postimg.cc/Nfd9bPZF/IMG-20240323-WA0053-Photoroom.png",
+        "https://i.postimg.cc/SNg2VtHQ/IMG-20240323-WA0054-Photoroom.jpg"
+      ],
+      "variants": [
+        {
+          "name": "Tipo",
+          "options": [
+            {
+              "label": "Capsulas",
+              "stock": 0,
+              "img": ""
+            }
+          ]
+        },
+        {
+          "name": "Unidades",
+          "options": [
+            {
+              "label": "90",
+              "stock": 0,
+              "img": ""
+            }
+          ]
+        }
+      ],
+      "variantMatrix": {
+        "Capsulas|90": 20
+      },
+      "featured": false,
+      "active": true
+    },
+    {
       "id": "moxrve30linee",
       "name": "Bioprost Forte 60 Caps.",
       "cat": "Productos Naturales",
@@ -593,5 +635,5 @@
       "active": true
     }
   ],
-  "_v": 1778386930050
+  "_v": 1778387513433
 }
