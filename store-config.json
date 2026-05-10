@@ -68,7 +68,7 @@
         "Capsula|60": 20
       },
       "featured": false,
-      "active": false
+      "active": true
     },
     {
       "id": "moxri4tc218ws",
@@ -591,5 +591,5 @@
       "active": true
     }
   ],
-  "_v": 1778376902768
+  "_v": 1778376996283
 }
