@@ -30,7 +30,7 @@
   "products": [
     {
       "id": "mozabsxe7l2fi",
-      "name": "Lana 100gr Antialergica Pack de 5Unidades",
+      "name": "Lana 100gr Antialergica Color Negro Pack de 5Unidades",
       "cat": "Camisetas de Futbol",
       "desc": "",
       "price": 5990,
@@ -675,5 +675,5 @@
       "active": true
     }
   ],
-  "_v": 1778388049210
+  "_v": 1778388069881
 }
