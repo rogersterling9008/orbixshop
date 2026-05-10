@@ -29,62 +29,6 @@
   "adminPassword": "12345678",
   "products": [
     {
-      "id": "mozabsxe7l2fi",
-      "name": "Lana Antialergica Color Negro Pack de 5Unidades",
-      "cat": "Arte y Manualidades",
-      "desc": "Set de 5 Ovillos negros, cada uno de 100gr. Perfecta para tus proyectos de tejido y crochet. Textura suave y color intenso que no se destiñe.",
-      "price": 5990,
-      "origPrice": 9990,
-      "stock": 81,
-      "img": "https://i.postimg.cc/QNf6c9Rq/Whats-App-Image-2026-05-10-at-12-34-00-AM.jpg",
-      "images": [
-        "https://i.postimg.cc/QNf6c9Rq/Whats-App-Image-2026-05-10-at-12-34-00-AM.jpg",
-        "https://i.postimg.cc/4N8dKxzD/Whats-App-Image-2026-05-10-at-2-24-43.jpg",
-        "https://i.postimg.cc/FsPRfHyt/Whats-App-Image-2026-05-10-at-2-24-43-PM.jpg"
-      ],
-      "variants": [
-        {
-          "name": "Color",
-          "options": [
-            {
-              "label": "Negro",
-              "stock": 0,
-              "img": "https://i.postimg.cc/QNf6c9Rq/Whats-App-Image-2026-05-10-at-12-34-00-AM.jpg"
-            },
-            {
-              "label": "Blanco",
-              "stock": 0,
-              "img": "https://i.postimg.cc/4N8dKxzD/Whats-App-Image-2026-05-10-at-2-24-43.jpg"
-            },
-            {
-              "label": "Rosado",
-              "stock": 0,
-              "img": "https://i.postimg.cc/FsPRfHyt/Whats-App-Image-2026-05-10-at-2-24-43-PM.jpg"
-            }
-          ]
-        },
-        {
-          "name": "Largo",
-          "options": [
-            {
-              "label": "100 m.",
-              "stock": 0,
-              "img": ""
-            }
-          ]
-        }
-      ],
-      "variantMatrix": {
-        "100Gr|5": 20,
-        "Negro|5": 1,
-        "Negro|100 m.": 20,
-        "Blanco|100 m.": 20,
-        "Rosado|100 m.": 20
-      },
-      "featured": false,
-      "active": true
-    },
-    {
       "id": "moza0bitpydt0",
       "name": "Citrato de Magnesio 90 Caps.",
       "cat": "Camisetas de Futbol",
@@ -649,5 +593,5 @@
       "active": true
     }
   ],
-  "_v": 1778438062386
+  "_v": 1778438076760
 }
