@@ -74,7 +74,7 @@
       "id": "moxri4tc218ws",
       "name": "Camiseta Universidad de Chile- Visitante 2026",
       "cat": "Camisetas de Futbol",
-      "desc": "",
+      "desc": "•  Base: Blanco como color Principal, limpio y clasico. \n •  Detalles: Mangas azules con toque con toques en rojo diseño asimetrico que cruza desde la manga hacia la espalda. Tiene trazos tipo pincelado en azul y rojo. Cuello y puños en azul, para mantener los colores del club.\n •  Dorsal y nombre:",
       "price": 20990,
       "origPrice": 24990,
       "stock": 40,
@@ -593,5 +593,5 @@
       "active": true
     }
   ],
-  "_v": 1778386483693
+  "_v": 1778386903309
 }
