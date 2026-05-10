@@ -67,10 +67,33 @@ function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;')
 async function loadAndGenerate(){
   const statusEl = document.getElementById('status');
   try {
-    const t = Date.now();
-    const cfgRes = await fetch(RAW + '/store-config.json?_=' + t);
-    if(!cfgRes.ok) throw new Error('No se pudo cargar store-config.json (HTTP ' + cfgRes.status + ')');
-    const cfg = await cfgRes.json();
+    const t   = Date.now();
+    const API = 'https://api.github.com/repos/' + REPO_OWNER + '/' + REPO_NAME + '/contents';
+
+    // Intento 1: raw URL (rápido)
+    let cfg = null;
+    try {
+      const r = await fetch(RAW + '/store-config.json?_=' + t);
+      if(r.ok) cfg = await r.json();
+    } catch(e){}
+
+    // Intento 2: GitHub Pages (mismo dominio, más confiable en móvil)
+    if(!cfg){
+      try {
+        const r = await fetch(BASE_URL + '/store-config.json?_=' + t);
+        if(r.ok) cfg = await r.json();
+      } catch(e){}
+    }
+
+    // Intento 3: GitHub Contents API
+    if(!cfg){
+      try {
+        const r = await fetch(API + '/store-config.json', { headers:{'Accept':'application/vnd.github.v3.raw'} });
+        if(r.ok) cfg = await r.json();
+      } catch(e){}
+    }
+
+    if(!cfg) throw new Error('No se pudo cargar store-config.json. Verifica tu conexión.');
 
     const storeName = cfg.storeName || 'SyA Store';
     const prods     = (cfg.products || []).filter(function(p){ return p.active && p.stock > 0; });
