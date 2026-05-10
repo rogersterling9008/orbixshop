@@ -1,16 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
 
-  <!-- Sitemap principal (páginas) -->
-  <sitemap>
-    <loc>https://syastore2020.github.io/SYA.CL/sitemap-paginas.xml</loc>
+  <url>
+    <loc>https://syastore2020.github.io/SYA.CL/</loc>
     <lastmod>2026-05-10</lastmod>
-  </sitemap>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
 
-  <!-- Sitemap de productos (generado desde google-shopping.html) -->
-  <sitemap>
-    <loc>https://syastore2020.github.io/SYA.CL/sitemap-productos.xml</loc>
+  <url>
+    <loc>https://syastore2020.github.io/SYA.CL/devoluciones.html</loc>
     <lastmod>2026-05-10</lastmod>
-  </sitemap>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
 
-</sitemapindex>
+</urlset>
