@@ -32,7 +32,7 @@
       "id": "moxrve30linee",
       "name": "Bioprost",
       "cat": "Productos Naturales",
-      "desc": "",
+      "desc": "BIOPROST FORTE XL viene con 60 capsulas y formula natural mejorada. Ideal para quienes buscan constancia en su bienester. \nRecuerda: los suplementos son un apoyo, siempre asesorate con un profesional de Salud.",
       "price": 12990,
       "origPrice": 15990,
       "stock": 40,
@@ -591,5 +591,5 @@
       "active": true
     }
   ],
-  "_v": 1778385013350
+  "_v": 1778385571375
 }
