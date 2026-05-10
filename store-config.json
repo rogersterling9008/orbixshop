@@ -30,7 +30,7 @@
   "products": [
     {
       "id": "moxrve30linee",
-      "name": "Bioprost",
+      "name": "Bioprost Forte 60 Comprimidos",
       "cat": "Productos Naturales",
       "desc": "",
       "price": 12990,
@@ -591,5 +591,5 @@
       "active": true
     }
   ],
-  "_v": 1778377306478
+  "_v": 1778381325350
 }
