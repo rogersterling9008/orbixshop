@@ -1177,41 +1177,38 @@ const SAMPLE_PRODUCTS = [
 // ════════════════════════════════════════════
 function injectProductSchema(prods, S){
   const BASE = 'https://syastore2020.github.io/SYA.CL/';
-  const schema = prods.filter(p=>p.active && p.stock > 0).map(p=>({
-    "@context": "https://schema.org",
-    "@type": "Product",
-    "name": p.name,
-    "description": p.desc || p.name,
-    "image": p.images?.length ? p.images[0] : (p.img || ''),
-    "sku": p.id,
-    "brand": {
-      "@type": "Brand",
-      "name": S.storeName || 'SyA Store'
-    },
-    "category": p.cat,
-    "offers": {
-      "@type": "Offer",
-      "url": BASE + `?producto=${p.id}`,
-      "priceCurrency": "CLP",
-      "price": p.price,
-      "availability": p.stock > 0
-        ? "https://schema.org/InStock"
-        : "https://schema.org/OutOfStock",
-      "itemCondition": "https://schema.org/NewCondition",
-      "seller": {
-        "@type": "Organization",
-        "name": S.storeName || 'SyA Store'
-      }
-    },
-    ...(p.origPrice && p.origPrice > p.price ? {
-      "offers": {
+  const schema = prods.filter(p=>p.active && p.stock > 0).map(p=>{
+    const hasDiscount = p.origPrice && p.origPrice > p.price;
+    return {
+      "@context": "https://schema.org",
+      "@type": "Product",
+      "name": p.name,
+      "description": p.desc || p.name,
+      "image": p.images?.length ? p.images[0] : (p.img || ''),
+      "sku": p.id,
+      "brand": { "@type": "Brand", "name": S.storeName || 'SyA Store' },
+      "category": p.cat,
+      "offers": hasDiscount ? {
         "@type": "AggregateOffer",
+        "url": BASE + `?producto=${p.id}`,
+        "priceCurrency": "CLP",
         "lowPrice": p.price,
         "highPrice": p.origPrice,
-        "priceCurrency": "CLP"
+        "offerCount": 1,
+        "availability": p.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+        "itemCondition": "https://schema.org/NewCondition",
+        "seller": { "@type": "Organization", "name": S.storeName || 'SyA Store' }
+      } : {
+        "@type": "Offer",
+        "url": BASE + `?producto=${p.id}`,
+        "priceCurrency": "CLP",
+        "price": p.price,
+        "availability": p.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+        "itemCondition": "https://schema.org/NewCondition",
+        "seller": { "@type": "Organization", "name": S.storeName || 'SyA Store' }
       }
-    } : {})
-  }));
+    };
+  });
   const el = document.getElementById('productSchema');
   if(el) el.textContent = JSON.stringify(schema);
 }

@@ -2,74 +2,156 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Google Shopping Feed</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Google Shopping Feed — SyA Store</title>
+  <style>
+    body { font-family: 'Segoe UI', sans-serif; max-width: 860px; margin: 40px auto; padding: 0 20px; background: #f9f9f9; color: #222; }
+    h2   { color: #FF4D00; }
+    h3   { color: #111; margin-top: 24px; }
+    pre  { background: #111; color: #7dd3fc; padding: 20px; border-radius: 8px; overflow-x: auto; font-size: 12px; max-height: 360px; }
+    .btn { padding: 11px 22px; background: #FF4D00; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 700; margin-right: 8px; margin-bottom: 8px; }
+    .btn.dark  { background: #111; }
+    .btn.green { background: #10B981; }
+    .card { background: white; border-radius: 10px; padding: 24px; margin-bottom: 20px; box-shadow: 0 1px 4px rgba(0,0,0,.08); }
+    .badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: 700; }
+    .ok   { background: #D1FAE5; color: #065F46; }
+    .warn { background: #FEF3C7; color: #92400E; }
+    ol li { line-height: 2.2; }
+    code  { background: #f0f0f0; padding: 2px 6px; border-radius: 4px; font-size: 13px; }
+  </style>
 </head>
 <body>
-<script>
-// Este archivo genera el feed XML de Google Shopping desde los productos en localStorage.
-// Google Merchant Center lo puede leer si lo publicas como feed dinámico desde tu tienda.
-// Para usarlo: abre esta página -> copia el XML -> súbelo como feed.xml a Netlify.
 
-const prods = JSON.parse(localStorage.getItem('st_products')||'[]').filter(p=>p.active && p.stock>0);
-const S     = JSON.parse(localStorage.getItem('st_settings')||'{}');
-const storeName = S.storeName||'MiTienda';
-const storeUrl  = window.location.origin;
-
-const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<rss version="2.0" xmlns:g="http://base.google.com/ns/1.0">
-  <channel>
-    <title>${storeName}</title>
-    <link>${storeUrl}</link>
-    <description>Feed de productos para Google Shopping</description>
-${prods.map(p=>{
-  const price = (p.price/1||0).toFixed(2);
-  const safeTitle = p.name.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  const safeDesc  = (p.desc||p.name).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').slice(0,5000);
-  const img = p.img||'';
-  const avail = p.stock>0 ? 'in_stock' : 'out_of_stock';
-  return `    <item>
-      <g:id>${p.id}</g:id>
-      <g:title>${safeTitle}</g:title>
-      <g:description>${safeDesc}</g:description>
-      <g:link>${storeUrl}/index.html?producto=${p.id}</g:link>
-      <g:image_link>${img}</g:image_link>
-      <g:condition>new</g:condition>
-      <g:availability>${avail}</g:availability>
-      <g:price>${price} CLP</g:price>
-      <g:brand>${storeName}</g:brand>
-      <g:google_product_category>Shopping</g:google_product_category>
-      <g:product_type>${p.cat||'General'}</g:product_type>
-    </item>`;
-}).join('\n')}
-  </channel>
-</rss>`;
-
-document.body.innerHTML = `
-<style>body{font-family:sans-serif;max-width:800px;margin:40px auto;padding:0 20px;}pre{background:#f5f5f5;padding:20px;border-radius:8px;overflow-x:auto;font-size:12px;max-height:400px;}button{padding:12px 24px;background:#FF4D00;color:white;border:none;border-radius:8px;cursor:pointer;font-size:14px;font-weight:700;margin-right:10px;}</style>
-<h2>🛍️ Feed Google Shopping</h2>
-<p>Este es el feed XML con <strong>${prods.length} producto${prods.length!==1?'s':''}</strong> activos para Google Merchant Center.</p>
-<div style="display:flex;gap:10px;margin:16px 0;">
-  <button onclick="downloadXML()">⬇️ Descargar feed.xml</button>
-  <button onclick="copyXML()" style="background:#111;">📋 Copiar XML</button>
+<div class="card">
+  <h2>🛍️ Feed Google Shopping — SyA Store</h2>
+  <p id="status">⏳ Cargando productos desde GitHub...</p>
+  <div id="actions" style="display:none; margin-top:12px;">
+    <button class="btn"       onclick="downloadFeed('xml')">⬇️ Descargar feed.xml</button>
+    <button class="btn dark"  onclick="copyFeed()">📋 Copiar XML</button>
+    <button class="btn green" onclick="downloadFeed('sitemap')">🗺️ Descargar sitemap-productos.xml</button>
+  </div>
+  <pre id="preview" style="display:none; margin-top:16px;"></pre>
 </div>
-<pre id="xmlPre">${xml.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</pre>
-<hr>
-<h3>📋 Instrucciones para Google Shopping</h3>
-<ol style="line-height:2;color:#444;">
-  <li>Descarga el archivo <code>feed.xml</code> con el botón de arriba.</li>
-  <li>Súbelo a tu Netlify (junto con los otros 3 archivos HTML). La URL será <code>https://tu-sitio.netlify.app/feed.xml</code></li>
-  <li>Ve a <a href="https://merchants.google.com" target="_blank">Google Merchant Center</a> → crea una cuenta si no tienes.</li>
-  <li>En <strong>Productos → Feeds</strong>, agrega un nuevo feed tipo "Scheduled fetch" con la URL de tu feed.xml.</li>
-  <li>Google validará y en 2-5 días tus productos aparecerán en Google Shopping.</li>
-  <li><strong>Importante:</strong> Cada vez que agregues productos nuevos, vuelve a este archivo y descarga el feed actualizado.</li>
-</ol>
-`;
 
-const xmlBlob = new Blob([xml], {type:'application/xml'});
-const xmlUrl  = URL.createObjectURL(xmlBlob);
+<div class="card">
+  <h3>📋 Google Merchant Center (Shopping)</h3>
+  <ol>
+    <li>Descarga el <code>feed.xml</code> y súbelo al repo <strong>SYA.CL</strong> en GitHub.</li>
+    <li>La URL del feed será: <code>https://syastore2020.github.io/SYA.CL/feed.xml</code></li>
+    <li>Ve a <a href="https://merchants.google.com" target="_blank">Google Merchant Center</a> → <strong>Productos → Feeds → +</strong></li>
+    <li>Elige <strong>"Scheduled fetch"</strong> y pega la URL del feed.</li>
+    <li>En 2–5 días tus productos aparecerán en Google Shopping.</li>
+    <li><strong>Nota:</strong> Cada vez que agregues productos, vuelve aquí y descarga el feed actualizado.</li>
+  </ol>
 
-function downloadXML(){ const a=document.createElement('a'); a.href=xmlUrl; a.download='feed.xml'; a.click(); }
-function copyXML(){ navigator.clipboard.writeText(xml).then(()=>alert('✓ XML copiado al portapapeles')); }
+  <h3>🗺️ Google Search (indexar productos)</h3>
+  <ol>
+    <li>Descarga el <code>sitemap-productos.xml</code> (botón verde) y súbelo al repo <strong>SYA.CL</strong>.</li>
+    <li>Ve a <a href="https://search.google.com/search-console" target="_blank">Google Search Console</a> → <strong>Sitemaps</strong>.</li>
+    <li>Agrega: <code>https://syastore2020.github.io/SYA.CL/sitemap-productos.xml</code></li>
+    <li>Google rastreará los productos en 1–7 días.</li>
+  </ol>
+</div>
+
+<script>
+const REPO_OWNER = 'SYASTORE2020';
+const REPO_NAME  = 'SYA.CL';
+const BASE_URL   = 'https://syastore2020.github.io/SYA.CL';
+const RAW        = 'https://raw.githubusercontent.com/' + REPO_OWNER + '/' + REPO_NAME + '/main';
+
+let xmlContent     = '';
+let sitemapContent = '';
+
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+async function loadAndGenerate(){
+  const statusEl = document.getElementById('status');
+  try {
+    const t = Date.now();
+    const cfgRes = await fetch(RAW + '/store-config.json?_=' + t);
+    if(!cfgRes.ok) throw new Error('No se pudo cargar store-config.json (HTTP ' + cfgRes.status + ')');
+    const cfg = await cfgRes.json();
+
+    const storeName = cfg.storeName || 'SyA Store';
+    const prods     = (cfg.products || []).filter(function(p){ return p.active && p.stock > 0; });
+
+    statusEl.innerHTML = '<span class="badge ok">✓ ' + prods.length + ' producto' + (prods.length!==1?'s':'') + ' activos cargados desde GitHub</span>';
+
+    // ── feed.xml (Google Merchant Center) ─────────────────────────────────────
+    var items = prods.map(function(p){
+      var price  = (Number(p.price)||0).toFixed(2);
+      var img    = (p.images && p.images[0]) || p.img || '';
+      var avail  = p.stock > 0 ? 'in_stock' : 'out_of_stock';
+      var sale   = (p.origPrice && p.origPrice > p.price) ? '<g:sale_price>' + price + ' CLP</g:sale_price>' : '';
+      return '    <item>\n' +
+        '      <g:id>' + p.id + '</g:id>\n' +
+        '      <g:title>' + esc(p.name) + '</g:title>\n' +
+        '      <g:description>' + esc((p.desc||p.name).slice(0,5000)) + '</g:description>\n' +
+        '      <g:link>' + BASE_URL + '/?producto=' + p.id + '</g:link>\n' +
+        '      <g:image_link>' + img + '</g:image_link>\n' +
+        '      <g:condition>new</g:condition>\n' +
+        '      <g:availability>' + avail + '</g:availability>\n' +
+        '      <g:price>' + price + ' CLP</g:price>\n' +
+        '      <g:brand>' + esc(storeName) + '</g:brand>\n' +
+        '      <g:product_type>' + esc(p.cat||'General') + '</g:product_type>\n' +
+        (sale ? '      ' + sale + '\n' : '') +
+        '    </item>';
+    }).join('\n');
+
+    xmlContent = '<?xml version="1.0" encoding="UTF-8"?>\n' +
+      '<rss version="2.0" xmlns:g="http://base.google.com/ns/1.0">\n' +
+      '  <channel>\n' +
+      '    <title>' + esc(storeName) + '</title>\n' +
+      '    <link>' + BASE_URL + '/</link>\n' +
+      '    <description>Feed de productos para Google Shopping</description>\n' +
+      items + '\n' +
+      '  </channel>\n</rss>';
+
+    // ── sitemap-productos.xml ─────────────────────────────────────────────────
+    var today = new Date().toISOString().split('T')[0];
+    var urls = prods.map(function(p){
+      var img = (p.images && p.images[0]) || p.img || '';
+      return '  <url>\n' +
+        '    <loc>' + BASE_URL + '/?producto=' + p.id + '</loc>\n' +
+        '    <lastmod>' + today + '</lastmod>\n' +
+        '    <changefreq>weekly</changefreq>\n' +
+        '    <priority>0.8</priority>\n' +
+        (img ? '    <image:image>\n      <image:loc>' + img + '</image:loc>\n      <image:title>' + esc(p.name) + '</image:title>\n    </image:image>\n' : '') +
+        '  </url>';
+    }).join('\n');
+
+    sitemapContent = '<?xml version="1.0" encoding="UTF-8"?>\n' +
+      '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"\n' +
+      '        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">\n' +
+      urls + '\n</urlset>';
+
+    // Preview
+    var preview = document.getElementById('preview');
+    preview.style.display = 'block';
+    preview.textContent = xmlContent.slice(0, 1400) + (xmlContent.length > 1400 ? '\n...(truncado)' : '');
+    document.getElementById('actions').style.display = 'block';
+
+  } catch(e) {
+    statusEl.innerHTML = '<span class="badge warn">⚠ ' + e.message + '</span>';
+    console.error(e);
+  }
+}
+
+function downloadFeed(type){
+  var content  = type === 'xml' ? xmlContent : sitemapContent;
+  var filename = type === 'xml' ? 'feed.xml'  : 'sitemap-productos.xml';
+  var blob = new Blob([content], { type: 'application/xml' });
+  var a    = document.createElement('a');
+  a.href   = URL.createObjectURL(blob);
+  a.download = filename;
+  a.click();
+}
+
+function copyFeed(){
+  navigator.clipboard.writeText(xmlContent).then(function(){ alert('✓ XML copiado al portapapeles'); });
+}
+
+loadAndGenerate();
 </script>
 </body>
 </html>
