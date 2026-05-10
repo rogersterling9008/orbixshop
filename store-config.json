@@ -34,7 +34,7 @@
       "cat": "Camisetas de Futbol",
       "desc": "",
       "price": 12990,
-      "origPrice": 14990,
+      "origPrice": 15990,
       "stock": 20,
       "img": "https://i.postimg.cc/7YKGXQjH/IMG-20240323-WA0055-Photoroom.jpg",
       "images": [
@@ -635,5 +635,5 @@
       "active": true
     }
   ],
-  "_v": 1778387513433
+  "_v": 1778387540434
 }
