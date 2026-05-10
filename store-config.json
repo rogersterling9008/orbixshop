@@ -31,7 +31,7 @@
     {
       "id": "mp05gf314m48e",
       "name": "Bioprost Forte 60 Cap.",
-      "cat": "Camisetas de Futbol",
+      "cat": "Productos Naturales",
       "desc": "Frasco de 60 capsulas en presentacion XL. Apoyo para tu bienestar diario. Consulta a tu medico antes de consumir.",
       "price": 12990,
       "origPrice": 14990,
@@ -688,5 +688,5 @@
       "active": true
     }
   ],
-  "_v": 1778440332643
+  "_v": 1778440343202
 }
