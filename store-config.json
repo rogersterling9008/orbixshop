@@ -78,9 +78,11 @@
       "price": 20990,
       "origPrice": 24990,
       "stock": 40,
-      "img": "https://i.postimg.cc/qvtfSzDz/Camiseta-de-la-U-Blanca.jpg",
+      "img": "https://i.postimg.cc/3NYZ27BH/Whats-App-Image-2026-05-10-at-12-05-42-AM-(1).jpg",
       "images": [
-        "https://i.postimg.cc/qvtfSzDz/Camiseta-de-la-U-Blanca.jpg"
+        "https://i.postimg.cc/3NYZ27BH/Whats-App-Image-2026-05-10-at-12-05-42-AM-(1).jpg",
+        "https://i.postimg.cc/4yWptcyn/Whats-App-Image-2026-05-10-at-12-12-40-AM.jpg",
+        "https://i.postimg.cc/QChqcsbs/Whats-App-Image-2026-05-10-at-12-09-32-AM.jpg"
       ],
       "variants": [
         {
@@ -89,7 +91,7 @@
             {
               "label": "Aranguiz",
               "stock": 0,
-              "img": ""
+              "img": "https://i.postimg.cc/4yWptcyn/Whats-App-Image-2026-05-10-at-12-12-40-AM.jpg"
             }
           ]
         },
@@ -591,5 +593,5 @@
       "active": true
     }
   ],
-  "_v": 1778385571375
+  "_v": 1778386483693
 }
