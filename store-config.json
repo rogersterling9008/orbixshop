@@ -125,14 +125,14 @@
           "name": "Jugador",
           "options": [
             {
-              "label": "Messi \"10\"",
+              "label": "Messi 10",
               "stock": 0,
               "img": ""
             }
           ]
         },
         {
-          "name": "Tallas",
+          "name": "Talla ",
           "options": [
             {
               "label": "10",
@@ -850,5 +850,5 @@
       "active": true
     }
   ],
-  "_v": 1778542303664
+  "_v": 1778542778672
 }
