@@ -29,6 +29,94 @@
   "adminPassword": "12345678",
   "products": [
     {
+      "id": "mp1sapvnoxyma",
+      "name": "Camiseta Argentina Local 2026",
+      "cat": "Camisetas de Futbol",
+      "desc": "•  Base: Clasicas franjas verticales albiceleste. Blanco como base y celeste con efecto degradado.\n •  Detalles: Cuello en V con doble linea celeste y negra. Puños en negro con detalle celeste. Franjas celeste con degradado. \nHombros: Tres lineas negras sobre blanco.\n •  Dorsal y nombre:",
+      "price": 24990,
+      "origPrice": 28990,
+      "stock": 40,
+      "img": "https://i.postimg.cc/6Q752DKs/Camiseta-Argentina1.jpg",
+      "images": [
+        "https://i.postimg.cc/6Q752DKs/Camiseta-Argentina1.jpg",
+        "https://i.postimg.cc/9MZm1Zzx/Camiseta-Argentina.jpg"
+      ],
+      "variants": [
+        {
+          "name": "Jugador",
+          "options": [
+            {
+              "label": "Messi \"10\"",
+              "stock": 0,
+              "img": ""
+            }
+          ]
+        },
+        {
+          "name": "Tallas",
+          "options": [
+            {
+              "label": "8",
+              "stock": 0,
+              "img": ""
+            },
+            {
+              "label": "10",
+              "stock": 0,
+              "img": ""
+            },
+            {
+              "label": "12",
+              "stock": 0,
+              "img": ""
+            },
+            {
+              "label": "14",
+              "stock": 0,
+              "img": ""
+            },
+            {
+              "label": "16",
+              "stock": 0,
+              "img": ""
+            },
+            {
+              "label": "S",
+              "stock": 0,
+              "img": ""
+            },
+            {
+              "label": "M",
+              "stock": 0,
+              "img": ""
+            },
+            {
+              "label": "L",
+              "stock": 0,
+              "img": ""
+            },
+            {
+              "label": "XL",
+              "stock": 0,
+              "img": ""
+            }
+          ]
+        }
+      ],
+      "variantMatrix": {
+        "Messi 10|8": 5,
+        "Messi 10|10": 5,
+        "Messi 10|12": 5,
+        "Messi 10|14": 5,
+        "Messi 10|16": 5,
+        "Messi 10|S": 5,
+        "Messi 10|M": 5,
+        "Messi 10|L": 5
+      },
+      "featured": false,
+      "active": true
+    },
+    {
       "id": "mp05gf314m48e",
       "name": "Bioprost Forte 60 Cap.",
       "cat": "Productos Naturales",
@@ -688,5 +776,5 @@
       "active": true
     }
   ],
-  "_v": 1778538015822
+  "_v": 1778539164039
 }
