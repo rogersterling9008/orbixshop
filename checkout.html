@@ -410,7 +410,7 @@ const BX_RATES = {
 let currentShippingCost = 0;
 function getShippingCost(region){ return BX_RATES[region] || 6990; }
 
-function getSettings(){ try{ return Object.assign({storeName:'SyA Store',whatsappNumber:'56991065770',mpWebhookUrl:'https://scalding-browsing-sly.ngrok-free.dev/webhook/mp-crear-preferencia'},JSON.parse(localStorage.getItem('st_settings')||'{}')); }catch(e){ return {storeName:'SyA Store',whatsappNumber:'56991065770',mpWebhookUrl:'https://scalding-browsing-sly.ngrok-free.dev/webhook/mp-crear-preferencia'}; } }
+function getSettings(){ try{ return Object.assign({storeName:'SyA Store',whatsappNumber:'56991065770',mpWebhookUrl:'https://verdant-tapioca-41d95c.netlify.app/.netlify/functions/mp-crear-preferencia'},JSON.parse(localStorage.getItem('st_settings')||'{}')); }catch(e){ return {storeName:'SyA Store',whatsappNumber:'56991065770',mpWebhookUrl:'https://verdant-tapioca-41d95c.netlify.app/.netlify/functions/mp-crear-preferencia'}; } }
 
 // ── Descuenta stock de los productos vendidos ──
 function decrementStock(orderItems){
