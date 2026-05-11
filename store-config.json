@@ -74,7 +74,7 @@
       "name": "Lana Antialergica Pack de 5 Unidades",
       "cat": "Arte y Manualidades",
       "desc": "Set de 5 Ovillos negros, blanco y rosa, cada uno de 100gr. Perfecta para tus proyectos de tejido y crochet. Textura suave y color intenso que no destiñe.",
-      "price": 6990,
+      "price": 5990,
       "origPrice": 9990,
       "stock": 45,
       "img": "https://i.postimg.cc/QNf6c9Rq/Whats-App-Image-2026-05-10-at-12-34-00-AM.jpg",
@@ -126,7 +126,7 @@
     {
       "id": "moza0bitpydt0",
       "name": "Citrato de Magnesio 90 Caps.",
-      "cat": "Productos Naturales",
+      "cat": "Camisetas de Futbol",
       "desc": "",
       "price": 12990,
       "origPrice": 15990,
@@ -688,5 +688,5 @@
       "active": true
     }
   ],
-  "_v": 1778473045559
+  "_v": 1778537745121
 }
