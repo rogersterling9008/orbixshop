@@ -217,6 +217,7 @@
       "price": 24990,
       "origPrice": 0,
       "stock": 40,
+      "weight": 0.35,
       "img": "https://i.postimg.cc/j5DhwqgZ/Camiseta-C1.jpg",
       "images": [
         "https://i.postimg.cc/j5DhwqgZ/Camiseta-C1.jpg",
@@ -1131,5 +1132,5 @@
       "active": true
     }
   ],
-  "_v": 1778556861449
+  "_v": 1778556881448
 }
