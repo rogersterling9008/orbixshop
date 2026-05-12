@@ -29,6 +29,89 @@
   "adminPassword": "12345678",
   "products": [
     {
+      "id": "mp21tr21h1fqb",
+      "name": "Camiseta Seleccion Alemania - Titular 2026",
+      "cat": "Camisetas de Futbol",
+      "desc": "",
+      "price": 24990,
+      "origPrice": 0,
+      "stock": 40,
+      "img": "https://i.postimg.cc/bwDqzrt0/Camiseta.jpg",
+      "images": [
+        "https://i.postimg.cc/bwDqzrt0/Camiseta.jpg",
+        "https://i.postimg.cc/K8kmZjMr/Camiseta-A.jpg"
+      ],
+      "variants": [
+        {
+          "name": "Jugador",
+          "options": [
+            {
+              "label": "Musiala",
+              "stock": 0,
+              "img": ""
+            }
+          ]
+        },
+        {
+          "name": "Talla",
+          "options": [
+            {
+              "label": "10",
+              "stock": 0,
+              "img": ""
+            },
+            {
+              "label": "12",
+              "stock": 0,
+              "img": ""
+            },
+            {
+              "label": "14",
+              "stock": 0,
+              "img": ""
+            },
+            {
+              "label": "16",
+              "stock": 0,
+              "img": ""
+            },
+            {
+              "label": "S",
+              "stock": 0,
+              "img": ""
+            },
+            {
+              "label": "M",
+              "stock": 0,
+              "img": ""
+            },
+            {
+              "label": "L",
+              "stock": 0,
+              "img": ""
+            },
+            {
+              "label": "XL",
+              "stock": 0,
+              "img": ""
+            }
+          ]
+        }
+      ],
+      "variantMatrix": {
+        "Musiala|10": 5,
+        "Musiala|12": 5,
+        "Musiala|14": 5,
+        "Musiala|16": 5,
+        "Musiala|S": 5,
+        "Musiala|M": 5,
+        "Musiala|L": 5,
+        "Musiala|XL": 5
+      },
+      "featured": false,
+      "active": true
+    },
+    {
       "id": "mp1un0hw0ozwf",
       "name": "Camiseta Seleccion Colombia- Local 2026",
       "cat": "Camisetas de Futbol",
@@ -950,5 +1033,5 @@
       "active": true
     }
   ],
-  "_v": 1778554569896
+  "_v": 1778555168576
 }
