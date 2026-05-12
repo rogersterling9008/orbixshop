@@ -301,6 +301,7 @@
       "price": 24990,
       "origPrice": 0,
       "stock": 80,
+      "weight": 0.35,
       "img": "https://i.postimg.cc/kX62t6vT/Camiseta-B.jpg",
       "images": [
         "https://i.postimg.cc/kX62t6vT/Camiseta-B.jpg",
@@ -1132,5 +1133,5 @@
       "active": true
     }
   ],
-  "_v": 1778556881448
+  "_v": 1778556903055
 }
