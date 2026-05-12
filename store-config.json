@@ -29,6 +29,66 @@
   "adminPassword": "12345678",
   "products": [
     {
+      "id": "mp2ybbnh9z6ou",
+      "name": "Camiseta Seleccion Francia - Local 2026",
+      "cat": "Camisetas de Futbol",
+      "desc": "•  Base: Celeste Claro/ Turquesa, tono fresco y moderno para la camiseta.\n •  Detalles: Mangas con puños con triple linea azul-blanco-rojo, los colores de la bandera francesa. Mismo detalle en la parte interna del cuello.",
+      "price": 24990,
+      "origPrice": 0,
+      "stock": 20,
+      "weight": 0.29,
+      "img": "https://i.postimg.cc/4xCdTgFc/Camiseta6.jpg",
+      "images": [
+        "https://i.postimg.cc/4xCdTgFc/Camiseta6.jpg",
+        "https://i.postimg.cc/pLNTtH1F/Camiseta7.jpg"
+      ],
+      "variants": [
+        {
+          "name": "Jugador",
+          "options": [
+            {
+              "label": "Mbappe",
+              "stock": 0,
+              "img": ""
+            }
+          ]
+        },
+        {
+          "name": "Talla",
+          "options": [
+            {
+              "label": "S",
+              "stock": 0,
+              "img": ""
+            },
+            {
+              "label": "M",
+              "stock": 0,
+              "img": ""
+            },
+            {
+              "label": "L",
+              "stock": 0,
+              "img": ""
+            },
+            {
+              "label": "XL",
+              "stock": 0,
+              "img": ""
+            }
+          ]
+        }
+      ],
+      "variantMatrix": {
+        "Mbappe|S": 5,
+        "Mbappe|M": 5,
+        "Mbappe|L": 5,
+        "Mbappe|XL": 5
+      },
+      "featured": false,
+      "active": true
+    },
+    {
       "id": "mp2xnr5xso6tu",
       "name": "Camiseta Seleccion Portugal- Local 2026",
       "cat": "Camisetas de Futbol",
@@ -1228,5 +1288,5 @@
       "active": true
     }
   ],
-  "_v": 1778608636490
+  "_v": 1778609736129
 }
