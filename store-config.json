@@ -29,6 +29,66 @@
   "adminPassword": "12345678",
   "products": [
     {
+      "id": "mp37smz9jww33",
+      "name": "Camiseta Manchester United Retro - Local 2008",
+      "cat": "Camisetas de Futbol",
+      "desc": "•  Base: \n •  Detalles:",
+      "price": 24989,
+      "origPrice": 0,
+      "stock": 20,
+      "weight": 0.29,
+      "img": "https://i.postimg.cc/Bn4f1rJF/4.png",
+      "images": [
+        "https://i.postimg.cc/Bn4f1rJF/4.png",
+        "https://i.postimg.cc/y8sCSM79/5.png"
+      ],
+      "variants": [
+        {
+          "name": "Jugador ",
+          "options": [
+            {
+              "label": "Ronaldo 7",
+              "stock": 0,
+              "img": ""
+            }
+          ]
+        },
+        {
+          "name": "Talla",
+          "options": [
+            {
+              "label": "S",
+              "stock": 0,
+              "img": ""
+            },
+            {
+              "label": "M",
+              "stock": 0,
+              "img": ""
+            },
+            {
+              "label": "L",
+              "stock": 0,
+              "img": ""
+            },
+            {
+              "label": "XL",
+              "stock": 0,
+              "img": ""
+            }
+          ]
+        }
+      ],
+      "variantMatrix": {
+        "Ronaldo 7|S": 5,
+        "Ronaldo 7|M": 5,
+        "Ronaldo 7|L": 5,
+        "Ronaldo 7|XL": 5
+      },
+      "featured": false,
+      "active": true
+    },
+    {
       "id": "mp37b274smwr6",
       "name": "Camiseta AC Milan Retro - KAKA 2006/07",
       "cat": "Camisetas de Futbol",
@@ -1348,5 +1408,5 @@
       "active": true
     }
   ],
-  "_v": 1778624840426
+  "_v": 1778625660506
 }
