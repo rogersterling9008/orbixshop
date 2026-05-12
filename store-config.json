@@ -398,6 +398,7 @@
       "price": 24990,
       "origPrice": 0,
       "stock": 40,
+      "weight": 0.35,
       "img": "https://i.postimg.cc/6Q752DKs/Camiseta-Argentina1.jpg",
       "images": [
         "https://i.postimg.cc/6Q752DKs/Camiseta-Argentina1.jpg",
@@ -1133,5 +1134,5 @@
       "active": true
     }
   ],
-  "_v": 1778556903055
+  "_v": 1778556930801
 }
