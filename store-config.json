@@ -29,6 +29,66 @@
   "adminPassword": "12345678",
   "products": [
     {
+      "id": "mp37b274smwr6",
+      "name": "Camiseta AC Milan Retro - KAKA 2006/07",
+      "cat": "Camisetas de Futbol",
+      "desc": "•  Base: Clasicas franjas verticales rojas y negras, la identidad del Rossonero. \n •  Detalles: Nombre y numero del juagdor en dorado, en honor a la temporada donde fue Balon de Oro y campeon de Champions.\nEl cuello tipo polo en rojo y negro, detalle retro, lineas finas en hombros y costuras que le dan un toque elegante.",
+      "price": 24990,
+      "origPrice": 0,
+      "stock": 20,
+      "weight": 0.35,
+      "img": "https://i.postimg.cc/j59JDdbG/Chat-GPT-Image-12-may-2026-06-10-40-p-m.png",
+      "images": [
+        "https://i.postimg.cc/j59JDdbG/Chat-GPT-Image-12-may-2026-06-10-40-p-m.png",
+        "https://i.postimg.cc/LX7ZJ6p7/CAMISETA9.png"
+      ],
+      "variants": [
+        {
+          "name": "Jugador",
+          "options": [
+            {
+              "label": "KAKA 22",
+              "stock": 0,
+              "img": ""
+            }
+          ]
+        },
+        {
+          "name": "Talla",
+          "options": [
+            {
+              "label": "S",
+              "stock": 0,
+              "img": ""
+            },
+            {
+              "label": "M",
+              "stock": 0,
+              "img": ""
+            },
+            {
+              "label": "L",
+              "stock": 0,
+              "img": ""
+            },
+            {
+              "label": "XL",
+              "stock": 0,
+              "img": ""
+            }
+          ]
+        }
+      ],
+      "variantMatrix": {
+        "KAKA 22|S": 5,
+        "KAKA 22|M": 5,
+        "KAKA 22|L": 5,
+        "KAKA 22|XL": 5
+      },
+      "featured": false,
+      "active": true
+    },
+    {
       "id": "mp2ybbnh9z6ou",
       "name": "Camiseta Seleccion Francia - Local 2026",
       "cat": "Camisetas de Futbol",
@@ -1288,5 +1348,5 @@
       "active": true
     }
   ],
-  "_v": 1778622094359
+  "_v": 1778624840426
 }
