@@ -961,6 +961,7 @@
       "price": 19990,
       "origPrice": 24990,
       "stock": 28,
+      "weight": 0.35,
       "img": "https://i.postimg.cc/nhpQWrm4/Polera-Universidad-de-Chile-2026-Entrenamiento.jpg",
       "images": [
         "https://i.postimg.cc/nhpQWrm4/Polera-Universidad-de-Chile-2026-Entrenamiento.jpg",
@@ -1142,5 +1143,5 @@
       "active": true
     }
   ],
-  "_v": 1778557117774
+  "_v": 1778557131065
 }
