@@ -306,7 +306,7 @@
     {
       "id": "moza0bitpydt0",
       "name": "Citrato de Magnesio 90 Caps.",
-      "cat": "Camisetas de Futbol",
+      "cat": "Productos Naturales",
       "desc": "",
       "price": 12990,
       "origPrice": 15990,
@@ -868,5 +868,5 @@
       "active": true
     }
   ],
-  "_v": 1778544690297
+  "_v": 1778544710693
 }
