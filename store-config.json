@@ -209,7 +209,7 @@
     },
     {
       "id": "mp1sapvnoxyma",
-      "name": "Camiseta Argentina - Local 2026",
+      "name": "Camiseta Seleccion Argentina - Local 2026",
       "cat": "Camisetas de Futbol",
       "desc": "•  Base: Clasicas franjas verticales albiceleste. Blanco como base y celeste con efecto degradado.\n •  Detalles: Cuello en V con doble linea celeste y negra. Puños en negro con detalle celeste. Franjas celeste con degradado. \nHombros: Tres lineas negras sobre blanco.",
       "price": 24990,
@@ -950,5 +950,5 @@
       "active": true
     }
   ],
-  "_v": 1778554486863
+  "_v": 1778554512303
 }
