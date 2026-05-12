@@ -118,7 +118,7 @@
       "desc": "•  Base: Amarillo Clasic, el color historico de Brasil\n •  Detalles: Cuello y Mangas rematados en verde oscuro, mismo tono del triangulo en el cuello en V. Costados con paneles laterales en turquesa/verde agua que estilizan la figura y dan un toque moderno.",
       "price": 24990,
       "origPrice": 0,
-      "stock": 0,
+      "stock": 80,
       "img": "https://i.postimg.cc/kX62t6vT/Camiseta-B.jpg",
       "images": [
         "https://i.postimg.cc/kX62t6vT/Camiseta-B.jpg",
@@ -126,15 +126,15 @@
       ],
       "variants": [
         {
-          "name": "Jugador ",
+          "name": "Jugador",
           "options": [
             {
-              "label": "Neymar \"10\"",
+              "label": "Neymar 10",
               "stock": 0,
               "img": ""
             },
             {
-              "label": "Raphinha \"11",
+              "label": "Raphinha 11",
               "stock": 0,
               "img": ""
             }
@@ -186,7 +186,24 @@
           ]
         }
       ],
-      "variantMatrix": {},
+      "variantMatrix": {
+        "Neymar 10|10": 5,
+        "Raphinha 11|10": 5,
+        "Neymar 10|12": 5,
+        "Raphinha 11|12": 5,
+        "Neymar 10|14": 5,
+        "Raphinha 11|14": 5,
+        "Neymar 10|16": 5,
+        "Raphinha 11|16": 5,
+        "Neymar 10|S": 5,
+        "Raphinha 11|S": 5,
+        "Neymar 10|M": 5,
+        "Raphinha 11|M": 5,
+        "Neymar 10|L": 5,
+        "Raphinha 11|L": 5,
+        "Neymar 10|XL": 5,
+        "Raphinha 11|XL": 5
+      },
       "featured": false,
       "active": true
     },
@@ -933,5 +950,5 @@
       "active": true
     }
   ],
-  "_v": 1778544008415
+  "_v": 1778544179423
 }
