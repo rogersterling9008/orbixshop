@@ -21,7 +21,9 @@
     "Camisetas de Futbol": "⚽",
     "Otros": "📦"
   },
-  "catImages": {},
+  "catImages": {
+    "Arte y Manualidades": "https://i.postimg.cc/43X4sKKk/6.png"
+  },
   "emailjsKey": "Vk0hp7Mvrvcon7heX",
   "emailjsService": "service_taslrlb",
   "emailjsTemplate": "pwglv3c",
@@ -1408,5 +1410,5 @@
       "active": true
     }
   ],
-  "_v": 1778625660506
+  "_v": 1778626402611
 }
