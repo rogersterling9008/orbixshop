@@ -32,7 +32,7 @@
       "id": "mp21z64wg6nx1",
       "name": "Camiseta Seleccion Inglaterra - Local 2026",
       "cat": "Camisetas de Futbol",
-      "desc": "",
+      "desc": "•  Base: Blanco puro, el clasico de \"Los Tres Leones\"\n •  Detalles: Cuello en V azul marino con doble linea roja y blanca. Puños de las mangas en el mismo diseño, estilo retro-moderno.",
       "price": 24990,
       "origPrice": 0,
       "stock": 40,
@@ -1144,5 +1144,5 @@
       "active": true
     }
   ],
-  "_v": 1778604973671
+  "_v": 1778605456037
 }
