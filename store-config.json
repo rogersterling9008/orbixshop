@@ -622,6 +622,7 @@
       "price": 20990,
       "origPrice": 24990,
       "stock": 40,
+      "weight": 0.35,
       "img": "https://i.postimg.cc/3NYZ27BH/Whats-App-Image-2026-05-10-at-12-05-42-AM-(1).jpg",
       "images": [
         "https://i.postimg.cc/3NYZ27BH/Whats-App-Image-2026-05-10-at-12-05-42-AM-(1).jpg",
@@ -1137,5 +1138,5 @@
       "active": true
     }
   ],
-  "_v": 1778557020340
+  "_v": 1778557041440
 }
