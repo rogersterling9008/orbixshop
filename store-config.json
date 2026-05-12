@@ -5,7 +5,7 @@
   "whatsappNumber": "56991065770",
   "mpWebhookUrl": "https://verdant-tapioca-41d95c.netlify.app/.netlify/functions/mp-crear-preferencia",
   "currency": "CLP",
-  "firebaseUrl": "",
+  "firebaseUrl": "https://sya-store-39770-default-rtdb.firebaseio.com",
   "categories": [
     "Camisetas de Futbol",
     "Poleras Bandas de Rock",
@@ -868,5 +868,5 @@
       "active": true
     }
   ],
-  "_v": 1778544723997
+  "_v": 1778545274792
 }
