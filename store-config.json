@@ -123,7 +123,7 @@
       "desc": "",
       "price": 24990,
       "origPrice": 0,
-      "stock": 40,
+      "stock": 20,
       "img": "https://i.postimg.cc/bwDqzrt0/Camiseta.jpg",
       "images": [
         "https://i.postimg.cc/bwDqzrt0/Camiseta.jpg",
@@ -187,10 +187,10 @@
         }
       ],
       "variantMatrix": {
-        "Musiala|10": 5,
-        "Musiala|12": 5,
-        "Musiala|14": 5,
-        "Musiala|16": 5,
+        "Musiala|10": 0,
+        "Musiala|12": 0,
+        "Musiala|14": 0,
+        "Musiala|16": 0,
         "Musiala|S": 5,
         "Musiala|M": 5,
         "Musiala|L": 5,
@@ -1121,5 +1121,5 @@
       "active": true
     }
   ],
-  "_v": 1778555421399
+  "_v": 1778555443168
 }
