@@ -29,6 +29,90 @@
   "adminPassword": "12345678",
   "products": [
     {
+      "id": "mp2xnr5xso6tu",
+      "name": "Camiseta Seleccion Portugal- Local 2026",
+      "cat": "Camisetas de Futbol",
+      "desc": "•  Base: Rojo profundo, el color historico de la seleccion.\n •  Detalles: Patron de lineas onduladas tono sobre tono que la da movimiento y elegancia al diseño.\nCuello en V y puños con doble linea verde y roja, los colores de la bandera.",
+      "price": 24990,
+      "origPrice": 0,
+      "stock": 40,
+      "weight": 0.29,
+      "img": "https://i.postimg.cc/bYHpWnjc/Camiseta-3.jpg",
+      "images": [
+        "https://i.postimg.cc/bYHpWnjc/Camiseta-3.jpg",
+        "https://i.postimg.cc/mZNBJ9Gx/Camiseta4.jpg"
+      ],
+      "variants": [
+        {
+          "name": "Jugador",
+          "options": [
+            {
+              "label": "Ronaldo 7",
+              "stock": 0,
+              "img": ""
+            }
+          ]
+        },
+        {
+          "name": "Talla",
+          "options": [
+            {
+              "label": "10",
+              "stock": 0,
+              "img": ""
+            },
+            {
+              "label": "12",
+              "stock": 0,
+              "img": ""
+            },
+            {
+              "label": "14",
+              "stock": 0,
+              "img": ""
+            },
+            {
+              "label": "16",
+              "stock": 0,
+              "img": ""
+            },
+            {
+              "label": "S",
+              "stock": 0,
+              "img": ""
+            },
+            {
+              "label": "M",
+              "stock": 0,
+              "img": ""
+            },
+            {
+              "label": "L",
+              "stock": 0,
+              "img": ""
+            },
+            {
+              "label": "XL",
+              "stock": 0,
+              "img": ""
+            }
+          ]
+        }
+      ],
+      "variantMatrix": {
+        "Ronaldo 7|10": 5,
+        "Ronaldo 7|12": 5,
+        "Ronaldo 7|14": 5,
+        "Ronaldo 7|16": 5,
+        "Ronaldo 7|S": 5,
+        "Ronaldo 7|M": 5,
+        "Ronaldo 7|L": 5,
+        "Ronaldo 7|XL": 5
+      },
+      "featured": false,
+      "active": true
+    },
+    {
       "id": "mp21z64wg6nx1",
       "name": "Camiseta Seleccion Inglaterra - Local 2026",
       "cat": "Camisetas de Futbol",
@@ -1144,5 +1228,5 @@
       "active": true
     }
   ],
-  "_v": 1778605741437
+  "_v": 1778608636490
 }
