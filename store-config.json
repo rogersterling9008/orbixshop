@@ -30,7 +30,7 @@
   "products": [
     {
       "id": "mp1un0hw0ozwf",
-      "name": "Camiseta Seleccion Colombia- Titular 2026",
+      "name": "Camiseta Seleccion Colombia- Local 2026",
       "cat": "Camisetas de Futbol",
       "desc": "•  Base: Amarillo vibrante, el color que identifica a la seleccion en todo el mundo.\n •  Detalles: Trama Froral en tonos amarillos por toda la camiseta, inspirada en la biodiversidad colombiana.\nCuello en V con linea azul. Mangas con puños en azul y detalles rojos en los hombros con los colores de la bandera.",
       "price": 24990,
@@ -950,5 +950,5 @@
       "active": true
     }
   ],
-  "_v": 1778554540246
+  "_v": 1778554569896
 }
