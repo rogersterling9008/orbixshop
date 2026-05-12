@@ -129,7 +129,7 @@
       "id": "mp21tr21h1fqb",
       "name": "Camiseta Seleccion Alemania - Titular 2026",
       "cat": "Camisetas de Futbol",
-      "desc": "",
+      "desc": "•  Base: Blanco clasico, base historica de la Seleccion.\n •  Detalles: el pecho tiene grafica en V con los colores de la bandera: negro, rojo y amarillo. Diseño iconico que cruza el pecho.\nCuello en V con borde rojo y negro. Puños en negro con remate rojo.",
       "price": 24990,
       "origPrice": 0,
       "stock": 20,
@@ -1144,5 +1144,5 @@
       "active": true
     }
   ],
-  "_v": 1778605456037
+  "_v": 1778605741437
 }
