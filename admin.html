@@ -6,6 +6,7 @@
   <title>Panel Admin</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
     *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
     :root {
@@ -753,7 +754,8 @@
     </div>
     <div id="orderDetail"></div>
     <div class="modal-foot">
-      <label class="form-label" style="align-self:center;">Cambiar estado:</label>
+      <button class="btn" style="background:#111;color:white;border-color:#111;" onclick="printLabel()">🖨️ Etiqueta PDF</button>
+      <label class="form-label" style="align-self:center;margin-left:auto;">Cambiar estado:</label>
       <select class="form-control" id="orderStatus" style="width:auto;">
         <option value="pending">Pendiente</option>
         <option value="confirmed">Confirmado</option>
@@ -1738,6 +1740,116 @@ function updateOrderStatus(){
   document.getElementById('orderModal').classList.remove('open');
   renderOrders();
   showToast('✓ Estado actualizado','ok');
+}
+
+function printLabel(){
+  const order = getOrders().find(o=>o.id===viewingOrderId);
+  if(!order){ showToast('No se encontró el pedido'); return; }
+  const S = getSettings();
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ unit:'mm', format:[100,200], orientation:'portrait' });
+  const W=100, H=200, P=7;
+
+  doc.setFillColor(255,255,255); doc.rect(0,0,W,H,'F');
+
+  // Nombre tienda arriba
+  doc.setFont('helvetica','bold'); doc.setFontSize(12); doc.setTextColor(17,17,17);
+  doc.text(S.storeName.toUpperCase(), W/2, 14, {align:'center'});
+  doc.setFont('helvetica','normal'); doc.setFontSize(6.5); doc.setTextColor(120,115,110);
+  doc.text('ETIQUETA DE DESPACHO', W/2, 20, {align:'center'});
+
+  doc.setDrawColor(220,215,210); doc.setLineWidth(0.4);
+  doc.line(P, 23, W-P, 23);
+
+  // Número de pedido
+  const ordNum='#'+order.id.slice(-6).toUpperCase();
+  doc.setFillColor(255,77,0); doc.roundedRect(P,26,W-P*2,10,2,2,'F');
+  doc.setFont('helvetica','bold'); doc.setFontSize(9); doc.setTextColor(255,255,255);
+  doc.text('PEDIDO '+ordNum, W/2, 32.5, {align:'center'});
+
+  const hline=y=>{ doc.setDrawColor(225,222,217); doc.setLineWidth(0.3); doc.line(P,y,W-P,y); };
+
+  // Destinatario
+  let y=40;
+  doc.setFontSize(7); doc.setFont('helvetica','bold'); doc.setTextColor(160,155,148);
+  doc.text('DESTINATARIO', P, y); y+=5;
+  doc.setFontSize(13); doc.setFont('helvetica','bold'); doc.setTextColor(17,17,17);
+  const nameLines=doc.splitTextToSize((order.customer.name||'').toUpperCase(), W-P*2);
+  doc.text(nameLines, P, y); y+=nameLines.length*6+1;
+  doc.setFontSize(9); doc.setFont('helvetica','normal'); doc.setTextColor(55,55,55);
+  doc.text('Tel: '+(order.customer.phone||''), P, y); y+=6;
+
+  hline(y); y+=5;
+
+  // Dirección
+  doc.setFontSize(7); doc.setFont('helvetica','bold'); doc.setTextColor(160,155,148);
+  doc.text('DIRECCIÓN DE ENTREGA', P, y); y+=5;
+  doc.setFontSize(10); doc.setFont('helvetica','normal'); doc.setTextColor(40,40,40);
+  const addrLines=doc.splitTextToSize(order.customer.address||'', W-P*2);
+  doc.text(addrLines, P, y); y+=addrLines.length*5+3;
+
+  // Comuna destacada
+  doc.setFillColor(240,236,228); doc.roundedRect(P,y-2,W-P*2,15,2,2,'F');
+  doc.setDrawColor(210,200,185); doc.setLineWidth(0.4);
+  doc.roundedRect(P,y-2,W-P*2,15,2,2,'S');
+  doc.setFont('helvetica','bold'); doc.setFontSize(16); doc.setTextColor(17,17,17);
+  doc.text((order.customer.commune||'').toUpperCase(), W/2, y+8, {align:'center'});
+  y+=18;
+  doc.setFontSize(8); doc.setFont('helvetica','normal'); doc.setTextColor(110,105,98);
+  doc.text('Región '+(order.customer.region||''), W/2, y, {align:'center'}); y+=6;
+
+  hline(y); y+=5;
+
+  // Pago y despacho
+  doc.setFontSize(7); doc.setFont('helvetica','bold'); doc.setTextColor(160,155,148);
+  doc.text('PAGO Y DESPACHO', P, y); y+=5;
+  const isContraEntrega = order.paymentMethod !== 'mercadopago';
+  if(isContraEntrega){
+    doc.setFillColor(220,38,38); doc.roundedRect(P,y-3,W-P*2,11,2,2,'F');
+    doc.setFont('helvetica','bold'); doc.setFontSize(9); doc.setTextColor(255,255,255);
+    doc.text('PAGO PENDIENTE — COBRAR AL ENTREGAR', W/2, y+4.5, {align:'center'}); y+=14;
+    doc.setFillColor(254,242,242); doc.roundedRect(P,y-2,W-P*2,12,2,2,'F');
+    doc.setFont('helvetica','normal'); doc.setFontSize(8); doc.setTextColor(153,27,27);
+    doc.text('TOTAL A COBRAR:', P+3, y+5.5);
+    doc.setFont('helvetica','bold'); doc.setFontSize(13); doc.setTextColor(153,27,27);
+    doc.text('$'+(order.total||0).toLocaleString('es-CL'), W-P-2, y+6, {align:'right'}); y+=16;
+  } else {
+    doc.setFillColor(5,150,105); doc.roundedRect(P,y-3,W-P*2,11,2,2,'F');
+    doc.setFont('helvetica','bold'); doc.setFontSize(9); doc.setTextColor(255,255,255);
+    doc.text('PAGO CONFIRMADO — MercadoPago', W/2, y+4.5, {align:'center'}); y+=14;
+  }
+
+  const shipping = order.shipping || (order.customer && order.customer.commune ? 'gratis' : 'blueexpress');
+  if(shipping === 'gratis'){
+    doc.setFillColor(230,245,235); doc.roundedRect(P,y-2,W-P*2,10,2,2,'F');
+    doc.setFont('helvetica','bold'); doc.setFontSize(9); doc.setTextColor(5,100,60);
+    doc.text('PROVINCIA DE SANTIAGO', W/2, y+4.5, {align:'center'});
+  } else {
+    doc.setFillColor(219,234,254); doc.roundedRect(P,y-2,W-P*2,10,2,2,'F');
+    doc.setFont('helvetica','bold'); doc.setFontSize(9); doc.setTextColor(30,64,175);
+    doc.text('BLUEEXPRESS', W/2, y+4.5, {align:'center'});
+  }
+  y+=13;
+
+  if(order.customer && order.customer.notes){
+    hline(y); y+=5;
+    doc.setFontSize(7); doc.setFont('helvetica','bold'); doc.setTextColor(160,155,148);
+    doc.text('NOTAS DEL CLIENTE', P, y); y+=4;
+    doc.setFont('helvetica','italic'); doc.setFontSize(8); doc.setTextColor(80,80,80);
+    const nLines=doc.splitTextToSize(order.customer.notes, W-P*2);
+    doc.text(nLines, P, y);
+  }
+
+  // Footer
+  doc.setFillColor(247,246,243); doc.rect(0,H-15,W,15,'F');
+  doc.setDrawColor(220,218,213); doc.setLineWidth(0.4); doc.line(0,H-15,W,H-15);
+  doc.setFont('helvetica','normal'); doc.setFontSize(6.5); doc.setTextColor(145,140,132);
+  const dateStr=new Date(order.createdAt).toLocaleDateString('es-CL',{day:'2-digit',month:'2-digit',year:'numeric'});
+  doc.text('Devoluciones hasta 7 días de recibido · Fecha: '+dateStr, W/2, H-9, {align:'center'});
+  doc.text(S.storeName+' · '+ordNum, W/2, H-4, {align:'center'});
+
+  doc.save('etiqueta-'+ordNum+'.pdf');
+  showToast('📦 Etiqueta descargada','ok');
 }
 
 // ════════════════════════════════════════════
