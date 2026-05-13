@@ -663,7 +663,7 @@
       "desc": "•  Base: Clasicas franjas verticales albiceleste. Blanco como base y celeste con efecto degradado.\n •  Detalles: Cuello en V con doble linea celeste y negra. Puños en negro con detalle celeste. Franjas celeste con degradado. \nHombros: Tres lineas negras sobre blanco.",
       "price": 24990,
       "origPrice": 0,
-      "stock": 40,
+      "stock": 45,
       "weight": 0.35,
       "img": "https://i.postimg.cc/6Q752DKs/Camiseta-Argentina1.jpg",
       "images": [
@@ -735,7 +735,8 @@
         "Messi 10|16": 5,
         "Messi 10|S": 5,
         "Messi 10|M": 5,
-        "Messi 10|L": 5
+        "Messi 10|L": 5,
+        "Messi 10|XL": 5
       },
       "featured": false,
       "active": true
@@ -1410,5 +1411,5 @@
       "active": true
     }
   ],
-  "_v": 1778626715700
+  "_v": 1778638511699
 }
