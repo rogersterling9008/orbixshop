@@ -145,7 +145,9 @@
     .stat-card {
       background:white; border-radius:var(--radius-lg);
       padding:20px 22px; border:1px solid var(--border);
+      cursor:pointer; transition:border-color .18s, box-shadow .18s;
     }
+    .stat-card:hover { border-color:var(--accent); box-shadow:0 2px 12px rgba(255,77,0,.10); }
     .stat-label { font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.8px; color:var(--muted); margin-bottom:8px; }
     .stat-val { font-family:'Syne',sans-serif; font-size:28px; font-weight:800; }
     .stat-sub { font-size:12px; color:var(--muted); margin-top:4px; }
@@ -1030,6 +1032,11 @@ document.getElementById('loginPwd').addEventListener('keydown',e=>{ if(e.key==='
 
 const TAB_TITLES = { dashboard:'Dashboard', products:'Productos', orders:'Pedidos', banners:'Banners', settings:'Configuración' };
 
+function goTab(name){
+  const navEl = document.querySelector(`.nav-item[onclick*="'${name}'"]`);
+  showTab(name, navEl);
+}
+
 function showTab(name, el){
   document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
@@ -1066,22 +1073,22 @@ function renderDashboard(){
   const pending = orders.filter(o=>o.status==='pending').length;
 
   document.getElementById('statsGrid').innerHTML=`
-    <div class="stat-card">
+    <div class="stat-card" onclick="goTab('products')" title="Ver productos">
       <div class="stat-label">Productos</div>
       <div class="stat-val">${prods.length}</div>
       <div class="stat-sub">${prods.filter(p=>p.active).length} activos</div>
     </div>
-    <div class="stat-card">
+    <div class="stat-card" onclick="goTab('orders')" title="Ver pedidos">
       <div class="stat-label">Pedidos</div>
       <div class="stat-val">${orders.length}</div>
       <div class="stat-sub">${pending} pendiente${pending!==1?'s':''}</div>
     </div>
-    <div class="stat-card">
+    <div class="stat-card" onclick="goTab('orders')" title="Ver pedidos e ingresos">
       <div class="stat-label">Ingresos</div>
       <div class="stat-val" style="font-size:22px;">${fmtPrice(revenue)}</div>
       <div class="stat-sub">Total histórico</div>
     </div>
-    <div class="stat-card">
+    <div class="stat-card" onclick="goTab('settings')" title="Configurar categorías">
       <div class="stat-label">Categorías</div>
       <div class="stat-val">${(getSettings().categories||[]).length}</div>
       <div class="stat-sub">Configuradas</div>
