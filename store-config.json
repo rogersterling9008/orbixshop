@@ -34,6 +34,72 @@
   "adminPassword": "12345678",
   "products": [
     {
+      "id": "mp4o3ljno4wkb",
+      "name": "Polera Banda De Rok Los Bunkers",
+      "cat": "Poleras Bandas de Rock",
+      "desc": "",
+      "price": 9990,
+      "origPrice": 12990,
+      "stock": 25,
+      "weight": 0.29,
+      "img": "https://i.postimg.cc/nLtHcMwM/Los-bumkers.jpg",
+      "images": [
+        "https://i.postimg.cc/nLtHcMwM/Los-bumkers.jpg",
+        "https://i.postimg.cc/3wHKJWbk/Los-Bunkers1.jpg"
+      ],
+      "variants": [
+        {
+          "name": "Diseño",
+          "options": [
+            {
+              "label": "Mural de Canciones",
+              "stock": 0,
+              "img": ""
+            }
+          ]
+        },
+        {
+          "name": "Talla",
+          "options": [
+            {
+              "label": "S",
+              "stock": 0,
+              "img": ""
+            },
+            {
+              "label": "M",
+              "stock": 0,
+              "img": ""
+            },
+            {
+              "label": "L",
+              "stock": 0,
+              "img": ""
+            },
+            {
+              "label": "XL",
+              "stock": 0,
+              "img": ""
+            },
+            {
+              "label": "2XL",
+              "stock": 0,
+              "img": ""
+            }
+          ]
+        }
+      ],
+      "variantMatrix": {
+        "Mural de Canciones|S": 5,
+        "Mural de Canciones|M": 5,
+        "Mural de Canciones|L": 5,
+        "Mural de Canciones|XL": 5,
+        "Mural de Canciones|2XL": 5
+      },
+      "featured": false,
+      "active": true
+    },
+    {
       "id": "mp37smz9jww33",
       "name": "Camiseta Manchester United Retro - Local 2008",
       "cat": "Camisetas de Futbol",
@@ -1414,5 +1480,5 @@
       "active": true
     }
   ],
-  "_v": 1778712280120
+  "_v": 1778713511905
 }
