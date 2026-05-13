@@ -34,6 +34,71 @@
   "adminPassword": "12345678",
   "products": [
     {
+      "id": "mp4okb89l3e3a",
+      "name": "Polera Banda De Rock Iron Maiden",
+      "cat": "Poleras Bandas de Rock",
+      "desc": "•  Base: Color negra, base clasica para resaltar eñ arte del album.\n •  Detalles: Grafica Eddi en version azteca con ojos rojos y fondo verde, directo del arte de The Book of Souls 2015.",
+      "price": 9990,
+      "origPrice": 12990,
+      "stock": 25,
+      "weight": 0.3,
+      "img": "https://i.postimg.cc/cLfvcppC/Polera1.jpg",
+      "images": [
+        "https://i.postimg.cc/cLfvcppC/Polera1.jpg"
+      ],
+      "variants": [
+        {
+          "name": "Diseño",
+          "options": [
+            {
+              "label": "The Book of Souls",
+              "stock": 0,
+              "img": ""
+            }
+          ]
+        },
+        {
+          "name": "Talla",
+          "options": [
+            {
+              "label": "S",
+              "stock": 0,
+              "img": ""
+            },
+            {
+              "label": "M",
+              "stock": 0,
+              "img": ""
+            },
+            {
+              "label": "L",
+              "stock": 0,
+              "img": ""
+            },
+            {
+              "label": "XL",
+              "stock": 0,
+              "img": ""
+            },
+            {
+              "label": "2XL",
+              "stock": 0,
+              "img": ""
+            }
+          ]
+        }
+      ],
+      "variantMatrix": {
+        "The Book of Souls|S": 5,
+        "The Book of Souls|M": 5,
+        "The Book of Souls|L": 5,
+        "The Book of Souls|XL": 5,
+        "The Book of Souls|2XL": 5
+      },
+      "featured": false,
+      "active": true
+    },
+    {
       "id": "mp4o3ljno4wkb",
       "name": "Polera Banda De Rok Los Bunkers",
       "cat": "Poleras Bandas de Rock",
@@ -1480,5 +1545,5 @@
       "active": true
     }
   ],
-  "_v": 1778713511905
+  "_v": 1778714291682
 }
