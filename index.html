@@ -1744,7 +1744,7 @@ function openModal(id){
   if(images.length > 1){
     thumbsEl.style.display='flex';
     thumbsEl.innerHTML = images.map((src,i)=>
-      `<img class="modal-thumb ${i===0?'active':''}" src="${src}" alt="${i+1}" onclick="setModalImg(${i})" style="height:58px;width:44px;">`
+      `<img class="modal-thumb ${i===0?'active':''}" src="${src}" alt="${i+1}" onclick="window._setModalImg(${i})" style="height:58px;width:44px;">`
     ).join('');
   } else {
     thumbsEl.style.display='none';
@@ -2202,12 +2202,14 @@ function injectStructuredData(){
 
 // Run after boot
 setTimeout(injectStructuredData, 100);
+</script>
+</body>
+</html>
 
+<script>
 // Auto-abrir producto si viene ?producto= en la URL (ej: desde Google)
 (function(){
   const pid = new URLSearchParams(window.location.search).get('producto');
   if(pid) setTimeout(function(){ openModal(pid); }, 800);
 })();
 </script>
-</body>
-</html>
