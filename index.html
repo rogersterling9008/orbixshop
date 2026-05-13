@@ -2202,6 +2202,12 @@ function injectStructuredData(){
 
 // Run after boot
 setTimeout(injectStructuredData, 100);
+
+// Auto-abrir producto si viene ?producto= en la URL (ej: desde Google)
+(function(){
+  const pid = new URLSearchParams(window.location.search).get('producto');
+  if(pid) setTimeout(function(){ openModal(pid); }, 800);
+})();
 </script>
 </body>
 </html>
