@@ -22,7 +22,8 @@
     "Otros": "📦"
   },
   "catImages": {
-    "Arte y Manualidades": "https://i.postimg.cc/43X4sKKk/6.png"
+    "Arte y Manualidades": "https://i.postimg.cc/43X4sKKk/6.png",
+    "Productos Naturales": "https://i.postimg.cc/DyKQC1vR/Diseno-sin-titulo.png"
   },
   "emailjsKey": "Vk0hp7Mvrvcon7heX",
   "emailjsService": "service_taslrlb",
@@ -1411,5 +1412,5 @@
       "active": true
     }
   ],
-  "_v": 1778645282005
+  "_v": 1778688707242
 }
