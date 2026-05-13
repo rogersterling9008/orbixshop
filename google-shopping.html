@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- v2.1 shipping_weight -->
   <title>Google Shopping Feed — SyA Store</title>
   <style>
     body { font-family: 'Segoe UI', sans-serif; max-width: 860px; margin: 40px auto; padding: 0 20px; background: #f9f9f9; color: #222; }
@@ -117,6 +118,7 @@ async function loadAndGenerate(){
         '      <g:price>' + price + ' CLP</g:price>\n' +
         '      <g:brand>' + esc(storeName) + '</g:brand>\n' +
         '      <g:product_type>' + esc(p.cat||'General') + '</g:product_type>\n' +
+        (p.weight ? '      <g:shipping_weight>' + Number(p.weight).toFixed(2) + ' kg</g:shipping_weight>\n' : '') +
         (sale ? '      ' + sale + '\n' : '') +
         '    </item>';
     }).join('\n');
