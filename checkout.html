@@ -443,6 +443,11 @@ function getCart(){ try{ return JSON.parse(localStorage.getItem('st_cart')||'[]'
 function clearCart(){ localStorage.removeItem('st_cart'); }
 function getOrders(){ try{ return JSON.parse(localStorage.getItem('st_orders')||'[]'); }catch(e){ return []; } }
 function saveOrders(o){ localStorage.setItem('st_orders',JSON.stringify(o)); }
+function pushOrderToFirebase(order){
+  const fbUrl=(getSettings().firebaseUrl||'').trim().replace(/\/$/,'');
+  if(!fbUrl) return;
+  fetch(fbUrl+'/orders/'+order.id+'.json',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(order)}).catch(()=>{});
+}
 function fmtPrice(p){ return '$'+Number(p).toLocaleString('es-CL'); }
 function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
 
@@ -677,6 +682,7 @@ async function submitOrder(){
 
 async function handleMP(order,S){
   getOrders().concat([order]); saveOrders([...getOrders(),order]); lastOrder=order;
+  pushOrderToFirebase(order);
   if(!S.mpWebhookUrl){
     sendWA(order,S); showSuccess(order.id,'pending'); return;
   }
@@ -722,6 +728,7 @@ async function handleMP(order,S){
 
 async function handleEntrega(order,S){
   saveOrders([...getOrders(),order]); lastOrder=order;
+  pushOrderToFirebase(order);
   decrementStock(order.items);       // ← descontar stock
   sendWA(order,S);                   // notify admin (WhatsApp del cliente)
   notifyCustomer(order,'confirmed'); // notify customer

@@ -1066,7 +1066,27 @@ function openAddModal(){
 //  DASHBOARD
 // ════════════════════════════════════════════
 
+async function syncOrdersFromFirebase(){
+  const fbUrl=(getSettings().firebaseUrl||'').trim().replace(/\/$/,'');
+  if(!fbUrl) return;
+  try{
+    const res=await fetch(fbUrl+'/orders.json');
+    if(!res.ok) return;
+    const data=await res.json();
+    if(!data) return;
+    const fbOrders=Object.values(data).filter(Boolean);
+    const local=getOrders();
+    let changed=false;
+    fbOrders.forEach(fo=>{
+      if(!local.find(lo=>lo.id===fo.id)){ local.push(fo); changed=true; }
+    });
+    if(changed){ saveOrders(local); return true; }
+  }catch(e){}
+  return false;
+}
+
 function renderDashboard(){
+  syncOrdersFromFirebase().then(changed=>{ if(changed) renderDashboard(); });
   const prods = getProducts();
   const orders = getOrders();
   const revenue = orders.filter(o=>o.status!=='cancelled').reduce((s,o)=>s+o.total,0);
@@ -1679,6 +1699,7 @@ const STATUS_BADGES = { pending:'badge-yellow', confirmed:'badge-blue', shipped:
 function statusBadge(s){ return `<span class="badge ${STATUS_BADGES[s]||'badge-gray'}">${STATUS_LABELS[s]||s}</span>`; }
 
 function renderOrders(){
+  syncOrdersFromFirebase().then(changed=>{ if(changed) renderOrders(); });
   const orders = [...getOrders()].sort((a,b)=>b.createdAt-a.createdAt);
   document.getElementById('orderCount').textContent=orders.length;
   document.getElementById('orderTbody').innerHTML = orders.length ? orders.map(o=>`
@@ -1759,25 +1780,33 @@ function printLabel(){
 
   doc.setFillColor(255,255,255); doc.rect(0,0,W,H,'F');
 
+  // Logo si está configurado en settings
+  let startY = 8;
+  if(S.logoImg && S.logoImg.startsWith('data:')){
+    const logoSize=20;
+    try{ doc.addImage(S.logoImg,'',( W-logoSize)/2, 3, logoSize, logoSize); startY=26; }catch(e){}
+  }
+
   // Nombre tienda arriba
   doc.setFont('helvetica','bold'); doc.setFontSize(12); doc.setTextColor(17,17,17);
-  doc.text(S.storeName.toUpperCase(), W/2, 14, {align:'center'});
+  doc.text(S.storeName.toUpperCase(), W/2, startY+6, {align:'center'});
   doc.setFont('helvetica','normal'); doc.setFontSize(6.5); doc.setTextColor(120,115,110);
-  doc.text('ETIQUETA DE DESPACHO', W/2, 20, {align:'center'});
+  doc.text('ETIQUETA DE DESPACHO', W/2, startY+12, {align:'center'});
 
   doc.setDrawColor(220,215,210); doc.setLineWidth(0.4);
-  doc.line(P, 23, W-P, 23);
+  doc.line(P, startY+15, W-P, startY+15);
 
   // Número de pedido
   const ordNum='#'+order.id.slice(-6).toUpperCase();
-  doc.setFillColor(255,77,0); doc.roundedRect(P,26,W-P*2,10,2,2,'F');
+  const pillY = startY+18;
+  doc.setFillColor(255,77,0); doc.roundedRect(P,pillY,W-P*2,10,2,2,'F');
   doc.setFont('helvetica','bold'); doc.setFontSize(9); doc.setTextColor(255,255,255);
-  doc.text('PEDIDO '+ordNum, W/2, 32.5, {align:'center'});
+  doc.text('PEDIDO '+ordNum, W/2, pillY+6.5, {align:'center'});
 
   const hline=y=>{ doc.setDrawColor(225,222,217); doc.setLineWidth(0.3); doc.line(P,y,W-P,y); };
 
   // Destinatario
-  let y=40;
+  let y=pillY+14;
   doc.setFontSize(7); doc.setFont('helvetica','bold'); doc.setTextColor(160,155,148);
   doc.text('DESTINATARIO', P, y); y+=5;
   doc.setFontSize(13); doc.setFont('helvetica','bold'); doc.setTextColor(17,17,17);
