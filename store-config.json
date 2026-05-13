@@ -95,8 +95,8 @@
       "name": "Camiseta AC Milan Retro - KAKA 2006/07",
       "cat": "Camisetas de Futbol",
       "desc": "•  Base: Clasicas franjas verticales rojas y negras, la identidad del Rossonero. \n •  Detalles: Nombre y numero del juagdor en dorado, en honor a la temporada donde fue Balon de Oro y campeon de Champions.\nEl cuello tipo polo en rojo y negro, detalle retro, lineas finas en hombros y costuras que le dan un toque elegante.",
-      "price": 24990,
-      "origPrice": 0,
+      "price": 19990,
+      "origPrice": 24990,
       "stock": 20,
       "weight": 0.35,
       "img": "https://i.postimg.cc/j59JDdbG/Chat-GPT-Image-12-may-2026-06-10-40-p-m.png",
@@ -1411,5 +1411,5 @@
       "active": true
     }
   ],
-  "_v": 1778638546398
+  "_v": 1778638564869
 }
