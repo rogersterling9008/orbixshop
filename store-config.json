@@ -102,7 +102,7 @@
       "id": "mp4o3ljno4wkb",
       "name": "Polera Banda De Rok Los Bunkers",
       "cat": "Poleras Bandas de Rock",
-      "desc": "",
+      "desc": "•  Base: Nega, base clasica para que resalten los colores del diseño.\n •  Detalles: Mural Tipografico con los titulos de sus canciones mas iconicas.\n •  Dorsal y nombre:",
       "price": 9990,
       "origPrice": 12990,
       "stock": 25,
@@ -1545,5 +1545,5 @@
       "active": true
     }
   ],
-  "_v": 1778714291682
+  "_v": 1778714432030
 }
