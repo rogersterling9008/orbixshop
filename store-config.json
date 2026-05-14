@@ -42,9 +42,13 @@
       "origPrice": 12990,
       "stock": 25,
       "weight": 0.3,
+      "gcat": "212",
+      "gender": "unisex",
+      "color": "Negro",
       "img": "https://i.postimg.cc/cLfvcppC/Polera1.jpg",
       "images": [
-        "https://i.postimg.cc/cLfvcppC/Polera1.jpg"
+        "https://i.postimg.cc/cLfvcppC/Polera1.jpg",
+        "https://i.postimg.cc/05XMdCKL/Chat-GPT-Image-14-may-2026-01-41-31-p-m.png"
       ],
       "variants": [
         {
@@ -1545,5 +1549,5 @@
       "active": true
     }
   ],
-  "_v": 1778780596191
+  "_v": 1778780888422
 }
