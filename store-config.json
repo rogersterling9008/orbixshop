@@ -42,6 +42,9 @@
       "origPrice": 12990,
       "stock": 25,
       "weight": 0.3,
+      "gcat": "212",
+      "gender": "unisex",
+      "color": "Negro",
       "img": "https://i.postimg.cc/cLfvcppC/Polera1.jpg",
       "images": [
         "https://i.postimg.cc/cLfvcppC/Polera1.jpg"
@@ -1545,5 +1548,5 @@
       "active": true
     }
   ],
-  "_v": 1778714432030
+  "_v": 1778773160074
 }
