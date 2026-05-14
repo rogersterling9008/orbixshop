@@ -55,7 +55,7 @@
           "name": "Diseño",
           "options": [
             {
-              "label": "Merch Oficial",
+              "label": "Merchandise de rock",
               "stock": 0,
               "img": ""
             }
@@ -1687,5 +1687,5 @@
       "active": true
     }
   ],
-  "_v": 1778783784337
+  "_v": 1778784231453
 }
