@@ -42,9 +42,6 @@
       "origPrice": 12990,
       "stock": 25,
       "weight": 0.3,
-      "gcat": "212",
-      "gender": "unisex",
-      "color": "Negro",
       "img": "https://i.postimg.cc/cLfvcppC/Polera1.jpg",
       "images": [
         "https://i.postimg.cc/cLfvcppC/Polera1.jpg"
@@ -105,7 +102,7 @@
       "id": "mp4o3ljno4wkb",
       "name": "Polera Banda De Rok Los Bunkers",
       "cat": "Poleras Bandas de Rock",
-      "desc": "•  Base: Nega, base clasica para que resalten los colores del diseño.\n •  Detalles: Mural Tipografico con los titulos de sus canciones mas iconicas.\n •  Dorsal y nombre:",
+      "desc": "•  Base: Nega, base clasica para que resalten los colores del diseño.\n •  Detalles: Mural Tipografico con los titulos de sus canciones mas iconicas.",
       "price": 9990,
       "origPrice": 12990,
       "stock": 25,
@@ -1548,5 +1545,5 @@
       "active": true
     }
   ],
-  "_v": 1778773160074
+  "_v": 1778780596191
 }
