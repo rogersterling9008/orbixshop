@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Política de Envíos — SyA Store</title>
+  <meta name="description" content="Conoce nuestra política de envíos. Despacho gratis en la provincia de Santiago. Envíos a regiones vía BlueExpress.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    :root {
+      --bg: #F7F6F3;
+      --primary: #111111;
+      --accent: #FF4D00;
+      --muted: #6B7280;
+      --border: #E5E2DC;
+      --radius: 12px;
+    }
+    body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--primary); line-height:1.7; }
+
+    nav {
+      background:white; border-bottom:1px solid var(--border);
+      padding:0 40px; height:64px;
+      display:flex; align-items:center; justify-content:space-between;
+      position:sticky; top:0; z-index:100;
+    }
+    .nav-logo {
+      font-family:'Syne',sans-serif; font-weight:800; font-size:20px;
+      text-decoration:none; color:var(--primary);
+    }
+    .nav-logo span { color:var(--accent); }
+    .nav-back {
+      display:inline-flex; align-items:center; gap:6px;
+      font-size:14px; font-weight:600; color:var(--muted);
+      text-decoration:none; transition:color .2s;
+    }
+    .nav-back:hover { color:var(--accent); }
+
+    .container {
+      max-width:780px; margin:0 auto;
+      padding:48px 24px 80px;
+    }
+    .page-header {
+      margin-bottom:40px;
+      padding-bottom:24px;
+      border-bottom:2px solid var(--accent);
+    }
+    .page-header h1 {
+      font-family:'Syne',sans-serif; font-size:36px; font-weight:800;
+      margin-bottom:8px;
+    }
+    .page-header p { color:var(--muted); font-size:15px; }
+    .last-updated {
+      display:inline-block; background:var(--accent);
+      color:white; font-size:12px; font-weight:600;
+      padding:4px 12px; border-radius:100px; margin-top:10px;
+    }
+
+    .section { margin-bottom:36px; }
+    .section h2 {
+      font-family:'Syne',sans-serif; font-size:20px; font-weight:700;
+      margin-bottom:12px; color:var(--primary);
+      display:flex; align-items:center; gap:10px;
+    }
+    .section h2::before {
+      content:''; display:inline-block;
+      width:4px; height:20px; background:var(--accent);
+      border-radius:2px; flex-shrink:0;
+    }
+    .section p { font-size:15px; color:#333; margin-bottom:10px; }
+    .section ul { padding-left:20px; margin-bottom:10px; }
+    .section ul li { font-size:15px; color:#333; margin-bottom:6px; }
+
+    .highlight-card {
+      background:white; border:1px solid var(--border);
+      border-radius:var(--radius); padding:20px 24px;
+      margin:16px 0; border-left:4px solid var(--accent);
+    }
+    .highlight-card strong { color:var(--accent); font-size:18px; }
+    .highlight-card p { margin-top:6px; font-size:14px; color:var(--muted); }
+
+    /* CARDS DE ZONA */
+    .zone-grid {
+      display:grid; grid-template-columns:1fr 1fr;
+      gap:16px; margin:16px 0;
+    }
+    .zone-card {
+      background:white; border:1px solid var(--border);
+      border-radius:var(--radius); padding:20px 22px;
+    }
+    .zone-card.free { border-top:4px solid #16a34a; }
+    .zone-card.paid { border-top:4px solid var(--accent); }
+    .zone-card .zone-icon { font-size:28px; margin-bottom:8px; }
+    .zone-card h3 { font-family:'Syne',sans-serif; font-size:16px; font-weight:700; margin-bottom:6px; }
+    .zone-card .zone-price { font-size:22px; font-weight:800; margin:8px 0 4px; }
+    .zone-card.free .zone-price { color:#16a34a; }
+    .zone-card.paid .zone-price { color:var(--accent); }
+    .zone-card p { font-size:13px; color:var(--muted); }
+
+    .tabla-wrap { overflow-x:auto; margin:16px 0; }
+    table { width:100%; border-collapse:collapse; font-size:14px; }
+    th { background:var(--primary); color:white; padding:12px 16px; text-align:left; }
+    td { padding:11px 16px; border-bottom:1px solid var(--border); }
+    tr:last-child td { border-bottom:none; }
+    tr:nth-child(even) td { background:rgba(0,0,0,0.02); }
+
+    /* BADGE GRATIS */
+    .badge-free {
+      display:inline-block; background:#dcfce7; color:#16a34a;
+      font-size:12px; font-weight:700; padding:3px 10px;
+      border-radius:100px;
+    }
+    .badge-paid {
+      display:inline-block; background:#fff7ed; color:var(--accent);
+      font-size:12px; font-weight:700; padding:3px 10px;
+      border-radius:100px;
+    }
+
+    /* TIMELINE */
+    .timeline { margin:16px 0; }
+    .tl-item {
+      display:flex; gap:16px; margin-bottom:16px;
+      padding:16px 20px; background:white;
+      border-radius:var(--radius); border:1px solid var(--border);
+      align-items:flex-start;
+    }
+    .tl-icon {
+      font-size:24px; flex-shrink:0;
+      width:44px; height:44px;
+      background:var(--bg); border-radius:10px;
+      display:flex; align-items:center; justify-content:center;
+    }
+    .tl-content h3 { font-size:15px; font-weight:700; margin-bottom:3px; }
+    .tl-content p { font-size:14px; color:var(--muted); }
+    .tl-content .tl-time {
+      display:inline-block; background:var(--accent); color:white;
+      font-size:12px; font-weight:700; padding:2px 10px;
+      border-radius:100px; margin-top:6px;
+    }
+
+    .info-box {
+      background:#fffbeb; border:1px solid #fde68a;
+      border-radius:var(--radius); padding:16px 20px;
+      margin:16px 0; font-size:14px; color:#92400e;
+    }
+    .info-box strong { display:block; margin-bottom:4px; }
+
+    .contact-box {
+      background:var(--primary); color:white;
+      border-radius:var(--radius); padding:28px 32px;
+      text-align:center; margin-top:40px;
+    }
+    .contact-box h3 { font-family:'Syne',sans-serif; font-size:22px; margin-bottom:8px; }
+    .contact-box p { opacity:.8; margin-bottom:16px; font-size:14px; }
+    .contact-btn {
+      display:inline-flex; align-items:center; gap:8px;
+      background:var(--accent); color:white;
+      padding:12px 24px; border-radius:8px;
+      text-decoration:none; font-weight:700; font-size:15px;
+      transition:opacity .2s;
+    }
+    .contact-btn:hover { opacity:.9; }
+
+    footer {
+      text-align:center; padding:24px;
+      font-size:13px; color:var(--muted);
+      border-top:1px solid var(--border);
+    }
+
+    @media(max-width:600px){
+      nav { padding:0 16px; }
+      .container { padding:32px 16px 60px; }
+      .page-header h1 { font-size:26px; }
+      .zone-grid { grid-template-columns:1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">SyA<span>Store</span></a>
+  <a href="index.html" class="nav-back">← Volver a la tienda</a>
+</nav>
+
+<div class="container">
+
+  <div class="page-header">
+    <h1>Política de Envíos</h1>
+    <p>En SyA Store nos comprometemos a entregar tu pedido de forma rápida y segura en todo Chile.</p>
+    <span class="last-updated">Actualizado: Mayo 2026</span>
+  </div>
+
+  <!-- ZONAS DE DESPACHO -->
+  <div class="section">
+    <h2>Zonas de despacho y costos</h2>
+    <p>Despachamos a todo Chile. El costo varía según la zona de destino:</p>
+    <div class="zone-grid">
+      <div class="zone-card free">
+        <div class="zone-icon">🏙️</div>
+        <h3>Provincia de Santiago</h3>
+        <div class="zone-price">GRATIS</div>
+        <p>Todas las comunas de la provincia de Santiago, sin mínimo de compra.</p>
+      </div>
+      <div class="zone-card paid">
+        <div class="zone-icon">🚚</div>
+        <h3>Regiones y comunas fuera de la provincia</h3>
+        <div class="zone-price">$3.900 – $9.200</div>
+        <p>El costo final depende del peso del pedido y la distancia al destino. Calculado automáticamente al confirmar tu compra.</p>
+      </div>
+    </div>
+    <div class="info-box">
+      <strong>💡 Sobre el costo a regiones</strong>
+      Ninguno de nuestros productos supera 1 kg por unidad, por lo que el costo de envío a regiones siempre se encontrará dentro del rango indicado. El valor exacto se informa antes de confirmar el pago.
+    </div>
+  </div>
+
+  <!-- TABLA RESUMEN -->
+  <div class="section">
+    <h2>Resumen por zona</h2>
+    <div class="tabla-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Destino</th>
+            <th>Courier</th>
+            <th>Costo</th>
+            <th>Pago contra entrega</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Provincia de Santiago</td>
+            <td>Despacho propio</td>
+            <td><span class="badge-free">GRATIS</span></td>
+            <td>✅ Disponible (gratis)</td>
+          </tr>
+          <tr>
+            <td>Regiones y comunas fuera de la provincia</td>
+            <td>BlueExpress</td>
+            <td><span class="badge-paid">$3.900 – $9.200</span></td>
+            <td>❌ No disponible</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- TIEMPOS DE ENTREGA -->
+  <div class="section">
+    <h2>Tiempos de entrega</h2>
+    <div class="timeline">
+
+      <div class="tl-item">
+        <div class="tl-icon">🏙️</div>
+        <div class="tl-content">
+          <h3>Provincia de Santiago</h3>
+          <p>Entrega dentro de las 24 horas siguientes a la confirmación del pago. Los domingos no se realizan despachos.</p>
+          <span class="tl-time">Máx. 24 horas hábiles</span>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-icon">📦</div>
+        <div class="tl-content">
+          <h3>Compras del día sábado</h3>
+          <p>Los pedidos realizados el día sábado son despachados y entregados el día lunes, junto con las compras del domingo.</p>
+          <span class="tl-time">Entrega el lunes</span>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-icon">🗺️</div>
+        <div class="tl-content">
+          <h3>Regiones (BlueExpress)</h3>
+          <p>Los pedidos recibidos hasta las 14:00 hrs son despachados el mismo día. El tiempo de entrega depende del flujo operativo de BlueExpress según la región de destino.</p>
+          <span class="tl-time">Despacho mismo día (hasta 14:00 hrs)</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- COBERTURA -->
+  <div class="section">
+    <h2>Cobertura de envíos</h2>
+    <p>Despachamos a todas las regiones de Chile donde opera <strong>BlueExpress</strong>. Si tienes dudas sobre si tu comuna está cubierta, puedes consultarnos directamente por WhatsApp antes de realizar tu compra.</p>
+    <div class="highlight-card">
+      <strong>Pago contra entrega</strong>
+      <p>El pago al momento de la entrega está disponible únicamente para las comunas de la <strong>provincia de Santiago</strong>. Los envíos a regiones requieren pago previo mediante MercadoPago.</p>
+    </div>
+  </div>
+
+  <!-- SEGUIMIENTO -->
+  <div class="section">
+    <h2>Seguimiento de tu pedido</h2>
+    <p>Una vez despachado tu pedido, te notificamos por WhatsApp con la información de seguimiento. Para envíos vía BlueExpress, podrás rastrear tu paquete directamente en <strong>blueexpress.cl</strong> con el número de seguimiento que te enviamos.</p>
+  </div>
+
+  <!-- PROBLEMAS -->
+  <div class="section">
+    <h2>¿Problemas con tu envío?</h2>
+    <p>Si tu pedido presenta alguno de los siguientes inconvenientes, contáctanos de inmediato:</p>
+    <ul>
+      <li>El pedido no llegó en el plazo indicado</li>
+      <li>Recibiste un producto incorrecto o dañado durante el transporte</li>
+      <li>El paquete llegó en mal estado visible</li>
+    </ul>
+    <p>Gestionamos el caso directamente con el courier y te damos solución a la brevedad.</p>
+  </div>
+
+  <div class="contact-box">
+    <h3>¿Tienes dudas sobre tu envío?</h3>
+    <p>Nuestro equipo está disponible de lunes a sábado para ayudarte.</p>
+    <a href="https://wa.me/56991065770?text=Hola%2C%20tengo%20una%20consulta%20sobre%20el%20env%C3%ADo%20de%20mi%20pedido" class="contact-btn" target="_blank">
+      💬 Consultar por WhatsApp
+    </a>
+  </div>
+
+</div>
+
+<footer>
+  <p>© 2026 SyA Store — Todos los derechos reservados ·
+    <a href="index.html" style="color:var(--accent);">Volver a la tienda</a> ·
+    <a href="devoluciones.html" style="color:var(--accent);">Política de Devoluciones</a>
+  </p>
+</footer>
+
+</body>
+</html>
