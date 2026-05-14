@@ -1275,6 +1275,22 @@ async function fetchCloud(){
   // Aplicar datos a localStorage
   if(cfgData){
     if(cfgData.products) localStorage.setItem('st_products', JSON.stringify(cfgData.products));
+
+    // Aplicar stock real desde Firebase (tiene precedencia sobre GitHub)
+    try{
+      const fbUrl=((JSON.parse(localStorage.getItem('st_settings')||'{}')).firebaseUrl||'').trim().replace(/\/$/,'');
+      if(fbUrl){
+        const sr=await fetch(fbUrl+'/stock.json');
+        if(sr.ok){
+          const stockData=await sr.json();
+          if(stockData){
+            const prods=JSON.parse(localStorage.getItem('st_products')||'[]');
+            prods.forEach(p=>{ if(stockData[p.id]!==undefined){ p.stock=stockData[p.id].stock; if(stockData[p.id].variantMatrix) p.variantMatrix=stockData[p.id].variantMatrix; } });
+            localStorage.setItem('st_products',JSON.stringify(prods));
+          }
+        }
+      }
+    }catch(e){}
     const merged = Object.assign({}, cfgData);
     delete merged.products; delete merged.banners; delete merged.logoImg;
     localStorage.setItem('st_settings', JSON.stringify(Object.assign(getSettings(), merged)));

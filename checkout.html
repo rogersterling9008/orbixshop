@@ -438,7 +438,16 @@ function decrementStock(orderItems){
     }
     changed = true;
   });
-  if(changed) localStorage.setItem('st_products', JSON.stringify(prods));
+  if(changed){
+    localStorage.setItem('st_products', JSON.stringify(prods));
+    // Sincronizar stock con Firebase para persistencia entre dispositivos
+    const fbUrl=(getSettings().firebaseUrl||'').trim().replace(/\/$/,'');
+    if(fbUrl){
+      const stockData={};
+      prods.forEach(p=>{ stockData[p.id]={stock:p.stock, variantMatrix:p.variantMatrix||null}; });
+      fetch(fbUrl+'/stock.json',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(stockData)}).catch(()=>{});
+    }
+  }
 }
 function getProducts(){ try{ return JSON.parse(localStorage.getItem('st_products')||'[]'); }catch(e){ return []; } }
 function getCart(){ try{ return JSON.parse(localStorage.getItem('st_cart')||'[]'); }catch(e){ return []; } }
