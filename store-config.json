@@ -34,6 +34,75 @@
   "adminPassword": "12345678",
   "products": [
     {
+      "id": "mp5txs3th7axk",
+      "name": "Polera Banda De Rock Guns N Roses",
+      "cat": "Poleras Bandas de Rock",
+      "desc": "•  Base: Polera negra, corte clasico estampado en serigrafia por ambos lados\n •  Detalles: Es una polera basica de corte clasico, con cuello redondo y mangas simples en negro para que el diseño resalte.",
+      "price": 9990,
+      "origPrice": 12990,
+      "stock": 25,
+      "weight": 0.3,
+      "gcat": "212",
+      "gender": "unisex",
+      "color": "Negro",
+      "img": "https://i.postimg.cc/g2BVTP5P/Chat-GPT-Image-14-may-2026-02-11-35-p-m.png",
+      "images": [
+        "https://i.postimg.cc/g2BVTP5P/Chat-GPT-Image-14-may-2026-02-11-35-p-m.png",
+        "https://i.postimg.cc/W1fGHPKR/Chat-GPT-Image-14-may-2026-02-12-03-p-m.png"
+      ],
+      "variants": [
+        {
+          "name": "Diseño",
+          "options": [
+            {
+              "label": "Merch Oficial",
+              "stock": 0,
+              "img": ""
+            }
+          ]
+        },
+        {
+          "name": "Talla ",
+          "options": [
+            {
+              "label": "S",
+              "stock": 0,
+              "img": ""
+            },
+            {
+              "label": "M",
+              "stock": 0,
+              "img": ""
+            },
+            {
+              "label": "L",
+              "stock": 0,
+              "img": ""
+            },
+            {
+              "label": "XL",
+              "stock": 0,
+              "img": ""
+            },
+            {
+              "label": "2XL",
+              "stock": 0,
+              "img": ""
+            }
+          ]
+        }
+      ],
+      "variantMatrix": {
+        "Merch Oficial|S": 5,
+        "Merch Oficial|M": 5,
+        "Merch Oficial|L": 5,
+        "Merch Oficial|XL": 5,
+        "Merch Oficial|2XL": 5
+      },
+      "featured": false,
+      "active": true
+    },
+    {
       "id": "mp5srame1eseb",
       "name": "Polera Banda De Rock AC/DC",
       "cat": "Poleras Bandas de Rock",
@@ -1618,5 +1687,5 @@
       "active": true
     }
   ],
-  "_v": 1778782501922
+  "_v": 1778783784337
 }
