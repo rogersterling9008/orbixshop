@@ -584,6 +584,35 @@
     </div>
     <div class="form-group" id="pm_stock_wrap"><label class="form-label">Stock disponible <span style="color:var(--muted);font-size:11px;">(se calcula automáticamente si hay variantes)</span></label><input class="form-control" type="number" id="pm_stock" placeholder="Ej: 10"></div>
     <div class="form-group"><label class="form-label">Peso del producto (kg) <span style="color:var(--muted);font-size:11px;">para cálculo de envío en Google Shopping</span></label><input class="form-control" type="number" step="0.01" min="0" id="pm_weight" placeholder="Ej: 0.35"></div>
+    <div style="background:#fff8f0;border:1px solid #fde8d0;border-radius:10px;padding:14px 16px;margin-bottom:16px;">
+      <div style="font-size:12px;font-weight:700;color:#FF4D00;margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px;">🛍️ Google Shopping (opcional pero recomendado)</div>
+      <div class="form-row">
+        <div class="form-group" style="margin-bottom:0;">
+          <label class="form-label">Categoría Google</label>
+          <select class="form-control" id="pm_gcat">
+            <option value="">— Sin categoría —</option>
+            <option value="Ropa y accesorios &gt; Ropa &gt; Ropa deportiva">Ropa deportiva / Camisetas fútbol</option>
+            <option value="Ropa y accesorios &gt; Ropa &gt; Camisetas">Camisetas / Poleras</option>
+            <option value="Salud y belleza &gt; Salud &gt; Vitaminas y suplementos">Vitaminas y suplementos</option>
+            <option value="Arte y manualidades &gt; Manualidades &gt; Tejido y costura &gt; Hilo y lana">Lana / Hilo</option>
+            <option value="Arte y manualidades &gt; Manualidades &gt; Materiales de manualidades">Materiales manualidades</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin-bottom:0;">
+          <label class="form-label">Género</label>
+          <select class="form-control" id="pm_gender">
+            <option value="">— No aplica —</option>
+            <option value="male">Hombre</option>
+            <option value="female">Mujer</option>
+            <option value="unisex">Unisex</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group" style="margin-top:10px;margin-bottom:0;">
+        <label class="form-label">Color principal <span style="color:var(--muted);font-size:11px;">Ej: Rojo, Azul y Blanco</span></label>
+        <input class="form-control" id="pm_color" placeholder="Ej: Rojo">
+      </div>
+    </div>
 
     <div class="form-group">
       <label class="form-label">Imágenes del producto <span style="color:var(--muted);font-weight:400;">(máx. 6 · formato vertical recomendado)</span></label>
@@ -1216,6 +1245,9 @@ function openProdModal(prod){
   document.getElementById('pm_orig').value = prod?.origPrice||'';
   document.getElementById('pm_stock').value = prod?.stock||'';
   document.getElementById('pm_weight').value = prod?.weight||'';
+  document.getElementById('pm_gcat').value   = prod?.gcat||'';
+  document.getElementById('pm_gender').value = prod?.gender||'';
+  document.getElementById('pm_color').value  = prod?.color||'';
   document.getElementById('pm_featured').checked = prod?.featured||false;
   document.getElementById('pm_active').checked = prod?.active!==undefined?prod.active:true;
   document.getElementById('pm_imgurl_add').value='';
@@ -1648,6 +1680,9 @@ function saveProd(){
     origPrice: parseFloat(document.getElementById('pm_orig').value)||0,
     stock: totalStock,
     weight: parseFloat(document.getElementById('pm_weight').value)||0,
+    gcat:   document.getElementById('pm_gcat').value.trim(),
+    gender: document.getElementById('pm_gender').value,
+    color:  document.getElementById('pm_color').value.trim(),
     img: images[0]||'',
     images,
     variants: (window._pmVariants||[])

@@ -107,6 +107,10 @@ async function loadAndGenerate(){
       var img    = (p.images && p.images[0]) || p.img || '';
       var avail  = p.stock > 0 ? 'in_stock' : 'out_of_stock';
       var sale   = (p.origPrice && p.origPrice > p.price) ? '<g:sale_price>' + price + ' CLP</g:sale_price>' : '';
+      var gcat   = p.gcat   ? '      <g:google_product_category>' + esc(p.gcat) + '</g:google_product_category>\n' : '';
+      var gender = p.gender ? '      <g:gender>' + esc(p.gender) + '</g:gender>\n' : '';
+      var age    = p.gender ? '      <g:age_group>adult</g:age_group>\n' : '';
+      var color  = p.color  ? '      <g:color>' + esc(p.color) + '</g:color>\n' : '';
       return '    <item>\n' +
         '      <g:id>' + p.id + '</g:id>\n' +
         '      <g:title>' + esc(p.name) + '</g:title>\n' +
@@ -118,6 +122,7 @@ async function loadAndGenerate(){
         '      <g:price>' + price + ' CLP</g:price>\n' +
         '      <g:brand>' + esc(storeName) + '</g:brand>\n' +
         '      <g:product_type>' + esc(p.cat||'General') + '</g:product_type>\n' +
+        gcat + gender + age + color +
         (p.weight ? '      <g:shipping_weight>' + Number(p.weight).toFixed(2) + ' kg</g:shipping_weight>\n' : '') +
         (sale ? '      ' + sale + '\n' : '') +
         '    </item>';
