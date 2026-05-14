@@ -34,6 +34,75 @@
   "adminPassword": "12345678",
   "products": [
     {
+      "id": "mp5srame1eseb",
+      "name": "Polera Banda De Rock AC/DC",
+      "cat": "Poleras Bandas de Rock",
+      "desc": "•  Base: Color negro, base clasica de rock. \n •  Detalles: es una polera basica con cuello redondo y mangas simples en negro para que el diseño frontal sea el que destaque.",
+      "price": 9990,
+      "origPrice": 12990,
+      "stock": 25,
+      "weight": 0.3,
+      "gcat": "212",
+      "gender": "unisex",
+      "color": "Negro",
+      "img": "https://i.postimg.cc/FF2YfHLC/Whats-App-Image-2026-05-14-at-1-49-28-PM.jpg",
+      "images": [
+        "https://i.postimg.cc/FF2YfHLC/Whats-App-Image-2026-05-14-at-1-49-28-PM.jpg",
+        "https://i.postimg.cc/nhFq3Lc0/Chat-GPT-Image-14-may-2026-01-44-14-p-m.png"
+      ],
+      "variants": [
+        {
+          "name": "Diseño",
+          "options": [
+            {
+              "label": "Black Ice Tour",
+              "stock": 0,
+              "img": ""
+            }
+          ]
+        },
+        {
+          "name": "Talla",
+          "options": [
+            {
+              "label": "S",
+              "stock": 0,
+              "img": ""
+            },
+            {
+              "label": "M",
+              "stock": 0,
+              "img": ""
+            },
+            {
+              "label": "L",
+              "stock": 0,
+              "img": ""
+            },
+            {
+              "label": "XL",
+              "stock": 0,
+              "img": ""
+            },
+            {
+              "label": "2XL",
+              "stock": 0,
+              "img": ""
+            }
+          ]
+        }
+      ],
+      "variantMatrix": {
+        "Black Ice Tour|S": 5,
+        "Black Ice Tour|M": 5,
+        "Black Ice Tour|L": 5,
+        "Black Ice Tour|XL": 5,
+        "Black Ice Tour|2XL": 5
+      },
+      "featured": false,
+      "active": true
+    },
+    {
       "id": "mp4okb89l3e3a",
       "name": "Polera Banda De Rock Iron Maiden",
       "cat": "Poleras Bandas de Rock",
@@ -1549,5 +1618,5 @@
       "active": true
     }
   ],
-  "_v": 1778780888422
+  "_v": 1778781802124
 }
