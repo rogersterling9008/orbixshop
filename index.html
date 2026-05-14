@@ -17,14 +17,17 @@
   <!-- ══════════════════════════════════════
        OPEN GRAPH (WhatsApp, Facebook, etc.)
   ══════════════════════════════════════ -->
+  <meta name="application-name" content="SyA Store">
+  <link rel="icon" type="image/jpeg" href="https://syastore2020.github.io/SYA.CL/logo.jpg">
+  <link rel="apple-touch-icon" href="https://syastore2020.github.io/SYA.CL/logo.jpg">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="SyA Store">
   <meta property="og:title" content="SyA Store — Todo lo que necesitas, en un solo lugar">
   <meta property="og:description" content="Compra online con despacho a todo Chile. Paga con MercadoPago o contra entrega en Santiago.">
   <meta property="og:url" content="https://syastore2020.github.io/SYA.CL/">
-  <meta property="og:image" content="https://syastore2020.github.io/SYA.CL/og-image.jpg">
-  <meta property="og:image:width" content="1200">
-  <meta property="og:image:height" content="630">
+  <meta property="og:image" content="https://syastore2020.github.io/SYA.CL/logo.jpg">
+  <meta property="og:image:width" content="1080">
+  <meta property="og:image:height" content="1080">
   <meta property="og:locale" content="es_CL">
 
   <!-- ══════════════════════════════════════
@@ -33,7 +36,7 @@
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="SyA Store — Todo lo que necesitas, en un solo lugar">
   <meta name="twitter:description" content="Tienda online con despacho a todo Chile.">
-  <meta name="twitter:image" content="https://syastore2020.github.io/SYA.CL/og-image.jpg">
+  <meta name="twitter:image" content="https://syastore2020.github.io/SYA.CL/logo.jpg">
 
   <!-- ══════════════════════════════════════
        SCHEMA.ORG — ORGANIZACIÓN / TIENDA
@@ -41,11 +44,20 @@
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "SyA Store",
+    "url": "https://syastore2020.github.io/SYA.CL/"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
     "@type": "OnlineStore",
     "name": "SyA Store",
     "description": "Tienda online con despacho a todo Chile. Variedad de productos, compra segura y envíos rápidos.",
     "url": "https://syastore2020.github.io/SYA.CL/",
-    "logo": "https://syastore2020.github.io/SYA.CL/og-image.jpg",
+    "logo": "https://syastore2020.github.io/SYA.CL/logo.jpg",
+    "image": "https://syastore2020.github.io/SYA.CL/logo.jpg",
     "contactPoint": {
       "@type": "ContactPoint",
       "telephone": "+56991065770",
@@ -1002,7 +1014,7 @@
 
 <!-- ── NAVBAR ── -->
 <nav class="navbar">
-  <a href="index.html" class="nav-logo" id="navLogo">Mi<span>Tienda</span></a>
+  <a href="index.html" class="nav-logo" id="navLogo"><img src="logo.jpg" alt="SyA Store" class="nav-logo-img" style="height:38px;width:38px;object-fit:contain;border-radius:6px;"> <span style="font-family:'Syne',sans-serif;font-weight:800;">SyA</span> Store</a>
   <ul class="nav-cats" id="navCats"></ul>
   <div class="nav-actions">
     <button class="cart-btn" onclick="openCart()">
