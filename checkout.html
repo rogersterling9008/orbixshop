@@ -673,7 +673,7 @@ function buildOrder(){
       region:document.getElementById('c_region').value.trim(),
       notes:document.getElementById('c_notes').value.trim()
     },
-    items:cart,
+    items:cart.map(i=>{ const p=prods.find(pr=>pr.id===i.id); return {...i, name:p?p.name:i.id, price:p?p.price:0}; }),
     subtotal,
     shippingCost,
     total,
