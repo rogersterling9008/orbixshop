@@ -351,6 +351,13 @@
   <p class="suc-desc" id="sucDesc">Tu pedido fue registrado exitosamente.</p>
   <div class="suc-order">Número de pedido<br><strong id="sucNum">#000000</strong></div>
   <p style="font-size:13px;color:var(--muted);max-width:400px;line-height:1.6;">🔄 Recuerda: tienes <strong>7 días corridos</strong> desde que recibes el pedido para solicitar una devolución vía WhatsApp.</p>
+  <div style="background:#F0F9FF;border:1px solid #BAE6FD;border-radius:12px;padding:16px 20px;max-width:440px;margin-top:8px;text-align:left;">
+    <p style="font-size:13px;color:#0C4A6E;line-height:1.7;margin:0;">
+      📧 <strong>Notificaciones de tu pedido</strong><br>
+      Te enviaremos actualizaciones sobre el estado de tu pedido al correo que proporcionaste. Si no encuentras nuestros mensajes en tu bandeja de entrada, te pedimos revisar la carpeta de <strong>spam o correo no deseado</strong>.<br><br>
+      Puedes marcarnos como remitente seguro para asegurarte de recibir todas las notificaciones. <strong>Nunca utilizaremos tu correo electrónico para el envío de promociones ni publicidad no solicitada.</strong>
+    </p>
+  </div>
   <div class="suc-actions">
     <a href="index.html" class="suc-btn orange" onclick="clearCart()">Volver a la tienda →</a>
   </div>
@@ -673,7 +680,7 @@ function buildOrder(){
       region:document.getElementById('c_region').value.trim(),
       notes:document.getElementById('c_notes').value.trim()
     },
-    items:cart.map(i=>{ const p=prods.find(pr=>pr.id===i.id); return {...i, name:p?p.name:i.id, price:p?p.price:0}; }),
+    items:cart,
     subtotal,
     shippingCost,
     total,
