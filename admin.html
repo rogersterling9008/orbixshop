@@ -1818,7 +1818,11 @@ function updateOrderStatus(){
         cancelled: 'Cancelado'
       };
       const label = statusLabels[newStatus] || newStatus;
-      const itemsList = (o.items||[]).map(i=>`${i.name} x${i.qty}`).join(', ');
+      const allProds = getProducts();
+      const itemsList = (o.items||[]).map(i=>{
+        const name = i.name || (allProds.find(p=>p.id===i.id)||{}).name || i.id;
+        return `${name} x${i.qty}`;
+      }).join(', ');
       try {
         emailjs.init(S.emailjsKey);
         emailjs.send(S.emailjsService, S.emailjsTemplate, {
