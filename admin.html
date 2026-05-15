@@ -1795,6 +1795,7 @@ function openOrder(id){
   document.getElementById('orderModal').classList.add('open');
 }
 
+let _sendingEmail = false;
 function updateOrderStatus(){
   const orders = getOrders();
   const o = orders.find(o=>o.id===viewingOrderId);
@@ -1803,12 +1804,17 @@ function updateOrderStatus(){
   const prevStatus = o.status;
   o.status = newStatus;
   saveOrders(orders);
+
+  // Empujar cambio de estado a Firebase para que persista entre dispositivos
+  const fbUrl=(getSettings().firebaseUrl||'').trim().replace(/\/$/,'');
+  if(fbUrl) fetch(fbUrl+'/orders/'+o.id+'.json',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(o)}).catch(()=>{});
+
   document.getElementById('orderModal').classList.remove('open');
   renderOrders();
   showToast('✓ Estado actualizado','ok');
 
-  // Enviar email al cliente si tiene correo y el estado cambió
-  if(newStatus !== prevStatus && o.customer && o.customer.email){
+  // Enviar email al cliente si tiene correo, el estado cambió y no se está enviando ya
+  if(newStatus !== prevStatus && o.customer && o.customer.email && !_sendingEmail){
     const S = getSettings();
     if(S.emailjsKey && S.emailjsService && S.emailjsTemplate){
       const statusLabels = {
@@ -1824,6 +1830,7 @@ function updateOrderStatus(){
         return `${name} x${i.qty}`;
       }).join(', ');
       try {
+        _sendingEmail = true;
         emailjs.init(S.emailjsKey);
         emailjs.send(S.emailjsService, S.emailjsTemplate, {
           to_email:   o.customer.email,
@@ -1839,8 +1846,8 @@ function updateOrderStatus(){
           showToast('📧 Email enviado al cliente','ok');
         }).catch(()=>{
           showToast('⚠ Estado actualizado pero email no se pudo enviar','warn');
-        });
-      } catch(e){ console.error('EmailJS error:',e); }
+        }).finally(()=>{ _sendingEmail = false; });
+      } catch(e){ console.error('EmailJS error:',e); _sendingEmail = false; }
     }
   }
 }
