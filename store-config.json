@@ -40,7 +40,7 @@
       "desc": "•  Base: Polera negra, corte clasico estampado en serigrafia por ambos lados\n •  Detalles: Es una polera basica de corte clasico, con cuello redondo y mangas simples en negro para que el diseño resalte.",
       "price": 9990,
       "origPrice": 12990,
-      "stock": 25,
+      "stock": 75,
       "weight": 0.3,
       "gcat": "212",
       "gender": "unisex",
@@ -97,7 +97,12 @@
         "Merch Oficial|M": 5,
         "Merch Oficial|L": 5,
         "Merch Oficial|XL": 5,
-        "Merch Oficial|2XL": 5
+        "Merch Oficial|2XL": 5,
+        "Merchandise de rock|S": 10,
+        "Merchandise de rock|M": 10,
+        "Merchandise de rock|L": 10,
+        "Merchandise de rock|XL": 10,
+        "Merchandise de rock|2XL": 10
       },
       "featured": false,
       "active": true
@@ -1687,5 +1692,5 @@
       "active": true
     }
   ],
-  "_v": 1778784231453
+  "_v": 1778803251139
 }
