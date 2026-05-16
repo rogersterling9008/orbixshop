@@ -34,6 +34,69 @@
   "adminPassword": "12345678",
   "products": [
     {
+      "id": "mp8pup9xvj3zm",
+      "name": "Camiseta Francia - Titular 2026",
+      "cat": "Camisetas de Futbol",
+      "desc": "•  Base: Rojo profundo, el color historico de la seleccion.\n •  Detalles: Patron de lineas onduladas tono sobre tono que la da movimiento y elegancia al diseño.\nCuello en V y puños con doble linea verde y roja, los colores de la bandera.",
+      "price": 24990,
+      "origPrice": 0,
+      "stock": 20,
+      "weight": 0.3,
+      "gcat": "5697",
+      "gender": "male",
+      "color": "Azul electrico con Rayas",
+      "img": "https://i.postimg.cc/RV2hbY5D/Whats-App-Image-2026-05-16-at-2-43-54-PM.jpg",
+      "images": [
+        "https://i.postimg.cc/RV2hbY5D/Whats-App-Image-2026-05-16-at-2-43-54-PM.jpg",
+        "https://i.postimg.cc/pX3r1Sb1/Whats-App-Image-2026-05-16-at-2-43-54-PM1.jpg"
+      ],
+      "variants": [
+        {
+          "name": "Jugador ",
+          "options": [
+            {
+              "label": "Mbappe",
+              "stock": 0,
+              "img": ""
+            }
+          ]
+        },
+        {
+          "name": "Talla",
+          "options": [
+            {
+              "label": "S",
+              "stock": 0,
+              "img": ""
+            },
+            {
+              "label": "M",
+              "stock": 0,
+              "img": ""
+            },
+            {
+              "label": "L",
+              "stock": 0,
+              "img": ""
+            },
+            {
+              "label": "XL",
+              "stock": 0,
+              "img": ""
+            }
+          ]
+        }
+      ],
+      "variantMatrix": {
+        "Mbappe|S": 5,
+        "Mbappe|M": 5,
+        "Mbappe|L": 5,
+        "Mbappe|XL": 5
+      },
+      "featured": false,
+      "active": true
+    },
+    {
       "id": "mp5txs3th7axk",
       "name": "Polera Banda De Rock Guns N Roses",
       "cat": "Poleras Bandas de Rock",
@@ -1692,5 +1755,5 @@
       "active": true
     }
   ],
-  "_v": 1778957413239
+  "_v": 1778958320763
 }
