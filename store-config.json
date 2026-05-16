@@ -35,7 +35,7 @@
   "products": [
     {
       "id": "mp8pup9xvj3zm",
-      "name": "Camiseta Seleccion de Francia - Titular 2026",
+      "name": "Camiseta Seleccion Francia - Titular 2026",
       "cat": "Camisetas de Futbol",
       "desc": "•  Base: Rojo profundo, el color historico de la seleccion.\n •  Detalles: Patron de lineas onduladas tono sobre tono que la da movimiento y elegancia al diseño.\nCuello en V y puños con doble linea verde y roja, los colores de la bandera.",
       "price": 24990,
@@ -1755,5 +1755,5 @@
       "active": true
     }
   ],
-  "_v": 1778958352412
+  "_v": 1778958376180
 }
