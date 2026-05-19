@@ -492,7 +492,7 @@
         "KAKA 22|XL": 5
       },
       "featured": false,
-      "active": true
+      "active": false
     },
     {
       "id": "mp2ybbnh9z6ou",
@@ -1755,5 +1755,5 @@
       "active": true
     }
   ],
-  "_v": 1779148892551
+  "_v": 1779148904825
 }
