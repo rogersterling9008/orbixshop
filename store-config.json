@@ -1350,7 +1350,7 @@
         "SIN JUGADOR|XL": 1
       },
       "featured": false,
-      "active": true
+      "active": false
     },
     {
       "id": "mowxt37k6i3h3",
@@ -1755,5 +1755,5 @@
       "active": true
     }
   ],
-  "_v": 1779148931610
+  "_v": 1779148936923
 }
