@@ -1478,7 +1478,7 @@
         "SIN JUGADOR|XL": 5
       },
       "featured": false,
-      "active": false
+      "active": true
     },
     {
       "id": "movr4hjjsw1cu",
@@ -1755,5 +1755,5 @@
       "active": false
     }
   ],
-  "_v": 1779152465986
+  "_v": 1779152468529
 }
