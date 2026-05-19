@@ -1308,7 +1308,7 @@
         "Aranguiz|XL": 5
       },
       "featured": false,
-      "active": false
+      "active": true
     },
     {
       "id": "moxrcigu9syqu",
@@ -1350,7 +1350,7 @@
         "SIN JUGADOR|XL": 1
       },
       "featured": false,
-      "active": false
+      "active": true
     },
     {
       "id": "mowxt37k6i3h3",
@@ -1755,5 +1755,5 @@
       "active": false
     }
   ],
-  "_v": 1779152463490
+  "_v": 1779152465986
 }
